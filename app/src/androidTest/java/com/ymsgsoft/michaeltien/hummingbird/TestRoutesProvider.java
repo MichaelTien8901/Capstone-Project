@@ -380,13 +380,13 @@ public class TestRoutesProvider extends AndroidTestCase {
         TestDb.validateCursor("testInsertReadProvider.  Error validating Steps with stepRowId.",
                 stepCursor, stepValues);
         stepCursor.close();
-        // Test Steps ----------------------------------------------------------------------------------------
+        // Test MicroSteps ----------------------------------------------------------------------------------------
         ContentValues microStepValues = TestDb.createMicroStepValues(stepRowId);
         // The TestContentObserver is a one-shot class
         tco = TestContentObserver.getTestContentObserver();
         mContext.getContentResolver().registerContentObserver(RoutesProvider.MicroSteps.CONTENT_URI, true, tco);
         Uri microStepInsertUri = mContext.getContentResolver()
-                .insert(RoutesProvider.MicroSteps.CONTENT_URI, stepValues);
+                .insert(RoutesProvider.MicroSteps.CONTENT_URI, microStepValues);
         assertTrue(microStepInsertUri != null);
 
         // Did our content observer get called?  If this fails, your insert leg
