@@ -1,7 +1,10 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -14,7 +17,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-
+    private Button mSearchButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +26,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mSearchButton = (Button) findViewById(R.id.search_button);
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this, PlaceActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -57,5 +68,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CameraPosition target = CameraPosition.builder().target(Vancouver).zoom(14).build();
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(Vancouver));
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
+
     }
 }

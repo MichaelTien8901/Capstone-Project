@@ -28,6 +28,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+        <!--<meta-data-->
+            <!--android:name="com.google.android.geo.API_KEY"-->
+            <!--android:value="@string/google_maps_server_key"/>-->
 
         <activity
             android:name=".MapsActivity"
@@ -38,11 +41,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <provider
-            android:authorities="com.ymsgsoft.michaeltien.hummingbird"
-            android:name=".generated_data.RoutesProvider"
-            android:exported="false"/>
 
+        <provider
+            android:name=".generated_data.RoutesProvider"
+            android:authorities="com.ymsgsoft.michaeltien.hummingbird"
+            android:exported="false" />
+
+        <activity
+            android:name=".PlaceActivity"
+            android:label="@string/title_activity_place"
+            android:parentActivityName=".MapsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ymsgsoft.michaeltien.hummingbird.MapsActivity" />
+        </activity>
     </application>
 
 </manifest>
