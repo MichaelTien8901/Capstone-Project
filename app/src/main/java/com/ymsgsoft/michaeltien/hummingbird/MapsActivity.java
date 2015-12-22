@@ -15,7 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-
+    private final int MY_SEARCH_ACTIVITY_REQUEST_ID = 1;
     private GoogleMap mMap;
     private Button mSearchButton;
     @Override
@@ -31,11 +31,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, PlaceActivity.class);
-                startActivity(intent);
+                String searchText = mSearchButton.getText().toString();
+                if ( !searchText.equals("Search")) {
+                    intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
+                }
+                startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch( requestCode ){
+            case MY_SEARCH_ACTIVITY_REQUEST_ID:
+                if ( resultCode == RESULT_OK) {
+                    String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
+                    //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
+                    CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
+                    mSearchButton.setText(place_name);
+                }
+                break;
+        }
+    }
 
     /**
      * Manipulates the map once available.

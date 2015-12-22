@@ -24,17 +24,27 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:hint="@string/autocomplete_hint"
-            android:paddingRight="40dp"
+            android:paddingRight="80dp"
             android:singleLine="true"
-             />
+            android:imeOptions="actionSearch"
+            />
         <Button
             android:id="@+id/button_clear"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="40dp"
             android:background="@android:drawable/ic_menu_close_clear_cancel"
+            />
+        <Button
+            android:id="@+id/button_search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@android:drawable/ic_menu_search"
             />
     </RelativeLayout>
         <ImageView
@@ -44,27 +54,5 @@
             android:src="@drawable/powered_by_google_light" />
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/selected_place"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/place_details"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:autoLink="all"
-            android:text=""
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/place_attribution"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:autoLink="all"
-            android:text=""
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 </ScrollView>
