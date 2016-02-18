@@ -28,9 +28,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <!--<meta-data-->
-            <!--android:name="com.google.android.geo.API_KEY"-->
-            <!--android:value="@string/google_maps_server_key"/>-->
+        <!-- <meta-data -->
+        <!-- android:name="com.google.android.geo.API_KEY" -->
+        <!-- android:value="@string/google_maps_server_key"/> -->
 
         <activity
             android:name=".MapsActivity"
@@ -56,6 +56,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ymsgsoft.michaeltien.hummingbird.MapsActivity" />
         </activity>
+        <activity
+            android:name=".PlanningActivity"
+            android:label="@string/title_activity_planning"
+            android:parentActivityName=".MapsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ymsgsoft.michaeltien.hummingbird.MapsActivity" />
+        </activity>
     </application>
-
 </manifest>

@@ -15,6 +15,12 @@ android {
         // enable multiDexEnabled will make the test failed
 //        multiDexEnabled true
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
     buildTypes {
 
         release {
@@ -34,6 +40,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.google.android.gms:play-services-location:8.4.0'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
-    compile 'net.simonvt.schematic:schematic-compiler:0.6.4'
     compile 'com.android.support:design:23.1.1'
+    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'net.simonvt.schematic:schematic-compiler:0.6.4'
 }

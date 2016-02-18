@@ -10,5 +10,10 @@
     <!-- getString(String, Object...) does not support HTML tags directly, they need to be encoded first.
     Original string: <b>%1$s</b><br/><i>Place Id: %2$s</i><br/>Address: %3$s<br/>Phone: %4$s<br/>Website: %5$s-->
     <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
-
+    <string name="title_activity_planning">Plan</string>
+    <string name="plan_from_title"> From </string>
+    <string name="plan_to_title"> To </string>
+    <string name="intent_plan_key_from">arg_intent_key_plan_from</string>
+    <string name="intent_plan_key_to">arg_intent_key_plan_to</string>
+    <string name="init_search_here">Here</string>
 </resources>

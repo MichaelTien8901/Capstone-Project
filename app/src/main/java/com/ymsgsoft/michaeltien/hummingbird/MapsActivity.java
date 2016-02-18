@@ -60,11 +60,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MapsActivity.this, PlaceActivity.class);
-                String searchText = mSearchButton.getText().toString();
-                if ( !searchText.equals("Search")) {
-                    intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
-                }
+
+//                Intent intent = new Intent(MapsActivity.this, PlaceActivity.class);
+//                String searchText = mSearchButton.getText().toString();
+//                if ( !searchText.equals("Search")) {
+//                    intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
+//                }
+//                startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
+                Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
                 startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
             }
         });
