@@ -68,6 +68,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                }
 //                startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
                 Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
+                PlaceObject mFromObject = new PlaceObject();
+                mFromObject.title = "Here You Are";
+                mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
+                intent.putExtra(getString(R.string.intent_plan_key_from), mFromObject);
                 startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
             }
         });

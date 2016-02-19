@@ -25,18 +25,19 @@ public class PlanningActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if ( savedInstanceState == null){
-//            String ARG_ITEM_ID = getString(R.string.package_prefix) + getString(R.string.intent_key_movie_object);
-//            MovieObject mv  = getIntent().getParcelableExtra(ARG_ITEM_ID);
-//
-//            Bundle arguments = new Bundle();
-//            arguments.putParcelable(ARG_ITEM_ID, mv);
-//
-//            DetailActivityFragment fragment = new DetailActivityFragment();
-//            fragment.setArguments(arguments);
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.movie_detail_container, fragment)
-//                    .commit();
+            final String ARG_PLAN_FROM_ID = getString(R.string.intent_plan_key_from);
+            final String ARG_PLAN_TO_ID = getString(R.string.intent_plan_key_to);
+
+            PlaceObject mFromObject = getIntent().getParcelableExtra(ARG_PLAN_FROM_ID);
+            PlaceObject mToObject = getIntent().getParcelableExtra(ARG_PLAN_TO_ID);
             PlanningActivityFragment fragment = new PlanningActivityFragment();
+
+            Bundle arguments = new Bundle();
+            if ( mFromObject != null)
+                arguments.putParcelable(ARG_PLAN_FROM_ID, mFromObject);
+            if ( mToObject != null)
+                arguments.putParcelable(ARG_PLAN_TO_ID, mToObject);
+            fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_planning_id, fragment)
                     .commit();
