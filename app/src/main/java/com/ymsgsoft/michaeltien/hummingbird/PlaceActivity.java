@@ -111,7 +111,7 @@ public class PlaceActivity extends FragmentActivity implements GoogleApiClient.O
              read the place ID and title.
               */
             final AutocompletePrediction item = mAdapter.getItem(position);
-            final String placeId = item.getPlaceId();
+            final String placeId = "place_id:" + item.getPlaceId();
             final CharSequence primaryText = item.getPrimaryText(null);
 
             Log.i(TAG, "Autocomplete item selected: " + primaryText);
@@ -182,8 +182,9 @@ public class PlaceActivity extends FragmentActivity implements GoogleApiClient.O
     }
     private void PerformSearch() {
         final CharSequence primaryText = mAutocompleteView.getText();
+        final String place_id = primaryText.toString();
         Intent resultData = new Intent();
-        resultData.putExtra(PLACE_ID, "");
+        resultData.putExtra(PLACE_ID, place_id);
         resultData.putExtra(PLACE_TEXT, primaryText);
         setResult(RESULT_OK, resultData);
         finish();

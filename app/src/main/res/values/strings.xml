@@ -16,4 +16,5 @@
     <string name="intent_plan_key_from">arg_intent_key_plan_from</string>
     <string name="intent_plan_key_to">arg_intent_key_plan_to</string>
     <string name="init_search_here">Here</string>
+    <string name="init_depart_time">Depart Now</string>
 </resources>

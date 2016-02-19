@@ -24,6 +24,23 @@ public class PlanningActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if ( savedInstanceState == null){
+//            String ARG_ITEM_ID = getString(R.string.package_prefix) + getString(R.string.intent_key_movie_object);
+//            MovieObject mv  = getIntent().getParcelableExtra(ARG_ITEM_ID);
+//
+//            Bundle arguments = new Bundle();
+//            arguments.putParcelable(ARG_ITEM_ID, mv);
+//
+//            DetailActivityFragment fragment = new DetailActivityFragment();
+//            fragment.setArguments(arguments);
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.movie_detail_container, fragment)
+//                    .commit();
+            PlanningActivityFragment fragment = new PlanningActivityFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_planning_id, fragment)
+                    .commit();
+        }
     }
 
 }

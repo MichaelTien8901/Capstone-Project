@@ -24,6 +24,7 @@ public class PlanningActivityFragment extends Fragment {
     private final int SEARCH_TO_REQUEST_ID = 2;
     @Bind(R.id.fromTextView) TextView mFromTextView;
     @Bind(R.id.toTextView) TextView mToTextView;
+    @Bind(R.id.departTextView) TextView mDepartView;
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
 
@@ -60,17 +61,18 @@ public class PlanningActivityFragment extends Fragment {
             mToObject = savedInstanceState.getParcelable(PLAN_TO_ID);
         } else {
             Bundle arguments = getArguments();
-            if (arguments != null && arguments.containsKey(getString(R.string.intent_plan_key_from))) {
+            mFromObject = new PlaceObject();
+            mFromObject.title = getString(R.string.init_search_here);
+            mToObject = new PlaceObject();
+            mToObject.title = "";
+
+            if (arguments != null) {
                 final String ARG_PLAN_FROM_ID = getString(R.string.intent_plan_key_from);
                 final String ARG_PLAN_TO_ID = getString(R.string.intent_plan_key_to);
-
-                mFromObject = arguments.getParcelable(ARG_PLAN_FROM_ID);
-                mToObject = arguments.getParcelable(ARG_PLAN_TO_ID);
-            } else {
-                mFromObject = new PlaceObject();
-                mFromObject.title = getString(R.string.init_search_here);
-                mToObject = new PlaceObject();
-                mToObject.title = "";
+                if ( arguments.containsKey(ARG_PLAN_FROM_ID))
+                    mFromObject = arguments.getParcelable(ARG_PLAN_FROM_ID);
+                if ( arguments.containsKey(ARG_PLAN_TO_ID))
+                    mToObject = arguments.getParcelable(ARG_PLAN_TO_ID);
             }
         }
         updateSearchText();
@@ -107,7 +109,7 @@ public class PlanningActivityFragment extends Fragment {
                     String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
                     //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
                     CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
-                    mFromObject.title = (String) place_name;
+                    mFromObject.title = place_name.toString();
                     mFromObject.placeId = place_id;
                     updateSearchText();
                 }
@@ -118,8 +120,8 @@ public class PlanningActivityFragment extends Fragment {
                     String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
                     //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
                     CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
-                    mToObject.title = (String) place_name;
-                    mToObject.placeId = place_id;
+                    mToObject.title = place_name.toString();
+                    mFromObject.placeId = place_id;
                     updateSearchText();
                 }
                 break;
