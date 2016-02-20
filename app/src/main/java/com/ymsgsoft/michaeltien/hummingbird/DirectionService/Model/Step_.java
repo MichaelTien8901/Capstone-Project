@@ -4,11 +4,11 @@ package com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model;
 public class Step_ {
     public Distance distance;
     public Duration duration;
-    public EndLocation endLocation;
-    public String htmlInstructions;
+    public EndLocation end_location;
+    public String html_instructions;
     public Polyline polyline;
-    public StartLocation startLocation;
-    public String travelMode;
+    public StartLocation start_location;
+    public String travel_mode;
     public String maneuver;
 
 }

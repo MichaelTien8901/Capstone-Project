@@ -58,7 +58,7 @@
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/planListView"
+        android:id="@+id/routeListView"
         android:layout_below="@+id/departTextView"
         android:layout_centerHorizontal="true" />
 

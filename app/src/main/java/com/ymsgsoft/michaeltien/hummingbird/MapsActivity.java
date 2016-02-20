@@ -25,7 +25,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         ConnectionCallbacks, OnConnectionFailedListener {
+    private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
     private final int MY_SEARCH_ACTIVITY_REQUEST_ID = 1;
+
+    private GoogleMap mMap;
+    private Button mSearchButton;
+    protected GoogleApiClient mGoogleApiClient;
+    protected Location mLastLocation;
+    protected int REQUEST_LOCATION = 101;
+    private Boolean locationReady = false, mapReady = false;
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -35,12 +43,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGoogleApiClient.connect();
     }
 
-    private GoogleMap mMap;
-    private Button mSearchButton;
-    protected GoogleApiClient mGoogleApiClient;
-    protected Location mLastLocation;
-    protected int REQUEST_LOCATION = 101;
-    private Boolean locationReady = false, mapReady = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,11 +72,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
                 PlaceObject mFromObject = new PlaceObject();
                 mFromObject.title = "Here You Are";
-                mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
+                //mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
+                mFromObject.placeId = String.format("%f,%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
                 intent.putExtra(getString(R.string.intent_plan_key_from), mFromObject);
                 startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
             }
         });
+        if ( savedInstanceState != null) {
+            mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
+        }
     }
 
     @Override
@@ -174,5 +180,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if ( mLastLocation != null) {
+            outState.putParcelable(LAST_LOCATION_KEY, mLastLocation);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if ( savedInstanceState != null )
+            mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
     }
 }

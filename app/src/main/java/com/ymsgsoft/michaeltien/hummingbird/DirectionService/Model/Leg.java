@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 public class Leg {
 
-    public ArrivalTime arrivalTime;
-    public DepartureTime departureTime;
+    public ArrivalTime arrival_time;
+    public DepartureTime departure_time;
     public Distance distance;
     public Duration duration;
-    public String endAddress;
-    public EndLocation endLocation;
-    public String startAddress;
-    public StartLocation startLocation;
+    public String end_address;
+    public EndLocation end_location;
+    public String start_address;
+    public StartLocation start_location;
     public List<Step> steps = new ArrayList<Step>();
-    public List<Object> viaWaypoint = new ArrayList<Object>();
+    public List<Object> via_waypoint = new ArrayList<Object>();
 
 }
