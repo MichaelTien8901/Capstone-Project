@@ -18,10 +18,15 @@ public interface  LegColumns {
     @DataType(INTEGER) @PrimaryKey @AutoIncrement String ID = "_id";
     // arrival time
     @DataType(INTEGER) String ARRIVAL_TIME = "arrival_time";
+    @DataType(TEXT) String ARRIVAL_TIME_TEXT = "arrival_time_text";
+
     @DataType(INTEGER) String DEPARTURE_TIME = "departure_time";
+    @DataType(TEXT) String DEPARTURE_TIME_TEXT = "departure_time_text";
 
     @DataType(INTEGER) String DISTANCE = "distance"; // meter
+    @DataType(TEXT) String DISTANCE_TEXT = "distance_text"; // meter
     @DataType(INTEGER) String DURATION = "duration"; // seconds
+    @DataType(TEXT) String DURATION_TEXT = "duration_text"; // seconds
     @DataType(TEXT) @NotNull String START_ADDRESS = "start_address";
     @DataType(REAL) String START_LAT = "start_lat";
     @DataType(REAL) String START_LNG = "start_lng";

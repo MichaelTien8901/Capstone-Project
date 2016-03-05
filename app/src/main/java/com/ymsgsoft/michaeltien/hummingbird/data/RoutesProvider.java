@@ -8,7 +8,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Leg;
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step;
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step_;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables;
+import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.LegsValuesBuilder;
+import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.RoutesValuesBuilder;
+import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.StepsValuesBuilder;
 
 import net.simonvt.schematic.annotation.ContentProvider;
 import net.simonvt.schematic.annotation.ContentUri;
@@ -181,5 +188,67 @@ public final class RoutesProvider {
             return buildUri(Path.STEPS, String.valueOf(stepId), Path.MICRO_STEPS);
         }
 
+    }
+    ContentValues createRouteValues(Route route) {
+        RoutesValuesBuilder builder = new RoutesValuesBuilder()
+                .overviewPolylines(route.overview_polyline.points)
+                .summary(route.summary);
+        StringBuilder warnings = new StringBuilder();
+        for ( String s: route.warnings) {
+            warnings.append(s + "  " );
+        }
+        builder.warning(warnings.toString());
+        return builder.values();
+    }
+    ContentValues createLegValues(Leg leg, int routeId) {
+        return new LegsValuesBuilder()
+                .routesId( routeId)
+                .arrivalTime(leg.arrival_time.value)
+                .arrivalTimeText(leg.arrival_time.text)
+                .departureTime(leg.departure_time.value)
+                .departureTimeText(leg.departure_time.text)
+                .distance(leg.distance.value)
+                .distanceText(leg.distance.text)
+                .duration(leg.duration.value)
+                .durationText(leg.duration.text)
+                .startAddress(leg.start_address)
+                .startLat((float) leg.start_location.lat.floatValue())
+                .startLng((float) leg.start_location.lng.floatValue())
+                .endAddress(leg.end_address)
+                .endLat((float) leg.end_location.lat.floatValue())
+                .endLng((float) leg.end_location.lng.floatValue())
+                .values();
+    }
+    ContentValues createStepValues(Step step, int legId){
+        return new StepsValuesBuilder()
+                .legId(legId)
+                .polyline(step.polyline.points)
+                .instruction(step.html_instructions)
+                .distance(step.distance.value)
+                .distanceText(step.distance.text)
+                .duration(step.duration.value)
+                .durationText(step.duration.text)
+                .startLat(step.start_location.lat.floatValue())
+                .startLng(step.start_location.lng.floatValue())
+                .endLat(step.end_location.lat.floatValue())
+                .endLng(step.end_location.lng.floatValue())
+                .travelMode(step.travel_mode)
+                .values();
+    }
+    ContentValues createMicroStepValues(Step_ step, int stepId){
+        return new StepsValuesBuilder()
+                .legId(stepId)
+                .polyline(step.polyline.points)
+                .instruction(step.html_instructions)
+                .distance(step.distance.value)
+                .distanceText(step.distance.text)
+                .duration(step.duration.value)
+                .durationText(step.duration.text)
+                .startLat(step.start_location.lat.floatValue())
+                .startLng(step.start_location.lng.floatValue())
+                .endLat(step.end_location.lat.floatValue())
+                .endLng(step.end_location.lng.floatValue())
+                .travelMode(step.travel_mode)
+                .values();
     }
 }
