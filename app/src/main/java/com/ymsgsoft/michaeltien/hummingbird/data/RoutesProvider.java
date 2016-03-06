@@ -4,6 +4,7 @@ package com.ymsgsoft.michaeltien.hummingbird.data;
  * Created by Michael Tien on 2015/12/2.
  */
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
@@ -190,7 +191,7 @@ public final class RoutesProvider {
         }
 
     }
-    ContentValues createRouteValues(Route route) {
+    static ContentValues createRouteValues(Route route) {
         RoutesValuesBuilder builder = new RoutesValuesBuilder()
                 .overviewPolylines(route.overview_polyline.points)
                 .summary(route.summary);
@@ -201,7 +202,7 @@ public final class RoutesProvider {
         builder.warning(warnings.toString());
         return builder.values();
     }
-    ContentValues createLegValues(Leg leg, int routeId) {
+    static ContentValues createLegValues(Leg leg, long routeId) {
         return new LegsValuesBuilder()
                 .routesId( routeId)
                 .arrivalTime(leg.arrival_time.value)
@@ -220,7 +221,7 @@ public final class RoutesProvider {
                 .endLng((float) leg.end_location.lng.floatValue())
                 .values();
     }
-    ContentValues createStepValues(Step step, int legId){
+    static ContentValues createStepValues(Step step, long legId){
         return new StepsValuesBuilder()
                 .legId(legId)
                 .polyline(step.polyline.points)
@@ -236,7 +237,7 @@ public final class RoutesProvider {
                 .travelMode(step.travel_mode)
                 .values();
     }
-    ContentValues createMicroStepValues(Step_ step, int stepId){
+    static ContentValues createMicroStepValues(Step_ step, long stepId){
         return new MicroStepsValuesBuilder()
                 .stepId(stepId)
                 .polyline(step.polyline.points)
@@ -251,5 +252,33 @@ public final class RoutesProvider {
                 .endLng(step.end_location.lng.floatValue())
                 .travelMode(step.travel_mode)
                 .values();
+    }
+    public static void insertRoute(Context mContext, Route route) {
+        ContentValues routeValues = createRouteValues(route);
+        Uri routeUri = mContext.getContentResolver().insert(RoutesProvider.Routes.CONTENT_URI, routeValues);
+        long routeRowId = ContentUris.parseId(routeUri);
+        for ( Leg leg: route.legs) {
+            insertLeg( mContext, leg, routeRowId);
+        }
+    }
+    public static void insertLeg(Context mContext, Leg leg, long routeRowId) {
+        ContentValues values = createLegValues(leg, routeRowId);
+        Uri legUri = mContext.getContentResolver().insert(RoutesProvider.Legs.CONTENT_URI, values);
+        long legRowId = ContentUris.parseId(legUri);
+        for (Step step: leg.steps) {
+            insertStep(mContext, step, legRowId);
+        }
+    }
+    public static void insertStep(Context mContext, Step step, long legRowId) {
+        ContentValues values = createStepValues(step, legRowId);
+        Uri stepUri = mContext.getContentResolver().insert(RoutesProvider.Steps.CONTENT_URI, values);
+        long stepRowId = ContentUris.parseId(stepUri);
+        for (Step_ micro_step : step.steps) {
+            insertMicroStep(mContext, micro_step, stepRowId);
+        }
+    }
+    public static void insertMicroStep(Context mContext, Step_ micro_step, long stepRowId) {
+        ContentValues values = createMicroStepValues(micro_step, stepRowId);
+        mContext.getContentResolver().insert(RoutesProvider.MicroSteps.CONTENT_URI, values);
     }
 }
