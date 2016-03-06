@@ -1,7 +1,9 @@
 package com.ymsgsoft.michaeltien.hummingbird.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.util.Log;
 
 import net.simonvt.schematic.annotation.Database;
@@ -56,8 +58,14 @@ public final class RoutesDbHelper {
             }
         }
     }
+    @SuppressLint("NewApi")
     @OnConfigure
     public static void onConfigure(SQLiteDatabase db) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            db.setForeignKeyConstraintsEnabled(true);
+        } else {
+            db.execSQL("PRAGMA foreign_keys=ON");
+        }
     }
 
 //    @ExecOnCreate

@@ -277,7 +277,7 @@ public final class RoutesProvider {
             insertMicroStep(mContext, micro_step, stepRowId);
         }
     }
-    public static void insertMicroStep(Context mContext, Step_ micro_step, long stepRowId) {
+    static void insertMicroStep(Context mContext, Step_ micro_step, long stepRowId) {
         ContentValues values = createMicroStepValues(micro_step, stepRowId);
         mContext.getContentResolver().insert(RoutesProvider.MicroSteps.CONTENT_URI, values);
     }
