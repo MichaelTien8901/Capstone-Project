@@ -14,6 +14,7 @@ import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step_;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.LegsValuesBuilder;
+import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.MicroStepsValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.RoutesValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.StepsValuesBuilder;
 
@@ -236,8 +237,8 @@ public final class RoutesProvider {
                 .values();
     }
     ContentValues createMicroStepValues(Step_ step, int stepId){
-        return new StepsValuesBuilder()
-                .legId(stepId)
+        return new MicroStepsValuesBuilder()
+                .stepId(stepId)
                 .polyline(step.polyline.points)
                 .instruction(step.html_instructions)
                 .distance(step.distance.value)

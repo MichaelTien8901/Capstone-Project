@@ -19,7 +19,9 @@ public interface MicroStepColumns {
     @DataType(INTEGER) @PrimaryKey @AutoIncrement String ID = "_id";
 
     @DataType(INTEGER) String DISTANCE = "distance"; // meter
+    @DataType(TEXT) String DISTANCE_TEXT = "distance_text"; // meter
     @DataType(INTEGER) String DURATION = "duration"; // seconds
+    @DataType(TEXT) String DURATION_TEXT = "duration_text"; // seconds
     @DataType(TEXT) String POLYLINE = "polyline";
     @DataType(TEXT) String INSTRUCTION = "instruction";
     @DataType(TEXT) String TRAVEL_MODE = "travel_mode";
