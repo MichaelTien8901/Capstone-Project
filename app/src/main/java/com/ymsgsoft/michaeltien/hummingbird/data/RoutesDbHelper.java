@@ -3,7 +3,6 @@ package com.ymsgsoft.michaeltien.hummingbird.data;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.util.Log;
 
 import net.simonvt.schematic.annotation.Database;
@@ -39,6 +38,37 @@ public final class RoutesDbHelper {
     @OnCreate
     public static void onCreate(Context context, SQLiteDatabase db) {
         Log.e(TAG, "onCreate");
+        // add trigger
+        String trigger1 =
+                "CREATE TRIGGER delete_route_with BEFORE DELETE ON " +
+                Tables.ROUTES +
+                " FOR EACH ROW BEGIN" +
+                   " DELETE FROM " + Tables.LEGS +
+                   " WHERE OLD." + RouteColumns.ID +
+                      " =  " +
+                      Tables.LEGS + '.' + LegColumns.ROUTES_ID + " ;" +
+                " END ";
+        db.execSQL(trigger1);
+        String trigger2 =
+                "CREATE TRIGGER delete_leg_with BEFORE DELETE ON " +
+                        Tables.LEGS +
+                        " FOR EACH ROW BEGIN" +
+                        " DELETE FROM " + Tables.STEPS +
+                        " WHERE OLD." + LegColumns.ID +
+                        " =  " +
+                        Tables.STEPS + '.' + StepColumns.LEG_ID + " ;" +
+                        " END ";
+        db.execSQL( trigger2 );
+        String trigger3 =
+                "CREATE TRIGGER delete_step_with BEFORE DELETE ON " +
+                        Tables.STEPS +
+                        " FOR EACH ROW BEGIN" +
+                        " DELETE FROM " + Tables.MICRO_STEPS +
+                        " WHERE OLD." + StepColumns.ID +
+                        " =  " +
+                        Tables.MICRO_STEPS + '.' + MicroStepColumns.STEP_ID + " ;" +
+                        " END ";
+        db.execSQL( trigger3 );
     }
 
     @OnUpgrade
@@ -61,11 +91,11 @@ public final class RoutesDbHelper {
     @SuppressLint("NewApi")
     @OnConfigure
     public static void onConfigure(SQLiteDatabase db) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            db.setForeignKeyConstraintsEnabled(true);
-        } else {
-            db.execSQL("PRAGMA foreign_keys=ON");
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//            db.setForeignKeyConstraintsEnabled(true);
+//        } else {
+//            db.execSQL("PRAGMA foreign_keys=ON");
+//        }
     }
 
 //    @ExecOnCreate

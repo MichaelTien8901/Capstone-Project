@@ -34,6 +34,7 @@ public interface  LegColumns {
     @DataType(REAL) String END_LAT = "end_lat";
     @DataType(REAL) String END_LNG = "end_lng";
 
-    @DataType(INTEGER)  @References(table = RoutesDbHelper.Tables.ROUTES, column = RouteColumns.ID) String ROUTES_ID = "route_id";
+    @DataType(INTEGER)  @References(table = RoutesDbHelper.Tables.ROUTES, column = RouteColumns.ID)
+        String ROUTES_ID = "route_id";
 
 }

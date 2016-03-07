@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
+import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.RoutesDbHelper;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.LegsValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.MicroStepsValuesBuilder;
@@ -64,7 +65,6 @@ public class TestDb extends AndroidTestCase {
         );
 
         validateCursor("Error: routes table.", routeCursor, routesValues);
-        routeCursor.close();
         // test leg table
         ContentValues legValues = createLegsValues(routeRowId);
         long legRowId = db.insert(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.LEGS, null, legValues);
@@ -79,7 +79,6 @@ public class TestDb extends AndroidTestCase {
                 null  // sort order
         );
         validateCursor("Error: legs table.", legCursor, legValues);
-        legCursor.close();
         // test step database
         ContentValues stepValues = createStepValues(legRowId);
         long stepRowId = db.insert(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.STEPS, null, stepValues);
@@ -94,7 +93,6 @@ public class TestDb extends AndroidTestCase {
                 null  // sort order
         );
         validateCursor("Error: steps table.", stepCursor, stepValues);
-        stepCursor.close();;
         // test microstep table
         ContentValues mStepValues = createMicroStepValues(stepRowId);
         long mStepRowId = db.insert(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.MICRO_STEPS, null, mStepValues);
@@ -109,10 +107,83 @@ public class TestDb extends AndroidTestCase {
                 null  // sort order
         );
         validateCursor("Error: micro_steps table.", mStepCursor, mStepValues);
+        // clean up database
+        db.delete(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.MICRO_STEPS,
+                null, null);
+        db.delete(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.STEPS,
+                null, null );
+        db.delete(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.LEGS,
+                null, null );
+        db.delete(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.ROUTES,
+                null, null );
+        routeCursor.close();
+        legCursor.close();
+        stepCursor.close();;
         mStepCursor.close();;
-
         dbHelper.close();
 
+        db.close();
+    }
+    public void testCascadeDeleteDb() {
+
+        RoutesDbHelper dbHelper = RoutesDbHelper.getInstance(this.mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues routesValues = createRouteValues();
+        long routeRowId = db.insert(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.ROUTES, null, routesValues);
+        assertTrue(routeRowId != -1);
+        ContentValues legValues = createLegsValues(routeRowId);
+        long legRowId = db.insert(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.LEGS, null, legValues);
+        assertTrue(legRowId != -1);
+
+        ContentValues stepValues = createStepValues(legRowId);
+        long stepRowId = db.insert(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.STEPS, null, stepValues);
+        assertTrue(legRowId != -1);
+
+        ContentValues mStepValues = createMicroStepValues(stepRowId);
+        long mStepRowId = db.insert(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.MICRO_STEPS, null, mStepValues);
+        assertTrue(mStepRowId != -1);
+
+        // delete route
+        String[] whereargs = new String[] {String.valueOf(routeRowId)};
+        db.delete(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.ROUTES, RouteColumns.ID + "=?", whereargs );
+
+        // check other table
+        Cursor legCursor = db.query(
+                com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.LEGS,  // Table to Query
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null, // columns to group by
+                null, // columns to filter by row groups
+                null  // sort order
+        );
+        // check empty
+        assertFalse(legCursor.moveToFirst());
+        legCursor.close();
+        Cursor stepCursor = db.query(
+                com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.STEPS,  // Table to Query
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null, // columns to group by
+                null, // columns to filter by row groups
+                null  // sort order
+        );
+        assertFalse(stepCursor.moveToFirst());
+        stepCursor.close();
+        Cursor microStepCursor = db.query(
+                com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.MICRO_STEPS,  // Table to Query
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null, // columns to group by
+                null, // columns to filter by row groups
+                null  // sort order
+        );
+        assertFalse(microStepCursor.moveToFirst());
+        microStepCursor.close();
+
+        dbHelper.close();
         db.close();
     }
     static ContentValues createRouteValues() {
