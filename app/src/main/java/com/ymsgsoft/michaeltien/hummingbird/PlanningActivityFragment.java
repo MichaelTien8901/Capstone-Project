@@ -2,38 +2,34 @@ package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ymsgsoft.michaeltien.hummingbird.DirectionService.MapApiService;
-import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
+import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.RouteAdapter;
-
-import java.util.ArrayList;
+import com.ymsgsoft.michaeltien.hummingbird.playservices.RouteHolder;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.GsonConverterFactory;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PlanningActivityFragment extends Fragment {
+public class PlanningActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     final String LOG_TAG = PlanningActivityFragment.class.getSimpleName();
+    public static final int DIRECTION_LOADER = 0;
     final String PLAN_FROM_ID = "PLAN_FROM_ID";
     final String PLAN_TO_ID = "PLAN_TO_ID";
     private final int SEARCH_FROM_REQUEST_ID = 1;
@@ -69,33 +65,10 @@ public class PlanningActivityFragment extends Fragment {
     }
     private void tryQueryRoutes() {
         if ( mFromObject.placeId.isEmpty() || mToObject.placeId.isEmpty()) return;
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(MapApiService.API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        MapApiService.DirectionApi directionApi = retrofit.create(MapApiService.DirectionApi.class);
-        String key = getString(R.string.google_maps_server_key);
         String origin = mFromObject.placeId;
         String destination = mToObject.placeId;
-        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key);
-        call.enqueue(new Callback<MapApiService.TransitRoutes>() {
-            @Override
-            public void onResponse(Response<MapApiService.TransitRoutes> response, Retrofit retrofit) {
-                MapApiService.TransitRoutes transitRoutes = response.body();
-                Log.v(LOG_TAG, "retrofit query direction status return: " + transitRoutes.status);
-                //assertTrue(LOG_TAG + ": retrofit query direction status return: " + transitRoutes.status,
-                // transitRoutes.status.equals("OK"));
-                mRouteAdapter.clear();
-                mRouteAdapter.addAll(transitRoutes.routes);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Log.v(LOG_TAG, "retrofit query direction status return: " + t.getMessage());
-                Toast.makeText(getContext(), "Route not found.", Toast.LENGTH_SHORT).show();
-                //fail(LOG_TAG + "testDirectionAsyncQuery" + t.getMessage());
-            }
-        });
+        DirectionIntentService.startActionQueryDirection(getContext(), origin, destination);
+        getLoaderManager().restartLoader(DIRECTION_LOADER, null, this);
 
     }
     @Override
@@ -103,18 +76,18 @@ public class PlanningActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_planning, container, false);
         ButterKnife.bind(this, rootView);
-        mRouteAdapter = new RouteAdapter(
-                getContext(), // The current context (this activity)
-                R.layout.list_item_routes, // The name of the layout ID.
-                new ArrayList<Route>());
-
+        mRouteAdapter = new RouteAdapter( getContext(), null, 0 );
+        mRouteListView.setAdapter(mRouteAdapter);
+        getLoaderManager().initLoader(DIRECTION_LOADER, null, this);
         mRouteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // choose the details
+                // retrieve routeId
+                RouteHolder selected = (RouteHolder) view.getTag();
+                mRouteAdapter.selectedRouteId = selected.routeId;
+                // launch detail activity
             }
         });
-        mRouteListView.setAdapter(mRouteAdapter);
 
         if (savedInstanceState != null) {
             mFromObject = savedInstanceState.getParcelable(PLAN_FROM_ID);
@@ -196,4 +169,25 @@ public class PlanningActivityFragment extends Fragment {
                 break;
         }
     }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+        mRouteAdapter.swapCursor(null);
+    }
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        // set filter for current
+//        Uri base_url = Uri.parse("content://"+RoutesProvider.AUTHORITY);
+//        base_url.buildUpon().appendPath(RouteProvider.)
+        return new CursorLoader(getActivity(),
+                RoutesProvider.Routes.CONTENT_URI,
+                null,null,null,null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mRouteAdapter.swapCursor(cursor);
+    }
+
 }

@@ -31,7 +31,7 @@ import net.simonvt.schematic.annotation.TableEndpoint;
         packageName = "com.ymsgsoft.michaeltien.hummingbird.generated_data")
 public final class RoutesProvider {
     public static final String AUTHORITY = "com.ymsgsoft.michaeltien.hummingbird";
-    static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     private RoutesProvider() {
     }
