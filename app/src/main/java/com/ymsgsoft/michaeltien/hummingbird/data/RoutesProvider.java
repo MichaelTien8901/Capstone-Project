@@ -253,8 +253,33 @@ public final class RoutesProvider {
                 .travelMode(step.travel_mode)
                 .values();
     }
+    static void extractRouteSummary(Route routeObject, ContentValues values ) {
+        //values.put(RouteColumns.);
+        String depart_time = "";
+        String duration = "";
+        String transitNo = "";
+        Boolean break_flag1 = false;
+        for ( int i = 0; i < routeObject.legs.size() && !break_flag1; i++) {
+            Leg legObject = routeObject.legs.get(i);
+            depart_time = legObject.departure_time.text;
+            duration = legObject.duration.text;
+            Boolean break_flag2 = false;
+            for ( int j = 0; j < legObject.steps.size() & !break_flag2; j ++ ) {
+                Step step = legObject.steps.get(j);
+                if ( step.travel_mode.equals("TRANSIT")) {
+                    transitNo = step.transit_details.line.short_name;
+                    break_flag2 = true;
+                    break_flag1 = true;
+                }
+            }
+        }
+        values.put(RouteColumns.EXT_DEPART_TIME, depart_time);
+        values.put(RouteColumns.EXT_DURATION, duration);
+        values.put(RouteColumns.EXT_TRANSIT_NO, transitNo);
+    }
     public static void insertRoute(Context mContext, Route route) {
         ContentValues routeValues = createRouteValues(route);
+        extractRouteSummary(route, routeValues);
         Uri routeUri = mContext.getContentResolver().insert(RoutesProvider.Routes.CONTENT_URI, routeValues);
         long routeRowId = ContentUris.parseId(routeUri);
         for ( Leg leg: route.legs) {

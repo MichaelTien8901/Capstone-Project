@@ -65,5 +65,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ymsgsoft.michaeltien.hummingbird.MapsActivity" />
         </activity>
+
+        <service
+            android:name=".DirectionIntentService"
+            android:exported="false"></service>
     </application>
+
 </manifest>

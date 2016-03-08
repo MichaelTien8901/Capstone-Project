@@ -19,4 +19,8 @@ public interface RouteColumns {
     @DataType(TEXT) @NotNull String OVERVIEW_POLYLINES = "overview_polylines";
     @DataType(TEXT) String SUMMARY = "summary";
     @DataType(TEXT) String WARNING = "warnings";
+    // generated from legs and steps
+    @DataType(TEXT) String EXT_DEPART_TIME = "depart_time";
+    @DataType(TEXT) String EXT_DURATION = "duration";
+    @DataType(TEXT) String EXT_TRANSIT_NO = "transit_number";
 }

@@ -145,7 +145,8 @@ public class TestDb extends AndroidTestCase {
 
         // delete route
         String[] whereargs = new String[] {String.valueOf(routeRowId)};
-        db.delete(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.ROUTES, RouteColumns.ID + "=?", whereargs );
+
+        db.delete(com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.ROUTES, RouteColumns.ID + "=?", whereargs);
 
         // check other table
         Cursor legCursor = db.query(
@@ -157,8 +158,7 @@ public class TestDb extends AndroidTestCase {
                 null, // columns to filter by row groups
                 null  // sort order
         );
-        // check empty
-        assertFalse(legCursor.moveToFirst());
+        assertEquals("Error: Cascade delete legs doesn't work", 0, legCursor.getCount());
         legCursor.close();
         Cursor stepCursor = db.query(
                 com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.STEPS,  // Table to Query
@@ -169,7 +169,7 @@ public class TestDb extends AndroidTestCase {
                 null, // columns to filter by row groups
                 null  // sort order
         );
-        assertFalse(stepCursor.moveToFirst());
+        assertEquals("Error: Cascade delete steps doesn't work", 0, stepCursor.getCount());
         stepCursor.close();
         Cursor microStepCursor = db.query(
                 com.ymsgsoft.michaeltien.hummingbird.data.RoutesDbHelper.Tables.MICRO_STEPS,  // Table to Query
@@ -180,7 +180,7 @@ public class TestDb extends AndroidTestCase {
                 null, // columns to filter by row groups
                 null  // sort order
         );
-        assertFalse(microStepCursor.moveToFirst());
+        assertEquals("Error: Cascade delete microSteps doesn't work", 0, microStepCursor.getCount());
         microStepCursor.close();
 
         dbHelper.close();
