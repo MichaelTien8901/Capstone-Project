@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.RouteAdapter;
-import com.ymsgsoft.michaeltien.hummingbird.playservices.RouteHolder;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -83,9 +82,12 @@ public class PlanningActivityFragment extends Fragment implements LoaderManager.
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // retrieve routeId
-                RouteHolder selected = (RouteHolder) view.getTag();
+                RouteAdapter.RouteHolder selected = (RouteAdapter.RouteHolder) view.getTag();
                 mRouteAdapter.selectedRouteId = selected.routeId;
                 // launch detail activity
+                Intent intent = new Intent( getContext(), DetailRouteActivity.class);
+                intent.putExtra(getString(R.string.intent_route_key), selected.routeId);
+                startActivity(intent);
             }
         });
 

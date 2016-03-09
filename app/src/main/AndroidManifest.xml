@@ -68,7 +68,17 @@
 
         <service
             android:name=".DirectionIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity
+            android:name=".DetailRouteActivity"
+            android:label="@string/title_activity_detail_route"
+            android:parentActivityName=".PlanningActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ymsgsoft.michaeltien.hummingbird.PlanningActivity" />
+        </activity>
     </application>
 
 </manifest>
