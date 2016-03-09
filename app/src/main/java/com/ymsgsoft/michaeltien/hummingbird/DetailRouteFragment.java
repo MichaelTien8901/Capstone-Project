@@ -13,9 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ymsgsoft.michaeltien.hummingbird.data.LegColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
-import com.ymsgsoft.michaeltien.hummingbird.dummy.DummyContent.DummyItem;
 
 /**
  * A fragment representing a list of Items.
@@ -31,12 +29,17 @@ public class DetailRouteFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-
+//        return new CursorLoader(getActivity(),
+//                RoutesProvider.Legs.CONTENT_URI,
+//                null,
+//                LegColumns.ID + "=?",
+//                new String[] {String.valueOf(mRouteId)},
+//                null);
         return new CursorLoader(getActivity(),
                 RoutesProvider.Legs.CONTENT_URI,
                 null,
-                LegColumns.ID + "=?",
-                new String[] {String.valueOf(mRouteId)},
+                null,
+                null,
                 null);
     }
     @Override
@@ -117,6 +120,6 @@ public class DetailRouteFragment extends Fragment implements LoaderManager.Loade
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+//        void onListFragmentInteraction(DummyItem item);
     }
 }

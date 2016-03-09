@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ymsgsoft.michaeltien.hummingbird.data.LegColumns;
-import com.ymsgsoft.michaeltien.hummingbird.dummy.DummyContent.DummyItem;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.CursorRecyclerAdapter;
 
 public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<DetailRouteRecyclerViewAdapter.ViewHolder> {
@@ -52,7 +51,7 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
         public final TextView mStartAddressView;
         public final TextView mDepartureTimeView;
         public final TextView mDurationView;
-        public DummyItem mItem;
+//        public DummyItem mItem;
 
         public ViewHolder(View view) {
             super(view);

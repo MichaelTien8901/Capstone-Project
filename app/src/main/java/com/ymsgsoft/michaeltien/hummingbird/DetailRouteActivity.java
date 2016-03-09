@@ -27,9 +27,10 @@ public class DetailRouteActivity extends AppCompatActivity {
             long mRouteId = getIntent().getLongExtra(ARG_ROUTE_KEY_ID, -1);
             Bundle arguments = new Bundle();
             arguments.putLong(ARG_ROUTE_KEY_ID, mRouteId);
-            DetailRouteFragment fragment = new DetailRouteFragment();
 
+            DetailRouteFragment fragment = new DetailRouteFragment();
             fragment.setArguments(arguments);
+
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_detail_route_id, fragment)
                     .commit();
