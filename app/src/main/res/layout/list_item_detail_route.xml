@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:id = "@+id/item_detail_start_address"
+        android:id = "@+id/item_detail_instruction"
         android:textColor="#f7fbff"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -19,13 +19,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:id = "@+id/list_item_routes_container"
         android:orientation="horizontal"
         >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id = "@+id/item_detail_departure_time"
+            android:id = "@+id/item_detail_travel_mode"
             android:textColor="#f7fbff"
             android:textSize="20sp"
             android:textStyle="bold"

@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
+import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
+import com.ymsgsoft.michaeltien.hummingbird.playservices.DividerItemDecoration;
 
 /**
  * A fragment representing a list of Items.
@@ -25,22 +27,22 @@ public class DetailRouteFragment extends Fragment implements LoaderManager.Loade
     protected long mRouteId = -1;
     protected DetailRouteRecyclerViewAdapter mAdapter;
     public static final int ROUTE_LOADER =1;
-    private OnListFragmentInteractionListener mListener;
+//    private OnListFragmentInteractionListener mListener;
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(),
+                RoutesProvider.Steps.CONTENT_URI,
+                null,
+                StepColumns.ROUTE_ID + "=?",
+                new String[] {String.valueOf(mRouteId)},
+                StepColumns.ID + " ASC" );
 //        return new CursorLoader(getActivity(),
 //                RoutesProvider.Legs.CONTENT_URI,
 //                null,
-//                LegColumns.ID + "=?",
-//                new String[] {String.valueOf(mRouteId)},
+//                null,
+//                null,
 //                null);
-        return new CursorLoader(getActivity(),
-                RoutesProvider.Legs.CONTENT_URI,
-                null,
-                null,
-                null,
-                null);
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -75,6 +77,7 @@ public class DetailRouteFragment extends Fragment implements LoaderManager.Loade
 //            } else {
 //                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
 //            }
+            recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
             recyclerView.setAdapter(mAdapter);
         }
         if ( savedInstanceState == null) {

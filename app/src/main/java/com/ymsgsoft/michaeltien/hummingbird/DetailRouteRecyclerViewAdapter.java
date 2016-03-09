@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ymsgsoft.michaeltien.hummingbird.data.LegColumns;
+import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.CursorRecyclerAdapter;
 
 public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<DetailRouteRecyclerViewAdapter.ViewHolder> {
@@ -25,9 +25,7 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
 
     @Override
     public void onBindViewHolder (ViewHolder holder, Cursor cursor) {
-        holder.mStartAddressView.setText(cursor.getString(cursor.getColumnIndex(LegColumns.START_ADDRESS)));
-        holder.mDepartureTimeView.setText(cursor.getString(cursor.getColumnIndex(LegColumns.DEPARTURE_TIME_TEXT)));
-        holder.mDurationView.setText(cursor.getString(cursor.getColumnIndex(LegColumns.DURATION_TEXT)));
+        holder.bindData(cursor);
     }
 //    @Override
 //    public void onBindViewHolder(final ViewHolder holder, int position) {
@@ -48,18 +46,23 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
 //    }
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mStartAddressView;
-        public final TextView mDepartureTimeView;
+        public final TextView mInstruction;
+        public final TextView mTravelMode;
         public final TextView mDurationView;
 //        public DummyItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mStartAddressView = (TextView) view.findViewById(R.id.item_detail_start_address);
-            mDepartureTimeView = (TextView) view.findViewById(R.id.item_detail_departure_time);
+            mInstruction = (TextView) view.findViewById(R.id.item_detail_instruction);
+            mTravelMode = (TextView) view.findViewById(R.id.item_detail_travel_mode);
             mDurationView = (TextView) view.findViewById(R.id.item_detail_duration);
         }
+        public void bindData(Cursor cursor){
+            mInstruction.setText(cursor.getString(cursor.getColumnIndex(StepColumns.INSTRUCTION)));
+            mTravelMode.setText(cursor.getString(cursor.getColumnIndex(StepColumns.TRAVEL_MODE)));
+            mDurationView.setText(cursor.getString(cursor.getColumnIndex(StepColumns.DURATION_TEXT)));
 
+        }
     }
 }

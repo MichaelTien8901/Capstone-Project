@@ -221,7 +221,7 @@ public final class RoutesProvider {
                 .endLng((float) leg.end_location.lng.floatValue())
                 .values();
     }
-    static ContentValues createStepValues(Step step, long legId){
+    static ContentValues createStepValues(Step step, long legId, long routeId){
         return new StepsValuesBuilder()
                 .legId(legId)
                 .polyline(step.polyline.points)
@@ -235,6 +235,7 @@ public final class RoutesProvider {
                 .endLat(step.end_location.lat.floatValue())
                 .endLng(step.end_location.lng.floatValue())
                 .travelMode(step.travel_mode)
+                .routeId(routeId)
                 .values();
     }
     static ContentValues createMicroStepValues(Step_ step, long stepId){
@@ -291,11 +292,11 @@ public final class RoutesProvider {
         Uri legUri = mContext.getContentResolver().insert(RoutesProvider.Legs.CONTENT_URI, values);
         long legRowId = ContentUris.parseId(legUri);
         for (Step step: leg.steps) {
-            insertStep(mContext, step, legRowId);
+            insertStep(mContext, step, legRowId, routeRowId);
         }
     }
-    public static void insertStep(Context mContext, Step step, long legRowId) {
-        ContentValues values = createStepValues(step, legRowId);
+    public static void insertStep(Context mContext, Step step, long legRowId, long routeRowId) {
+        ContentValues values = createStepValues(step, legRowId, routeRowId);
         Uri stepUri = mContext.getContentResolver().insert(RoutesProvider.Steps.CONTENT_URI, values);
         long stepRowId = ContentUris.parseId(stepUri);
         for (Step_ micro_step : step.steps) {
