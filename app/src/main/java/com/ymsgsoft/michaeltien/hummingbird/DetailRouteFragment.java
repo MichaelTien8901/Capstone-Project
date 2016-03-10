@@ -16,23 +16,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
+import com.ymsgsoft.michaeltien.hummingbird.playservices.DetailRouteRecyclerViewAdapter;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.DividerItemDecoration;
+import com.ymsgsoft.michaeltien.hummingbird.playservices.StepData;
 
 import java.util.List;
 
@@ -46,7 +50,8 @@ public class DetailRouteFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        MyOnItemClickListener {
     protected long mRouteId = -1;
     protected int REQUEST_LOCATION = 101;
 
@@ -54,10 +59,9 @@ public class DetailRouteFragment extends Fragment implements
     public static final int ROUTE_LOADER =1;
 //    RecyclerView.OnItemTouchListener mListener;
     private GoogleMap mMap;
-    private Button mSearchButton;
     protected GoogleApiClient mGoogleApiClient;
     protected String mOverviewPolyline;
-//    private OnListFragmentInteractionListener mListener;
+    protected Polyline mStepline;
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
@@ -110,7 +114,7 @@ public class DetailRouteFragment extends Fragment implements
         View view = inflater.inflate(R.layout.content_detail_route, container, false);
         Context context = view.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_detail_route);
-        mAdapter = new DetailRouteRecyclerViewAdapter( getContext(), R.layout.list_item_detail_route, null);
+        mAdapter = new DetailRouteRecyclerViewAdapter( getContext(), R.layout.list_item_detail_route, null, this);
         // Set the adapter
 //        if (view instanceof RecyclerView) {
 //            Context context = view.getContext();
@@ -190,8 +194,40 @@ public class DetailRouteFragment extends Fragment implements
                     .addAll(points)
                     .color(Color.BLUE);
             mMap.addPolyline(options);
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for ( LatLng point: points) {
+                builder.include(point);
+            }
+            LatLngBounds bounds = builder.build();
+            int padding = 40; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.animateCamera(cu);
         }
     }
+
+    @Override
+    public void OnItemClick(StepData data, int position) {
+        if ( mStepline != null) {
+            mStepline.remove();
+            mStepline = null;
+        }
+        if ( data.polylinePoints != null) {
+            List<LatLng> points = PolyUtil.decode(data.polylinePoints);
+            PolylineOptions options = new PolylineOptions()
+                    .addAll(points)
+                    .color(getResources().getColor(R.color.colorAccent));
+            mStepline = mMap.addPolyline(options);
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for ( LatLng point: points) {
+                builder.include(point);
+            }
+            LatLngBounds bounds = builder.build();
+            int padding = 40; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.animateCamera(cu);
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -236,12 +272,9 @@ public class DetailRouteFragment extends Fragment implements
 //            }
         }
 
-
     }
-
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
     }
-
 }
+

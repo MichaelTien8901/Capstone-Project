@@ -1,4 +1,4 @@
-package com.ymsgsoft.michaeltien.hummingbird;
+package com.ymsgsoft.michaeltien.hummingbird.playservices;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,18 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.ymsgsoft.michaeltien.hummingbird.MyOnItemClickListener;
+import com.ymsgsoft.michaeltien.hummingbird.R;
 import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
-import com.ymsgsoft.michaeltien.hummingbird.playservices.CursorRecyclerAdapter;
 
 public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<DetailRouteRecyclerViewAdapter.ViewHolder> {
-    private int mLayout;
+    protected int mLayout;
     protected Context mContext;
-    public DetailRouteRecyclerViewAdapter(Context context, int layout, Cursor c) {
+    protected MyOnItemClickListener mListener;
+    public DetailRouteRecyclerViewAdapter(Context context, int layout, Cursor c, MyOnItemClickListener listener) {
         super(c);
         mLayout = layout;
         mContext = context;
+        mListener = listener;
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -30,7 +32,19 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
 
     @Override
     public void onBindViewHolder (final ViewHolder holder, Cursor cursor) {
-        holder.bindData(cursor);
+        StepData data = holder.bindData(cursor);
+        holder.mInstruction.setText(data.instruction);
+        holder.mDurationView.setText(data.durationText);
+        if ( data.travalMode.equals("WALKING")) {
+            holder.mIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_walk));
+            holder.mTravelMode.setText("");
+            holder.mTravelMode.setVisibility(View.INVISIBLE);
+        }
+        else if (data.travalMode.equals("TRANSIT")) {
+            holder.mIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_bus));
+            holder.mTravelMode.setVisibility(View.VISIBLE);
+            holder.mTravelMode.setText(data.transitNo);
+        }
     }
 //    @Override
 //    public void onBindViewHolder(final ViewHolder holder, int position) {
@@ -56,7 +70,7 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
         public final TextView mDurationView;
         public final ImageView mIcon;
         public long mStepId;
-
+        public StepData mItem;
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
@@ -66,29 +80,24 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
             mDurationView = (TextView) itemView.findViewById(R.id.item_detail_duration);
             mIcon = (ImageView) itemView.findViewById(R.id.item_detail_step_icon);
         }
-        public void bindData(Cursor cursor){
-            mStepId = cursor.getLong(cursor.getColumnIndex(StepColumns.ID));
-            mInstruction.setText(cursor.getString(cursor.getColumnIndex(StepColumns.INSTRUCTION)));
-//            mTravelMode.setText(cursor.getString(cursor.getColumnIndex(StepColumns.TRAVEL_MODE)));
-            mDurationView.setText(cursor.getString(cursor.getColumnIndex(StepColumns.DURATION_TEXT)));
-            String travel_mode = cursor.getString(cursor.getColumnIndex(StepColumns.TRAVEL_MODE));
-            if ( travel_mode.equals("WALKING")) {
-                mIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_walk));
-                mTravelMode.setText("");
-                mTravelMode.setVisibility(View.INVISIBLE);
-            }
-            else if (travel_mode.equals("TRANSIT")) {
-                mIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_bus));
-                mTravelMode.setVisibility(View.VISIBLE);
-                mTravelMode.setText(cursor.getString(cursor.getColumnIndex(StepColumns.TRANSIT_NO)));
-            }
+        public StepData bindData(Cursor cursor) {
+            mItem = new StepData();
+            mItem.stepId = cursor.getLong(cursor.getColumnIndex(StepColumns.ID));
+            mItem.instruction = cursor.getString(cursor.getColumnIndex(StepColumns.INSTRUCTION));
+            mItem.polylinePoints = cursor.getString(cursor.getColumnIndex(StepColumns.POLYLINE));
+            mItem.durationText = cursor.getString(cursor.getColumnIndex(StepColumns.DURATION_TEXT));
+            mItem.travalMode = cursor.getString(cursor.getColumnIndex(StepColumns.TRAVEL_MODE));
+            mItem.transitNo = cursor.getString(cursor.getColumnIndex(StepColumns.TRANSIT_NO));
+            mItem.startLat = cursor.getDouble(cursor.getColumnIndex(StepColumns.START_LAT));
+            mItem.startLng = cursor.getDouble(cursor.getColumnIndex(StepColumns.START_LNG));
+            mItem.endLat = cursor.getDouble(cursor.getColumnIndex(StepColumns.END_LAT));
+            mItem.endLng = cursor.getDouble(cursor.getColumnIndex(StepColumns.END_LNG));
+            return mItem;
         }
-
         @Override
         public void onClick(View v) {
-            // mStepId is the current stepId
-            String msg = "position = " + getPosition() + " stepID = " + mStepId;
-            Toast.makeText(v.getContext(), msg, Toast.LENGTH_SHORT).show();
+            if ( mListener != null)
+                mListener.OnItemClick( mItem, getAdapterPosition());
         }
     }
 }
