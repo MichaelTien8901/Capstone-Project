@@ -278,6 +278,13 @@ public final class RoutesProvider {
         values.put(RouteColumns.EXT_DURATION, duration);
         values.put(RouteColumns.EXT_TRANSIT_NO, transitNo);
     }
+    static void extractStepSummary(Step stepObject, ContentValues values ) {
+        if ( stepObject.transit_details != null && stepObject.transit_details.line != null) {
+            String transitNo = stepObject.transit_details.line.short_name;
+            values.put(StepColumns.TRANSIT_NO, transitNo);
+        }
+    }
+
     public static void insertRoute(Context mContext, Route route) {
         ContentValues routeValues = createRouteValues(route);
         extractRouteSummary(route, routeValues);
@@ -297,6 +304,7 @@ public final class RoutesProvider {
     }
     public static void insertStep(Context mContext, Step step, long legRowId, long routeRowId) {
         ContentValues values = createStepValues(step, legRowId, routeRowId);
+        extractStepSummary(step, values);
         Uri stepUri = mContext.getContentResolver().insert(RoutesProvider.Steps.CONTENT_URI, values);
         long stepRowId = ContentUris.parseId(stepUri);
         for (Step_ micro_step : step.steps) {

@@ -87,6 +87,7 @@ public class PlanningActivityFragment extends Fragment implements LoaderManager.
                 // launch detail activity
                 Intent intent = new Intent( getContext(), DetailRouteActivity.class);
                 intent.putExtra(getString(R.string.intent_route_key), selected.routeId);
+                intent.putExtra(getString(R.string.intent_overview_polyline_key), selected.mOverviewPolyline);
                 startActivity(intent);
             }
         });

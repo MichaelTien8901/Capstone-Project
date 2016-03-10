@@ -24,9 +24,13 @@ public class DetailRouteActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if ( savedInstanceState == null) {
             final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
+            final String ARG_OVERVIEW_POLYLINE_KEY = getString(R.string.intent_overview_polyline_key);
+
             long mRouteId = getIntent().getLongExtra(ARG_ROUTE_KEY_ID, -1);
+            String mPolyLine = getIntent().getStringExtra(ARG_OVERVIEW_POLYLINE_KEY);
             Bundle arguments = new Bundle();
             arguments.putLong(ARG_ROUTE_KEY_ID, mRouteId);
+            arguments.putString(ARG_OVERVIEW_POLYLINE_KEY, mPolyLine);
 
             DetailRouteFragment fragment = new DetailRouteFragment();
             fragment.setArguments(arguments);

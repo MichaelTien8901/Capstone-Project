@@ -45,4 +45,5 @@ dependencies {
     compile 'net.simonvt.schematic:schematic-compiler:0.6.4'
     compile 'com.android.support:support-v4:23.2.0'
     compile 'com.android.support:recyclerview-v7:23.2.0'
+    compile 'com.google.maps.android:android-maps-utils:0.4'
 }

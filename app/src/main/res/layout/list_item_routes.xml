@@ -10,10 +10,10 @@
         android:layout_weight="1"
         android:id = "@+id/list_item_depart_time"
         android:textColor="#f7fbff"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:gravity="left"
-        android:background="#80000000"
+        android:background="@color/list_background"
         android:layout_gravity="top"
         android:text="9:30 pm"/>
     <LinearLayout
@@ -34,10 +34,10 @@
             android:layout_height="wrap_content"
             android:id = "@+id/list_item_transit_no"
             android:textColor="#f7fbff"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="left"
-            android:background="#80000000"
+            android:background="@color/list_background"
             android:layout_gravity="top"
             android:text="99"/>
         <TextView
@@ -45,10 +45,10 @@
             android:layout_height="wrap_content"
             android:id = "@+id/list_item_duration"
             android:textColor="#f7fbff"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="right"
-            android:background="#80000000"
+            android:background="@color/list_background"
             android:layout_gravity="right"
             android:text="1 hr 20 min"/>
 

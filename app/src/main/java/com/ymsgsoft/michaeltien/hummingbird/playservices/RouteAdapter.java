@@ -28,6 +28,7 @@ public class RouteAdapter extends CursorAdapter {
         mHolder.duration.setText( cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION)));
         mHolder.transitNo.setText(cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_TRANSIT_NO)));
         mHolder.routeId = cursor.getInt(cursor.getColumnIndex(RouteColumns.ID));
+        mHolder.mOverviewPolyline = cursor.getString(cursor.getColumnIndex(RouteColumns.OVERVIEW_POLYLINES));
     }
 
     @Override
@@ -43,6 +44,7 @@ public class RouteAdapter extends CursorAdapter {
         TextView transitNo;
         TextView duration;
         public long routeId;
+        public String mOverviewPolyline;
 
         public RouteHolder(View view) {
             imageIcon = (ImageView) view.findViewById(R.id.list_item_image_Icon);

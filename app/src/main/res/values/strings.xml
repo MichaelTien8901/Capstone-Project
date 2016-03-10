@@ -18,6 +18,7 @@
     <string name="intent_plan_key_to">arg_intent_key_plan_to</string>
     <!-- key definition to pass detail route id -->
     <string name="intent_route_key">arg_intent_key_route_no</string>
+    <string name="intent_overview_polyline_key">arg_intent_key_overview_polyline</string>
     <string name="init_search_here">Here</string>
     <string name="init_depart_time">Depart Now</string>
     <string name="title_activity_detail_route">Details</string>
