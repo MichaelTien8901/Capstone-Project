@@ -37,15 +37,8 @@ import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.DetailRouteRecyclerViewAdapter;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.DividerItemDecoration;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.StepData;
-
 import java.util.List;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
 public class DetailRouteFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         OnMapReadyCallback,
@@ -57,7 +50,6 @@ public class DetailRouteFragment extends Fragment implements
 
     protected DetailRouteRecyclerViewAdapter mAdapter;
     public static final int ROUTE_LOADER =1;
-//    RecyclerView.OnItemTouchListener mListener;
     private GoogleMap mMap;
     protected GoogleApiClient mGoogleApiClient;
     protected String mOverviewPolyline;
@@ -110,26 +102,14 @@ public class DetailRouteFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        View view = inflater.inflate(R.layout.list_detail_route, container, false);
         View view = inflater.inflate(R.layout.content_detail_route, container, false);
         Context context = view.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_detail_route);
         mAdapter = new DetailRouteRecyclerViewAdapter( getContext(), R.layout.list_item_detail_route, null, this);
-        // Set the adapter
-//        if (view instanceof RecyclerView) {
-//            Context context = view.getContext();
-//            RecyclerView recyclerView = (RecyclerView) view;
-//            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-////            if (mColumnCount <= 1) {
-////                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-////                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-////            } else {
-////                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-////            }
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
-            recyclerView.setAdapter(mAdapter);
-//        }
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
+        recyclerView.setAdapter(mAdapter);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.detail_map_id);
         mapFragment.getMapAsync(this);
@@ -161,12 +141,6 @@ public class DetailRouteFragment extends Fragment implements
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnListFragmentInteractionListener) {
-//            mListener = (OnListFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnListFragmentInteractionListener");
-//        }
     }
 
     @Override
@@ -207,16 +181,16 @@ public class DetailRouteFragment extends Fragment implements
 
     @Override
     public void OnItemClick(StepData data, int position) {
-        if ( mStepline != null) {
-            mStepline.remove();
-            mStepline = null;
-        }
         if ( data.polylinePoints != null) {
             List<LatLng> points = PolyUtil.decode(data.polylinePoints);
             PolylineOptions options = new PolylineOptions()
                     .addAll(points)
                     .color(getResources().getColor(R.color.colorAccent));
-            mStepline = mMap.addPolyline(options);
+            if ( mStepline == null) {
+                mStepline = mMap.addPolyline(options);
+            } else {
+                mStepline.setPoints(points);
+            }
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             for ( LatLng point: points) {
                 builder.include(point);
@@ -228,21 +202,7 @@ public class DetailRouteFragment extends Fragment implements
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-//        void onListFragmentInteraction(DummyItem item);
-    }
-    @Override
+     @Override
     public void onConnectionSuspended(int i) {
         // The connection to Google Play services was lost for some reason. We call connect() to
         // attempt to re-establish the connection.
