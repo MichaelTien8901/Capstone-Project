@@ -22,5 +22,6 @@
     <string name="init_search_here">Here</string>
     <string name="init_depart_time">Depart Now</string>
     <string name="title_activity_detail_route">Details</string>
+    <string name="title_activity_navigate">Navigation</string>
 
 </resources>

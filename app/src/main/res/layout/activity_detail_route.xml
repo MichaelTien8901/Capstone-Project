@@ -35,12 +35,32 @@
     <include layout="@layout/content_detail_route" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_navigate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_margin3"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:src="@drawable/ic_navigation"
+        android:tint="#ffffffff"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_margin2"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:src="@drawable/ic_add"
+        android:tint="#ffffffff"
+         />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end" />
-
+        android:src="@drawable/ic_remove"
+        android:tint="#ffffffff"
+        />
 </android.support.design.widget.CoordinatorLayout>

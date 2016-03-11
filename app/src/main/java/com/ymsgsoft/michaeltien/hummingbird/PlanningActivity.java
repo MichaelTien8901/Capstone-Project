@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 public class PlanningActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +25,7 @@ public class PlanningActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if ( savedInstanceState == null){
+        if (savedInstanceState == null) {
             final String ARG_PLAN_FROM_ID = getString(R.string.intent_plan_key_from);
             final String ARG_PLAN_TO_ID = getString(R.string.intent_plan_key_to);
 
@@ -33,9 +34,9 @@ public class PlanningActivity extends AppCompatActivity {
             PlanningActivityFragment fragment = new PlanningActivityFragment();
 
             Bundle arguments = new Bundle();
-            if ( mFromObject != null)
+            if (mFromObject != null)
                 arguments.putParcelable(ARG_PLAN_FROM_ID, mFromObject);
-            if ( mToObject != null)
+            if (mToObject != null)
                 arguments.putParcelable(ARG_PLAN_TO_ID, mToObject);
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -43,5 +44,4 @@ public class PlanningActivity extends AppCompatActivity {
                     .commit();
         }
     }
-
 }
