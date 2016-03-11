@@ -19,3 +19,5 @@
 -keep class retrofit.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
