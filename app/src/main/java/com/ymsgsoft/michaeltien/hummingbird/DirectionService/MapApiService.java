@@ -5,9 +5,13 @@ import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Call;
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+
+//import retrofit.Call;
+//import retrofit.http.GET;
+//import retrofit.http.Query;
 
 /**
  * Created by Michael Tien on 2015/12/13.

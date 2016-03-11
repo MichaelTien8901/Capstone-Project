@@ -6,13 +6,17 @@ import android.content.Intent;
 
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.MapApiService;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
-import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
+import com.ymsgsoft.michaeltien.hummingbird.data.DbUtils;
 
 import java.io.IOException;
 
-import retrofit.Call;
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+//import retrofit.Call;
+//import retrofit.GsonConverterFactory;
+//import retrofit.Retrofit;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -79,7 +83,7 @@ public class DirectionIntentService extends IntentService {
         // load into contextProvider
         if ( "OK".equals(transitRoutes.status)) {
             for(Route route: transitRoutes.routes) {
-                RoutesProvider.insertRoute(DirectionIntentService.this, route);
+                DbUtils.insertRoute(DirectionIntentService.this, route);
             }
         }
     }
