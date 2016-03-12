@@ -8,8 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 public class DetailRouteActivity extends AppCompatActivity {
-    protected long mRouteId;
-    protected String mPolyLine;
+//    protected long mRouteId;
+//    protected String mPolyLine;
+    protected RouteParcelable mRouteObject;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,21 +39,18 @@ public class DetailRouteActivity extends AppCompatActivity {
                 Snackbar.make(view, "Navigate", Snackbar.LENGTH_LONG)
                      .setAction("Action", null).show();
                 Intent intent = new Intent( DetailRouteActivity.this, NavigateActivity.class);
-                intent.putExtra(getString(R.string.intent_route_key), mRouteId);
-                intent.putExtra(getString(R.string.intent_overview_polyline_key), mPolyLine);
+                intent.putExtra(getString(R.string.intent_route_key), mRouteObject);
+//                intent.putExtra(getString(R.string.intent_route_key), mRouteId);
+//                intent.putExtra(getString(R.string.intent_overview_polyline_key), mPolyLine);
                 startActivity(intent);
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if ( savedInstanceState == null) {
             final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-            final String ARG_OVERVIEW_POLYLINE_KEY = getString(R.string.intent_overview_polyline_key);
-
-            mRouteId = getIntent().getLongExtra(ARG_ROUTE_KEY_ID, -1);
-            mPolyLine = getIntent().getStringExtra(ARG_OVERVIEW_POLYLINE_KEY);
+            mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
             Bundle arguments = new Bundle();
-            arguments.putLong(ARG_ROUTE_KEY_ID, mRouteId);
-            arguments.putString(ARG_OVERVIEW_POLYLINE_KEY, mPolyLine);
+            arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
 
             DetailRouteFragment fragment = new DetailRouteFragment();
             fragment.setArguments(arguments);

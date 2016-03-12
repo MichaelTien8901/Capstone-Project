@@ -16,6 +16,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -46,14 +49,14 @@ public class DetailRouteFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         MyOnItemClickListener {
-    protected long mRouteId = -1;
     protected int REQUEST_LOCATION = 101;
-
     protected DetailRouteRecyclerViewAdapter mAdapter;
     public static final int ROUTE_LOADER =1;
     private GoogleMap mMap;
     protected GoogleApiClient mGoogleApiClient;
     protected String mOverviewPolyline;
+    protected long mRouteId = -1;
+    protected RouteParcelable mRouteObject;
     protected Polyline mStepline;
 
     @Override
@@ -128,16 +131,45 @@ public class DetailRouteFragment extends Fragment implements
             Bundle arguments = getArguments();
             if (arguments != null) {
                 final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-                final String ARG_OVERVIEW_POLYLINE_KEY = getString(R.string.intent_overview_polyline_key);
-                if ( arguments.containsKey(ARG_ROUTE_KEY_ID))
-                    mRouteId = arguments.getLong(ARG_ROUTE_KEY_ID);
-                if ( arguments.containsKey(ARG_OVERVIEW_POLYLINE_KEY))
-                    mOverviewPolyline = arguments.getString(ARG_OVERVIEW_POLYLINE_KEY);
+                if ( arguments.containsKey(ARG_ROUTE_KEY_ID)) {
+                    mRouteObject = arguments.getParcelable(ARG_ROUTE_KEY_ID);
+                    mRouteId = mRouteObject.routeId;
+                    mOverviewPolyline = mRouteObject.overviewPolyline;
+                }
             }
+        }
+        if ( mRouteObject != null && mRouteObject.transitNo != null) {
+            CreateDetailTitleView(inflater, view);
         }
         getLoaderManager().initLoader(ROUTE_LOADER, null, this);
 
         return view;
+    }
+
+    private void CreateDetailTitleView(LayoutInflater inflater, View view) {
+        ((TextView) view.findViewById(R.id.detail_depart_time)).setText(mRouteObject.departTime);
+        ((TextView) view.findViewById(R.id.detail_duration)).setText(mRouteObject.duration);
+        String[] transits = mRouteObject.transitNo.split(",");
+        TextView transitNoView = (TextView) view.findViewById(R.id.detail_transit_no2);
+        if ( !transits[0].equals("null"))
+            transitNoView.setText(transits[0]);
+        else
+            transitNoView.setText("");
+        // create rest of bus number
+        if ( transits.length > 1 ) {
+            LinearLayout detail_title_container = (LinearLayout) view.findViewById(R.id.list_detail_title);
+            for (int i = 1; i < transits.length && i < 3; i++) {
+                View childView = inflater.inflate(R.layout.list_item_transit_no, null);
+                ImageView image = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
+                image.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_directions_bus));
+                TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
+                if (!transits[i].equals("null"))
+                    textView.setText(transits[i]);
+                else
+                    textView.setText("");
+                detail_title_container.addView(childView);
+            }
+        }
     }
 
 

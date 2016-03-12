@@ -43,6 +43,7 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:src="@drawable/ic_navigation"
         android:tint="#ffffffff"
+        android:alpha="0.55"
         />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add"
@@ -53,6 +54,7 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:src="@drawable/ic_add"
         android:tint="#ffffffff"
+        android:alpha="0.55"
          />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_remove"
@@ -62,5 +64,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_remove"
         android:tint="#ffffffff"
+        android:alpha="0.55"
         />
 </android.support.design.widget.CoordinatorLayout>

@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ymsgsoft.michaeltien.hummingbird.R;
+import com.ymsgsoft.michaeltien.hummingbird.RouteParcelable;
 import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 
 /**
@@ -43,22 +44,25 @@ public class RouteAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         final RouteAdapter.RouteHolder mHolder = (RouteAdapter.RouteHolder) view.getTag();
-        mHolder.departTime.setText( cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DEPART_TIME)));
-        mHolder.duration.setText( cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION)));
-        mHolder.routeId = cursor.getInt(cursor.getColumnIndex(RouteColumns.ID));
-        mHolder.mOverviewPolyline = cursor.getString(cursor.getColumnIndex(RouteColumns.OVERVIEW_POLYLINES));
+        mHolder.bindData(cursor);
+        mHolder.departTime.setText( mHolder.mData.departTime);
+        mHolder.duration.setText( mHolder.mData.duration);
         mHolder.imageIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_bus));
-        mHolder.transitNo.setText(cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_TRANSIT_NO)));
-        String[] transits = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_TRANSIT_NO)).split(",");
-        mHolder.transitNo.setText(transits[0]);
+        String[] transits = mHolder.mData.transitNo.split(",");
+        if ( !transits[0].equals("null"))
+            mHolder.transitNo.setText(transits[0]);
+        else
+            mHolder.transitNo.setText("");
         if ( transits.length > 1) {
-            for ( int i = 1; i < transits.length; i ++) {
+            for ( int i = 1; i < transits.length && i < 3; i ++) {
                 LinearLayout childView = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.list_item_transit_no, null);
-//                LinearLayout childView = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.list_item_transit_no, mHolder.mContainer);
                 ImageView image = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
                 image.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_bus));
                 TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
-                textView.setText(transits[i]);
+                if ( !transits[i].equals("null"))
+                    textView.setText(transits[i]);
+                else
+                    textView.setText("");
                 mHolder.mContainer.addView(childView);
             }
         }
@@ -71,14 +75,22 @@ public class RouteAdapter extends CursorAdapter {
         mItem.setTag(mHolder);
         return mItem;
     }
+
     public class RouteHolder {
         ImageView imageIcon;
         TextView departTime;
         TextView transitNo;
         TextView duration;
-        public long routeId;
-        public String mOverviewPolyline;
         LinearLayout mContainer;
+        public RouteParcelable mData;
+        public void bindData(Cursor cursor) {
+            mData = new RouteParcelable();
+            mData.routeId = cursor.getInt(cursor.getColumnIndex(RouteColumns.ID));
+            mData.overviewPolyline = cursor.getString(cursor.getColumnIndex(RouteColumns.OVERVIEW_POLYLINES));
+            mData.transitNo = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_TRANSIT_NO));
+            mData.departTime = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DEPART_TIME));
+            mData.duration = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION));
+        }
         public RouteHolder(View view) {
             imageIcon = (ImageView) view.findViewById(R.id.list_item_route_icon);
             departTime = (TextView) view.findViewById(R.id.list_item_depart_time);

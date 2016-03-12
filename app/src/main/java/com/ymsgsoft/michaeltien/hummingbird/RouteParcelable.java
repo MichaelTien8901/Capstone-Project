@@ -3,14 +3,15 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
-
 /**
- * Created by Michael Tien on 2016/2/20.
+ * Created by Michael Tien on 2016/3/11.
  */
 public class RouteParcelable implements Parcelable {
-    public Route route;
-    public String Summary;
+    public long routeId;
+    public String overviewPolyline;
+    public String transitNo;
+    public String departTime;
+    public String duration;
 
     @Override
     public int describeContents() {
@@ -19,16 +20,22 @@ public class RouteParcelable implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeParcelable(this.route, flags);
-        dest.writeString(this.Summary);
+        dest.writeLong(this.routeId);
+        dest.writeString(this.overviewPolyline);
+        dest.writeString(this.transitNo);
+        dest.writeString(this.departTime);
+        dest.writeString(this.duration);
     }
 
     public RouteParcelable() {
     }
 
     protected RouteParcelable(Parcel in) {
-        this.route = in.readParcelable(Route.class.getClassLoader());
-        this.Summary = in.readString();
+        this.routeId = in.readLong();
+        this.overviewPolyline = in.readString();
+        this.transitNo = in.readString();
+        this.departTime = in.readString();
+        this.duration = in.readString();
     }
 
     public static final Parcelable.Creator<RouteParcelable> CREATOR = new Parcelable.Creator<RouteParcelable>() {

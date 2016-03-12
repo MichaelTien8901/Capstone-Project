@@ -83,11 +83,10 @@ public class PlanningActivityFragment extends Fragment implements LoaderManager.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // retrieve routeId
                 RouteAdapter.RouteHolder selected = (RouteAdapter.RouteHolder) view.getTag();
-                mRouteAdapter.selectedRouteId = selected.routeId;
+                mRouteAdapter.selectedRouteId = selected.mData.routeId;
                 // launch detail activity
                 Intent intent = new Intent( getContext(), DetailRouteActivity.class);
-                intent.putExtra(getString(R.string.intent_route_key), selected.routeId);
-                intent.putExtra(getString(R.string.intent_overview_polyline_key), selected.mOverviewPolyline);
+                intent.putExtra(getString(R.string.intent_route_key), selected.mData);
                 startActivity(intent);
             }
         });
