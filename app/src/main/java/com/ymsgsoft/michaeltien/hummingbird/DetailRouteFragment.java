@@ -37,6 +37,7 @@ import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.DetailRouteRecyclerViewAdapter;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.DividerItemDecoration;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.StepData;
+
 import java.util.List;
 
 public class DetailRouteFragment extends Fragment implements
@@ -107,7 +108,9 @@ public class DetailRouteFragment extends Fragment implements
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_detail_route);
         mAdapter = new DetailRouteRecyclerViewAdapter( getContext(), R.layout.list_item_detail_route, null, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
+//        recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL,
+                getResources().getDrawable(R.drawable.line_divider)));
         recyclerView.setAdapter(mAdapter);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()

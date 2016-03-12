@@ -2,13 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:attr/selectableItemBackground"
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:orientation="horizontal"
-        android:background="@color/list_background"
         >
         <ImageView
             android:id="@+id/item_detail_step_icon"
@@ -16,11 +19,11 @@
             android:layout_height="wrap_content"
             android:gravity="left"
             />
+        <!--android:background="@color/list_background"-->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id = "@+id/item_detail_travel_mode"
-            android:background="@color/list_background"
             android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="left"
@@ -34,7 +37,6 @@
             android:textStyle="bold"
             android:gravity="right"
             android:layout_gravity="right"
-            android:background="@color/list_background"
             android:text="1 hr 20 min"/>
     </LinearLayout>
     <TextView
@@ -46,7 +48,6 @@
         android:textStyle="bold"
         android:gravity="left"
         android:layout_gravity="top"
-        android:background="@color/list_background"
         android:text="instruction"/>
 
 </LinearLayout>

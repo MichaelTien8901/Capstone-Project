@@ -4,6 +4,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Leg;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
@@ -15,6 +16,7 @@ import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.RoutesValuesBu
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.StepsValuesBuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Michael Tien on 2016/3/11.
@@ -89,7 +91,7 @@ public class DbUtils {
         String duration = "";
         String transitNo;
 //        Boolean break_flag1 = false;
-        ArrayList<String> transit_list = new ArrayList<>();
+        List<String> transit_list = new ArrayList<>();
 
         for ( Leg legObject: routeObject.legs ) {
             if ( depart_time.isEmpty())
@@ -101,7 +103,7 @@ public class DbUtils {
                     transit_list.add(step.transit_details.line.short_name);
             }
         }
-        transitNo = transit_list.toString();
+        transitNo = TextUtils.join(",", transit_list);
         values.put(RouteColumns.EXT_DEPART_TIME, depart_time);
         values.put(RouteColumns.EXT_DURATION, duration);
         values.put(RouteColumns.EXT_TRANSIT_NO, transitNo);

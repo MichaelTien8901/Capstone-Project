@@ -20,33 +20,40 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:id = "@+id/list_item_routes_container"
         android:orientation="horizontal"
+        android:background="@color/list_background"
         >
-        <ImageView
-            android:id="@+id/list_item_image_Icon"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id = "@+id/list_item_transit_no"
-            android:textColor="#f7fbff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="left"
-            android:background="@color/list_background"
-            android:layout_gravity="top"
-            android:text="99"/>
+            android:orientation="horizontal"
+            android:id = "@+id/list_item_routes_container"
+            >
+            <ImageView
+                android:id="@+id/list_item_route_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:tint="#ffffff"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id = "@+id/list_item_transit_no"
+                android:textColor="#f7fbff"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="left"
+                android:background="@color/list_background"
+                android:layout_gravity="top"
+                android:text="99"/>
+        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id = "@+id/list_item_duration"
             android:textColor="#f7fbff"
             android:textSize="16sp"
-            android:textStyle="bold"
             android:gravity="right"
             android:background="@color/list_background"
             android:layout_gravity="right"

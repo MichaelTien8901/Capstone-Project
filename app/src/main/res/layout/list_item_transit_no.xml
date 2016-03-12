@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:tint="#ffffff"
+        android:src="@drawable/ic_chevron_right" />
+    <ImageView
+        android:id="@+id/list_item_transit_icon1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:tint="#ffffff"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id = "@+id/list_item_transit_no1"
+        android:textColor="#f7fbff"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="left"
+        android:background="@color/list_background"
+        android:layout_gravity="top"
+        android:text="99"/>
+
+</LinearLayout>

@@ -1,7 +1,6 @@
 package com.ymsgsoft.michaeltien.hummingbird.playservices;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -38,11 +37,12 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private int mOrientation;
 
-    public DividerItemDecoration(Context context, int orientation) {
-        final TypedArray a = context.obtainStyledAttributes(ATTRS);
-        mDivider = a.getDrawable(0);
-        a.recycle();
+    public DividerItemDecoration(Context context, int orientation, Drawable drawable ) {
+//        final TypedArray a = context.obtainStyledAttributes(ATTRS);
+//        mDivider = a.getDrawable(0);
+//        a.recycle();
         setOrientation(orientation);
+        mDivider = drawable;
     }
 
     public void setOrientation(int orientation) {
