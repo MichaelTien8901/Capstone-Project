@@ -189,6 +189,7 @@ public class DetailRouteFragment extends Fragment implements
             PolylineOptions options = new PolylineOptions()
                     .addAll(points)
                     .color(getResources().getColor(R.color.colorAccent));
+            options.zIndex(10);
             if ( mStepline == null) {
                 mStepline = mMap.addPolyline(options);
             } else {
