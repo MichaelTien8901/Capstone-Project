@@ -56,7 +56,7 @@ public class DetailRouteActivity extends AppCompatActivity {
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_detail_route_id, fragment)
+                    .add(R.id.fragment_detail_container, fragment)
                     .commit();
         }
     }

@@ -104,9 +104,16 @@ public class DetailRouteFragment extends Fragment implements
 
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if ( mRouteObject != null)
+            outState.putParcelable(getString(R.string.intent_route_key), mRouteObject);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.content_detail_route, container, false);
+        View view = inflater.inflate(R.layout.fragment_detail_route, container, false);
         Context context = view.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_detail_route);
         mAdapter = new DetailRouteRecyclerViewAdapter( getContext(), R.layout.list_item_detail_route, null, this);
@@ -127,26 +134,30 @@ public class DetailRouteFragment extends Fragment implements
                     .build();
         }
 
+        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( savedInstanceState == null) {
             Bundle arguments = getArguments();
             if (arguments != null) {
-                final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
                 if ( arguments.containsKey(ARG_ROUTE_KEY_ID)) {
                     mRouteObject = arguments.getParcelable(ARG_ROUTE_KEY_ID);
                     mRouteId = mRouteObject.routeId;
                     mOverviewPolyline = mRouteObject.overviewPolyline;
                 }
             }
+        } else {
+            savedInstanceState.getParcelable( ARG_ROUTE_KEY_ID);
+            mRouteId = mRouteObject.routeId;
+            mOverviewPolyline = mRouteObject.overviewPolyline;
         }
         if ( mRouteObject != null && mRouteObject.transitNo != null) {
-            CreateDetailTitleView(inflater, view);
+            createDetailTitleView(inflater, view);
         }
         getLoaderManager().initLoader(ROUTE_LOADER, null, this);
 
         return view;
     }
 
-    private void CreateDetailTitleView(LayoutInflater inflater, View view) {
+    private void createDetailTitleView(LayoutInflater inflater, View view) {
         ((TextView) view.findViewById(R.id.detail_depart_time)).setText(mRouteObject.departTime);
         ((TextView) view.findViewById(R.id.detail_duration)).setText(mRouteObject.duration);
         String[] transits = mRouteObject.transitNo.split(",");
