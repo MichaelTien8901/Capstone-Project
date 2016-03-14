@@ -43,13 +43,13 @@ public class PlanningActivityFragment extends Fragment implements LoaderManager.
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         if ( mFromObject != null) {
             outState.putParcelable(PLAN_FROM_ID, mFromObject);
         }
         if ( mToObject != null) {
            outState.putParcelable(PLAN_TO_ID, mToObject);
         }
+        super.onSaveInstanceState(outState);
     }
 
     public PlanningActivityFragment() {

@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/fragment_detail_route_id"
     >
     <!--tools:showIn="@layout/activity_detail_route"-->
-    <!--android:id="@+id/fragment_detail_route_id"-->
     <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
     <LinearLayout
         android:layout_width="match_parent"

@@ -10,7 +10,16 @@ import android.view.View;
 public class DetailRouteActivity extends AppCompatActivity {
 //    protected long mRouteId;
 //    protected String mPolyLine;
+    static final String SAVE_ARG_KEY = "save_arg_key";
     protected RouteParcelable mRouteObject;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if ( mRouteObject != null)
+            outState.putParcelable(SAVE_ARG_KEY, mRouteObject);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,18 +55,22 @@ public class DetailRouteActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( savedInstanceState == null) {
-            final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
             mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
-
-            DetailRouteFragment fragment = new DetailRouteFragment();
-            fragment.setArguments(arguments);
-
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_detail_container, fragment)
-                    .commit();
+        } else {
+            if (savedInstanceState.containsKey(SAVE_ARG_KEY))
+                mRouteObject = savedInstanceState.getParcelable(SAVE_ARG_KEY);
         }
+
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+
+        DetailRouteFragment fragment = new DetailRouteFragment();
+        fragment.setArguments(arguments);
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_detail_container, fragment, "fragment_detail_tag")
+                .commit();
     }
 }

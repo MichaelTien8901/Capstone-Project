@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.DetailRouteRecyclerViewAdapter;
@@ -49,12 +50,13 @@ public class DetailRouteFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         MyOnItemClickListener {
+    static final String SAVE_ARG_KEY = "save_arg_key";
     protected int REQUEST_LOCATION = 101;
     protected DetailRouteRecyclerViewAdapter mAdapter;
     public static final int ROUTE_LOADER =1;
     private GoogleMap mMap;
     protected GoogleApiClient mGoogleApiClient;
-    protected String mOverviewPolyline;
+//    protected String mOverviewPolyline;
     protected long mRouteId = -1;
     protected RouteParcelable mRouteObject;
     protected Polyline mStepline;
@@ -102,21 +104,32 @@ public class DetailRouteFragment extends Fragment implements
     public DetailRouteFragment() {
     }
 
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if ( mRouteObject != null)
-            outState.putParcelable(getString(R.string.intent_route_key), mRouteObject);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
+        Bundle arguments = getArguments();
+        if (arguments != null && arguments.containsKey(ARG_ROUTE_KEY_ID)) {
+                mRouteObject = arguments.getParcelable(ARG_ROUTE_KEY_ID);
+        }
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if ( mRouteObject != null) {
+            outState.putParcelable(SAVE_ARG_KEY, mRouteObject);
+            PrefUtils.saveRouteParcelableToPref(getContext(), getString(R.string.intent_route_key), mRouteObject);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+   @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail_route, container, false);
         Context context = view.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_detail_route);
-        mAdapter = new DetailRouteRecyclerViewAdapter( getContext(), R.layout.list_item_detail_route, null, this);
+        mAdapter = new DetailRouteRecyclerViewAdapter(getContext(), R.layout.list_item_detail_route, null, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 //        recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
         recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL,
@@ -125,7 +138,6 @@ public class DetailRouteFragment extends Fragment implements
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.detail_map_id);
-        mapFragment.getMapAsync(this);
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                     .addConnectionCallbacks(this)
@@ -135,23 +147,21 @@ public class DetailRouteFragment extends Fragment implements
         }
 
         final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-        if ( savedInstanceState == null) {
-            Bundle arguments = getArguments();
-            if (arguments != null) {
-                if ( arguments.containsKey(ARG_ROUTE_KEY_ID)) {
-                    mRouteObject = arguments.getParcelable(ARG_ROUTE_KEY_ID);
-                    mRouteId = mRouteObject.routeId;
-                    mOverviewPolyline = mRouteObject.overviewPolyline;
-                }
-            }
-        } else {
-            savedInstanceState.getParcelable( ARG_ROUTE_KEY_ID);
+        if ( savedInstanceState != null && savedInstanceState.containsKey(SAVE_ARG_KEY)) {
+                mRouteObject = savedInstanceState.getParcelable(SAVE_ARG_KEY);
+//                mRouteId = mRouteObject.routeId;
+//                mOverviewPolyline = mRouteObject.overviewPolyline;
+        }
+        if ( mRouteObject == null) {
+            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(getContext(), ARG_ROUTE_KEY_ID);
+        }
+        if ( mRouteObject != null) {
             mRouteId = mRouteObject.routeId;
-            mOverviewPolyline = mRouteObject.overviewPolyline;
         }
         if ( mRouteObject != null && mRouteObject.transitNo != null) {
             createDetailTitleView(inflater, view);
         }
+        mapFragment.getMapAsync(this);
         getLoaderManager().initLoader(ROUTE_LOADER, null, this);
 
         return view;
@@ -198,18 +208,19 @@ public class DetailRouteFragment extends Fragment implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.clear();
 //        mMap.getUiSettings().setMapToolbarEnabled(false);
-        if ( mMap != null)
-            drawOverviewPolyline();
+        if ( mMap != null && mRouteObject != null)
+            drawOverviewPolyline(mRouteObject.overviewPolyline);
     }
-    void drawOverviewPolyline() {
-        if ( mOverviewPolyline != null ) {
+    void drawOverviewPolyline(String polyline) {
+        if ( polyline != null ) {
             LatLng Here = new LatLng( 49.2649, -123.24169 );
             mMap.addMarker(new MarkerOptions().position(Here).title("You Are Here"));
             CameraPosition target = CameraPosition.builder().target(Here).zoom(10).build();
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
 
-            List<LatLng> points = PolyUtil.decode(mOverviewPolyline);
+            List<LatLng> points = PolyUtil.decode(polyline);
             PolylineOptions options = new PolylineOptions()
                     .addAll(points)
                     .color(Color.BLUE);
@@ -220,8 +231,36 @@ public class DetailRouteFragment extends Fragment implements
             }
             LatLngBounds bounds = builder.build();
             int padding = 40; // offset from edges of the map in pixels
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-            mMap.animateCamera(cu);
+            final CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+                @Override
+                public void onCameraChange(CameraPosition cameraPosition) {
+                    mMap.setOnCameraChangeListener(null);
+                    try {
+                        mMap.animateCamera(cu);
+                    } catch (IllegalStateException e) {
+                    }
+                }
+            });
+//            try {
+//                mMap.animateCamera(cu);
+//            } catch (IllegalStateException e){
+//                // layout not initialized
+//                final View mapView = getFragmentManager().findFragmentById(R.id.detail_map_id).getView();
+//                if ( mapView.getViewTreeObserver().isAlive()) {
+//                    mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//                        @Override
+//                        public void onGlobalLayout() {
+//                            if ( Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+//                                mapView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//                            } else {
+//                                mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                            }
+//                            mMap.animateCamera(cu);
+//                        }
+//                    });
+//                }
+//            }
         }
     }
 
@@ -245,8 +284,13 @@ public class DetailRouteFragment extends Fragment implements
             LatLngBounds bounds = builder.build();
             int padding = 40; // offset from edges of the map in pixels
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-            mMap.animateCamera(cu);
-        }
+            try {
+                mMap.animateCamera(cu);
+            } catch (IllegalStateException e){
+                // layout not initialized
+            }
+
+    }
     }
 
      @Override

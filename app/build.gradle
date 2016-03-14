@@ -38,6 +38,8 @@ dependencies {
 //    compile "com.squareup.retrofit:converter-gson:$retrofitVersion"
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    //    compile 'com.google.android.gms:play-services:8.4.0'
+//    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
@@ -47,6 +49,4 @@ dependencies {
     compile 'com.android.support:support-v4:23.2.0'
     compile 'com.android.support:recyclerview-v7:23.2.0'
     compile 'com.google.maps.android:android-maps-utils:0.4'
-//    compile 'com.google.android.gms:play-services:8.4.0'
-//    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }
