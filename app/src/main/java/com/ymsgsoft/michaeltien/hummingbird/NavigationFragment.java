@@ -1,6 +1,7 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.content.Context;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
@@ -25,14 +27,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Use the {@link NavigationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NavigationFragment extends Fragment implements OnMapReadyCallback
+public class NavigationFragment extends Fragment implements
+        OnMapReadyCallback,
+        NavigateActivity.Callback
 {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private GoogleMap mMap;
-
+    protected GoogleMap mMap;
+    protected Marker mMarker;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -110,9 +114,29 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         LatLng Vancouver = new LatLng( 49.264911, -123.241917 );
-        mMap.addMarker(new MarkerOptions().position(Vancouver).title("Marker in Vancouver"));
+        mMarker = mMap.addMarker(new MarkerOptions().position(Vancouver).title("Marker in Vancouver"));
         CameraPosition target = CameraPosition.builder().target(Vancouver).zoom(14).build();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(Vancouver));
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
+
+    }
+
+    @Override
+    public void stepUpdate(String step) {
+
+    }
+
+    @Override
+    public void locationUpdate(Location location) {
+        // check current marker
+        LatLng position = new LatLng( location.getLatitude(), location.getLongitude());
+        if ( mMarker == null) {
+            mMarker = mMap.addMarker(new MarkerOptions().position(position));
+        } else {
+            mMarker.setPosition(position);
+        }
+        CameraPosition target = CameraPosition.builder().target(position).zoom(14).build();
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
 
     }
