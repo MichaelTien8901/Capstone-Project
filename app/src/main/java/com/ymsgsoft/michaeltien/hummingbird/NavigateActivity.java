@@ -25,6 +25,7 @@ import java.util.Date;
 public class NavigateActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
     static final String TAG = NavigateActivity.class.getSimpleName();
+    static final String NAVIGATION_TAG = "com.ymsgsoft.michaeltien.hummingbird.navigation_fragment";
     static final int REQUEST_LOCATION = 103;
 //    private GoogleMap mMap;
     /**
@@ -75,8 +76,10 @@ public class NavigateActivity extends AppCompatActivity implements
             mFragment = new NavigationFragment();
 //            fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_navigation_container, mFragment)
+                    .add(R.id.fragment_navigation_container, mFragment, NAVIGATION_TAG)
                     .commit();
+        } else {
+            mFragment = getSupportFragmentManager().findFragmentByTag(NAVIGATION_TAG);
         }
         // Update values using data stored in the Bundle.
         updateValuesFromBundle(savedInstanceState);
