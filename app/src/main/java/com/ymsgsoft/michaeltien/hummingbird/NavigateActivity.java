@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -67,6 +68,12 @@ public class NavigateActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_navigation);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        findViewById(R.id.fab_navigation_mode).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((Callback)mFragment).fabMyLocationPressed();
+            }
+        });
         if ( savedInstanceState == null) {
 //            final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
 //            mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
@@ -298,5 +305,6 @@ public class NavigateActivity extends AppCompatActivity implements
     public interface Callback {
         void locationUpdate(Location location);
         void stepUpdate(String step);
+        void fabMyLocationPressed();
     }
 }

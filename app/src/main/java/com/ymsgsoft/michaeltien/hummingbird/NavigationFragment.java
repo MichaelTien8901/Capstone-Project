@@ -1,10 +1,17 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +20,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -37,6 +47,12 @@ public class NavigationFragment extends Fragment implements
     private static final String ARG_PARAM2 = "param2";
     protected GoogleMap mMap;
     protected Marker mMarker;
+    protected float  mCurrentCameraZoom = -1;
+    protected Location mCurrentLocation;
+    protected boolean mPositionSync = true;
+    protected int mNavigationMode = 0;
+    final static double DISTANCE_TOLERENCE = 2.0; // meters
+    final static float ZOOM_LEVEL = 15;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -111,13 +127,42 @@ public class NavigationFragment extends Fragment implements
     }
 
     @Override
+    public void fabMyLocationPressed() {
+        if ( !mPositionSync) {
+            mPositionSync = true;
+            mNavigationMode = 0;
+        } else {
+            if ( mNavigationMode ++ == 1)
+                mNavigationMode = 0;
+        }
+//        mCurrentCameraZoom = ZOOM_LEVEL;
+        updateUI();
+    }
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng Vancouver = new LatLng( 49.264911, -123.241917 );
-        mMarker = mMap.addMarker(new MarkerOptions().position(Vancouver).title("Marker in Vancouver"));
-        CameraPosition target = CameraPosition.builder().target(Vancouver).zoom(14).build();
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(Vancouver));
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                mCurrentCameraZoom = cameraPosition.zoom;
+                if ( mCurrentLocation != null) {
+                    float [] result = new float[3];
+                    Location.distanceBetween(
+                            mCurrentLocation.getLatitude(),
+                            mCurrentLocation.getLongitude(),
+                            cameraPosition.target.latitude,
+                            cameraPosition.target.longitude, result);
+                    if ( result[0] > DISTANCE_TOLERENCE) {
+                        mPositionSync = false;
+                    }
+                }
+            }
+        });
+//        LatLng Vancouver = new LatLng( 49.264911, -123.241917 );
+//        mMarker = mMap.addMarker(new MarkerOptions().position(Vancouver).title("Marker in Vancouver"));
+//        CameraPosition target = CameraPosition.builder().target(Vancouver).zoom(14).build();
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(Vancouver));
+//        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
 
     }
 
@@ -125,22 +170,76 @@ public class NavigationFragment extends Fragment implements
     public void stepUpdate(String step) {
 
     }
+    public static float convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px;
+    }
+
+    private static BitmapDescriptor getBitmapDescriptor(Context context, int id) {
+        Drawable vectorDrawable;
+        if ( Build.VERSION.SDK_INT < 21) {
+            vectorDrawable = ContextCompat.getDrawable(context, id);
+        } else
+            vectorDrawable = context.getDrawable(id);
+        int h = (int) convertDpToPixel(40, context);
+        int w = (int) convertDpToPixel(40, context);
+        vectorDrawable.setBounds(0, 0, w, h);
+        Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bm);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bm);
+    }
 
     @Override
     public void locationUpdate(Location location) {
         // check current marker
-        LatLng position = new LatLng( location.getLatitude(), location.getLongitude());
-        if ( mMarker == null) {
-            mMarker = mMap.addMarker(new MarkerOptions().position(position));
-        } else {
-            mMarker.setPosition(position);
-        }
-        CameraPosition target = CameraPosition.builder().target(position).zoom(14).build();
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
+        mCurrentLocation = location;
+        updateUI();
 
     }
 
+    private void updateUI() {
+        LatLng position = new LatLng( mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        float zoom;
+        if ( mMarker == null) {
+            mMarker = mMap.addMarker(new MarkerOptions().position(position));
+//            mMarker.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+            mMarker.setIcon(getBitmapDescriptor(getContext(), R.drawable.ic_person_pin_black));
+            zoom = ZOOM_LEVEL;
+        } else {
+            mMarker.setPosition(position);
+            if ( mCurrentCameraZoom != -1) {
+                zoom = mCurrentCameraZoom;
+            } else zoom = ZOOM_LEVEL;
+        }
+        if ( mPositionSync || !CheckMarkerVisibility(mMarker)) {
+            CameraPosition.Builder builder = new CameraPosition.Builder();
+            builder.target(position);
+            if ( mPositionSync ) {
+                switch (mNavigationMode) {
+                    case 1:
+                        if (mCurrentLocation.hasBearing())
+                            builder.bearing(mCurrentLocation.getBearing());
+                        break;
+                    case 0:
+                        builder.bearing(0);
+                        break;
+                }
+            }
+            CameraPosition target = builder.zoom(zoom).build();
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target));
+        }
+    }
+
+    private boolean CheckMarkerVisibility(Marker myPosition)
+    {
+        //This is the current user-viewable region of the map
+        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+        return (bounds.contains(myPosition.getPosition()));
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
