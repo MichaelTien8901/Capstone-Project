@@ -17,6 +17,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -75,6 +76,8 @@ public class NavigationFragment extends Fragment implements
     protected StepParcelable mStepObject;
     @Bind(R.id.navigate_instruction) TextView mInstructionView;
     @Bind(R.id.navigate_detail_instruction) TextView mDetailedInstructionView;
+    @Bind(R.id.navigate_step_transit_no) TextView mStepTransitNo;
+    @Bind(R.id.navigate_step_icon) ImageView mStepIconView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -199,6 +202,19 @@ public class NavigationFragment extends Fragment implements
                     mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
                     mInstructionView.setVisibility(View.VISIBLE);
                     mDetailedInstructionView.setVisibility(View.INVISIBLE);
+                    if ( mStepObject.travel_mode.equals("WALKING")) {
+                        mStepIconView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_directions_walk));
+                        mStepTransitNo.setText("");
+                        mStepTransitNo.setVisibility(View.INVISIBLE);
+                    } else {
+                        mStepIconView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_directions_bus));
+                        if ( mStepObject.transit_no != null && !mStepObject.transit_no.isEmpty()) {
+                            mStepTransitNo.setText(mStepObject.transit_no);
+                            mStepTransitNo.setVisibility(View.VISIBLE);
+                        } else {
+                            mStepTransitNo.setVisibility(View.INVISIBLE);
+                        }
+                    }
                 } else {
                     mDetailedInstructionView.setText(Html.fromHtml(mStepObject.instruction));
                     mDetailedInstructionView.setVisibility(View.VISIBLE);

@@ -148,7 +148,8 @@ public class DbUtils {
     static void extractStepSummary(Step stepObject, ContentValues values ) {
         if ( stepObject.transit_details != null && stepObject.transit_details.line != null) {
             String transitNo = stepObject.transit_details.line.short_name;
-            values.put(StepColumns.TRANSIT_NO, transitNo);
+            if ( transitNo != null)
+                values.put(StepColumns.TRANSIT_NO, transitNo);
         }
     }
 
@@ -166,6 +167,7 @@ public class DbUtils {
         for ( Leg leg: route.legs) {
             for (Step step: leg.steps) {
                 ContentValues values = createNavigateValuesFromStep(step, routeRowId, step.steps.size());
+                extractStepSummary(step, values);
                 mContext.getContentResolver().insert(RoutesProvider.Navigates.CONTENT_URI, values);
                 if ( step.steps != null && step.steps.size() != 0) {
                     long level = 1;
