@@ -11,6 +11,7 @@ import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
 
 /**
  * Created by Michael Tien on 2015/12/2.
+ * Navigation table
  */
 public interface NavigateColumns {
     @DataType(INTEGER) @PrimaryKey @AutoIncrement String ID = "_id";
@@ -28,5 +29,7 @@ public interface NavigateColumns {
     @DataType(REAL) String END_LNG = "end_lng";
     @DataType(TEXT) String TRANSIT_NO = "transit_no";
     @DataType(INTEGER)  @References(table = RoutesDbHelper.Tables.ROUTES, column = RouteColumns.ID)
-    String ROUTES_ID = "route_id";
+        String ROUTES_ID = "route_id";
+    @DataType(INTEGER) String LEVEL = "level";
+    @DataType(INTEGER) String COUNT = "count";
 }

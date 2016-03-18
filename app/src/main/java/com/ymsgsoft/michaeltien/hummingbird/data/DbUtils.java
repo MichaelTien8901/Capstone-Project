@@ -86,7 +86,7 @@ public class DbUtils {
                 .travelMode(step.travel_mode)
                 .values();
     }
-    static ContentValues createNavigateValuesFromStep(Step step, long routeId){
+    static ContentValues createNavigateValuesFromStep(Step step, long routeId, int count){
         return new NavigatesValuesBuilder()
                 .polyline(step.polyline.points)
                 .instruction(step.html_instructions)
@@ -100,9 +100,11 @@ public class DbUtils {
                 .endLng(step.end_location.lng.floatValue())
                 .travelMode(step.travel_mode)
                 .routesId(routeId)
+                .level(0)
+                .count(count)
                 .values();
     }
-    static ContentValues createNavigateValuesFromMicroStep(Step_ step, long routeId){
+    static ContentValues createNavigateValuesFromMicroStep(Step_ step, long routeId, long level){
         return new NavigatesValuesBuilder()
                 .polyline(step.polyline.points)
                 .instruction(step.html_instructions)
@@ -116,6 +118,8 @@ public class DbUtils {
                 .endLng(step.end_location.lng.floatValue())
                 .travelMode(step.travel_mode)
                 .routesId(routeId)
+                .level(level)
+                .count(0)
                 .values();
     }
     static void extractRouteSummary(Route routeObject, ContentValues values ) {
@@ -161,14 +165,14 @@ public class DbUtils {
     public static void insertNavigateValues(Context mContext, Route route, long routeRowId) {
         for ( Leg leg: route.legs) {
             for (Step step: leg.steps) {
+                ContentValues values = createNavigateValuesFromStep(step, routeRowId, step.steps.size());
+                mContext.getContentResolver().insert(RoutesProvider.Navigates.CONTENT_URI, values);
                 if ( step.steps != null && step.steps.size() != 0) {
+                    long level = 1;
                     for ( Step_ microStep: step.steps) {
-                        ContentValues values = createNavigateValuesFromMicroStep(microStep, routeRowId);
-                        mContext.getContentResolver().insert(RoutesProvider.Navigates.CONTENT_URI, values);
+                        ContentValues values1 = createNavigateValuesFromMicroStep(microStep, routeRowId, level++);
+                        mContext.getContentResolver().insert(RoutesProvider.Navigates.CONTENT_URI, values1);
                     }
-                } else {
-                    ContentValues values = createNavigateValuesFromStep(step, routeRowId);
-                    mContext.getContentResolver().insert(RoutesProvider.Navigates.CONTENT_URI, values);
                 }
             }
         }

@@ -17,6 +17,8 @@ public class StepParcelable implements Parcelable {
     public String polyline;
     public String travel_mode;
     public String transit_no;
+    public int level;
+    public int count;
 
     public StepParcelable() {
     }
@@ -35,6 +37,8 @@ public class StepParcelable implements Parcelable {
         result.polyline = data.getString(data.getColumnIndex(NavigateColumns.POLYLINE));
         result.travel_mode = data.getString(data.getColumnIndex(NavigateColumns.TRAVEL_MODE));
         result.transit_no = data.getString(data.getColumnIndex(NavigateColumns.TRANSIT_NO));
+        result.level = data.getInt(data.getColumnIndex(NavigateColumns.LEVEL));
+        result.count = data.getInt(data.getColumnIndex(NavigateColumns.COUNT));
         return result;
     }
 
@@ -57,6 +61,8 @@ public class StepParcelable implements Parcelable {
         dest.writeString(this.polyline);
         dest.writeString(this.travel_mode);
         dest.writeString(this.transit_no);
+        dest.writeInt(this.level);
+        dest.writeInt(this.count);
     }
 
     protected StepParcelable(Parcel in) {
@@ -72,6 +78,8 @@ public class StepParcelable implements Parcelable {
         this.polyline = in.readString();
         this.travel_mode = in.readString();
         this.transit_no = in.readString();
+        this.level = in.readInt();
+        this.count = in.readInt();
     }
 
     public static final Creator<StepParcelable> CREATOR = new Creator<StepParcelable>() {

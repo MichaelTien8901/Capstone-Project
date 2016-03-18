@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
@@ -36,6 +37,9 @@ import com.google.maps.android.PolyUtil;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 ///**
 // * A simple {@link Fragment} subclass.
@@ -56,7 +60,8 @@ public class NavigationFragment extends Fragment implements
     protected GoogleMap mMap;
     private boolean isMapReady = false;
     protected Marker mMarker;
-    protected Polyline mPolyline;
+    protected Polyline mPolyline0;
+    protected Polyline mPolyline1;
     protected float  mCurrentCameraZoom = -1;
     protected Location mCurrentLocation;
     protected boolean mPositionSync = true;
@@ -68,7 +73,9 @@ public class NavigationFragment extends Fragment implements
     //    private String mParam2;
     protected RouteParcelable mRouteObject;
     protected StepParcelable mStepObject;
-    protected TextView mInstructionView;
+    @Bind(R.id.navigate_instruction) TextView mInstructionView;
+    @Bind(R.id.navigate_detail_instruction) TextView mDetailedInstructionView;
+
     private OnFragmentInteractionListener mListener;
 
     public NavigationFragment() {
@@ -106,12 +113,13 @@ public class NavigationFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootview = inflater.inflate(R.layout.fragment_navigation, container, false);
-        mInstructionView = (TextView) rootview.findViewById(R.id.navigate_instruction);
+        View rootView = inflater.inflate(R.layout.fragment_navigation, container, false);
+        ButterKnife.bind(this, rootView);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.navigate_map);
         mapFragment.getMapAsync(this);
-        return rootview;
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -184,23 +192,45 @@ public class NavigationFragment extends Fragment implements
         mStepObject = step;
         if ( isMapReady ) {
             if ( mStepObject.polyline != null && !mStepObject.polyline.isEmpty())
-                drawPolyline(mStepObject.polyline);
+                drawPolyline(mStepObject.polyline, mStepObject.level);
             // show instruction
-            if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty() )
-                mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
-            mInstructionView.setVisibility(View.VISIBLE);
+            if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty())
+                if ( mStepObject.level == 0) {
+                    mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
+                    mInstructionView.setVisibility(View.VISIBLE);
+                    mDetailedInstructionView.setVisibility(View.INVISIBLE);
+                } else {
+                    mDetailedInstructionView.setText(Html.fromHtml(mStepObject.instruction));
+                    mDetailedInstructionView.setVisibility(View.VISIBLE);
+                }
         }
     }
-    private void drawPolyline( String polyline) {
+    private void drawPolyline( String polyline, long level) {
         List<LatLng> points = PolyUtil.decode(polyline);
-        PolylineOptions options = new PolylineOptions()
-                .addAll(points)
-                .color(getResources().getColor(R.color.colorAccent));
-        options.zIndex(10);
-        if ( mPolyline == null) {
-            mPolyline = mMap.addPolyline(options);
+        if ( level == 0) {
+            if ( mPolyline1 != null) {
+                mPolyline1.remove();
+                mPolyline1 = null;
+            }
+            if ( mPolyline0 == null) {
+                PolylineOptions options = new PolylineOptions()
+                        .addAll(points)
+                        .color(getResources().getColor(R.color.colorAccent));
+                options.zIndex(1);
+                mPolyline0 = mMap.addPolyline(options);
+            } else {
+                mPolyline0.setPoints(points);
+            }
         } else {
-            mPolyline.setPoints(points);
+            if ( mPolyline1 == null) {
+                PolylineOptions options = new PolylineOptions()
+                        .addAll(points)
+                        .color(Color.BLUE);
+                options.zIndex(level+1);
+                mPolyline1 = mMap.addPolyline(options);
+            } else {
+                mPolyline1.setPoints(points);
+            }
         }
         // move camera within range
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -261,24 +291,25 @@ public class NavigationFragment extends Fragment implements
                 zoom = mCurrentCameraZoom;
             } else zoom = ZOOM_LEVEL;
         }
-        if ( mPositionSync || !CheckMarkerVisibility(mMarker)) {
-            CameraPosition.Builder builder = new CameraPosition.Builder();
-            builder.target(position);
-            if ( mPositionSync ) {
-                switch (mNavigationMode) {
-                    case 1:
-                        if (mCurrentLocation.hasBearing())
-                            builder.bearing(mCurrentLocation.getBearing());
-                        break;
-                    case 0:
-                        builder.bearing(0);
-                        break;
-                }
-            }
-            CameraPosition target = builder.zoom(zoom).build();
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target));
-        }
+
+//        if ( mPositionSync || !CheckMarkerVisibility(mMarker)) {
+//            CameraPosition.Builder builder = new CameraPosition.Builder();
+//            builder.target(position);
+//            if ( mPositionSync ) {
+//                switch (mNavigationMode) {
+//                    case 1:
+//                        if (mCurrentLocation.hasBearing())
+//                            builder.bearing(mCurrentLocation.getBearing());
+//                        break;
+//                    case 0:
+//                        builder.bearing(0);
+//                        break;
+//                }
+//            }
+//            CameraPosition target = builder.zoom(zoom).build();
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+//            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target));
+//        }
     }
 
     private boolean CheckMarkerVisibility(Marker myPosition)

@@ -341,15 +341,22 @@ public class NavigateActivity extends AppCompatActivity implements
         if ( mCursor == null) return;
         // start navigation geofencing
         if ( mCursor.moveToFirst()) {
-            StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
+            updateCursorStep(mCursor);        }
+    }
+    void updateCursorStep(Cursor cursor) {
+        StepParcelable navStep = StepParcelable.readStepParcelable(cursor);
+        ((Callback) mFragment).stepUpdate(navStep);
+        if ( navStep.level == 0 && navStep.count != 0){
+            cursor.moveToNext();
+            navStep = StepParcelable.readStepParcelable(cursor);
             ((Callback) mFragment).stepUpdate(navStep);
         }
     }
+
     private void navigationForward(){
         if ( mCursor != null) {
             if (mCursor.moveToNext()) {
-                StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
-                ((Callback) mFragment).stepUpdate(navStep);
+                updateCursorStep(mCursor);
             }
         }
     }
@@ -357,6 +364,19 @@ public class NavigateActivity extends AppCompatActivity implements
         if ( mCursor != null) {
             if (mCursor.moveToPrevious()) {
                 StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
+                if ( navStep.level == 0 ) {
+                    if (navStep.count != 0 ) { // slip
+                        if (!mCursor.moveToPrevious()) return; //error
+                        navStep = StepParcelable.readStepParcelable(mCursor);
+                    }
+                }
+                if ( navStep.level != 0) {
+                    int offset = navStep.level;
+                    if ( !mCursor.move(-offset)) return; // error
+                    StepParcelable navStep0 = StepParcelable.readStepParcelable(mCursor);
+                    mCursor.move(offset);
+                    ((Callback) mFragment).stepUpdate(navStep0);
+                }
                 ((Callback) mFragment).stepUpdate(navStep);
             }
         }
