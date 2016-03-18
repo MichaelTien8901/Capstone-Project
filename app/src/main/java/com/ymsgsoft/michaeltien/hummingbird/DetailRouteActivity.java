@@ -49,8 +49,6 @@ public class DetailRouteActivity extends AppCompatActivity {
                      .setAction("Action", null).show();
                 Intent intent = new Intent( DetailRouteActivity.this, NavigateActivity.class);
                 intent.putExtra(getString(R.string.intent_route_key), mRouteObject);
-//                intent.putExtra(getString(R.string.intent_route_key), mRouteId);
-//                intent.putExtra(getString(R.string.intent_overview_polyline_key), mPolyLine);
                 startActivity(intent);
             }
         });

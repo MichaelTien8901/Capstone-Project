@@ -33,6 +33,26 @@
     </android.support.design.internal.ScrimInsetsFrameLayout>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_navigation_forward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_margin4"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:tint="#ffffff"
+        android:src="@drawable/ic_arrow_forward" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_navigation_backward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_margin3"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:tint="#ffffff"
+        android:src="@drawable/ic_arrow_back" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_navigation_mode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

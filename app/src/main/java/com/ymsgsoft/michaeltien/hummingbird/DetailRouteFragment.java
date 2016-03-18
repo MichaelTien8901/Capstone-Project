@@ -290,7 +290,7 @@ public class DetailRouteFragment extends Fragment implements
                 // layout not initialized
             }
 
-    }
+        }
     }
 
      @Override

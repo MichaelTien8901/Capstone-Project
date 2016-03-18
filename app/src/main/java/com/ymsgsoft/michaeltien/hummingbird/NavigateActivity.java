@@ -2,10 +2,14 @@ package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,15 +23,19 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
+import com.ymsgsoft.michaeltien.hummingbird.data.NavigateColumns;
+import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
+import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 import java.text.DateFormat;
 import java.util.Date;
 
 public class NavigateActivity extends AppCompatActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+        ConnectionCallbacks, OnConnectionFailedListener, LocationListener, LoaderManager.LoaderCallbacks<Cursor> {
     static final String TAG = NavigateActivity.class.getSimpleName();
     static final String NAVIGATION_TAG = "com.ymsgsoft.michaeltien.hummingbird.navigation_fragment";
     static final int REQUEST_LOCATION = 103;
+    public static final int NAVIGATION_LOADER =10;
+
 //    private GoogleMap mMap;
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
@@ -59,8 +67,17 @@ public class NavigateActivity extends AppCompatActivity implements
     protected Location mCurrentLocation;
     protected String mLastUpdateTime;
     protected boolean mRequestingLocationUpdates = true;
-
+    protected RouteParcelable mRouteObject;
     protected Fragment mFragment;
+    protected Cursor mCursor;
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
+        if ( mRouteObject != null)
+            outState.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,22 +88,36 @@ public class NavigateActivity extends AppCompatActivity implements
         findViewById(R.id.fab_navigation_mode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Callback)mFragment).fabMyLocationPressed();
+                ((Callback) mFragment).fabMyLocationPressed();
             }
         });
+        findViewById(R.id.fab_navigation_forward).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigationForward();
+            }
+        });
+        findViewById(R.id.fab_navigation_backward).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigationBackward();
+            }
+        });
+
+        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( savedInstanceState == null) {
-//            final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-//            mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
-//            Bundle arguments = new Bundle();
-//            arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+            mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
 
             mFragment = new NavigationFragment();
-//            fragment.setArguments(arguments);
+            mFragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_navigation_container, mFragment, NAVIGATION_TAG)
                     .commit();
         } else {
             mFragment = getSupportFragmentManager().findFragmentByTag(NAVIGATION_TAG);
+            mRouteObject = savedInstanceState.getParcelable(ARG_ROUTE_KEY_ID);
         }
         // Update values using data stored in the Bundle.
         updateValuesFromBundle(savedInstanceState);
@@ -94,6 +125,8 @@ public class NavigateActivity extends AppCompatActivity implements
         // Kick off the process of building a GoogleApiClient and requesting the LocationServices
         // API.
         buildGoogleApiClient();
+        // start loader
+        getSupportLoaderManager().initLoader(NAVIGATION_LOADER, null, NavigateActivity.this);
     }
 
     /**
@@ -284,6 +317,50 @@ public class NavigateActivity extends AppCompatActivity implements
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        if ( mCursor != null)
+            mCursor.close();
+        mCursor = null;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this,
+                RoutesProvider.Navigates.CONTENT_URI,
+                null,
+                NavigateColumns.ROUTES_ID + "=?",
+                new String[]{String.valueOf(mRouteObject.routeId)},
+                StepColumns.ID + " ASC");
+    }
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if ( mCursor != null)
+            mCursor.close();
+        mCursor = data;
+        if ( mCursor == null) return;
+        // start navigation geofencing
+        if ( mCursor.moveToFirst()) {
+            StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
+            ((Callback) mFragment).stepUpdate(navStep);
+        }
+    }
+    private void navigationForward(){
+        if ( mCursor != null) {
+            if (mCursor.moveToNext()) {
+                StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
+                ((Callback) mFragment).stepUpdate(navStep);
+            }
+        }
+    }
+    private void navigationBackward(){
+        if ( mCursor != null) {
+            if (mCursor.moveToPrevious()) {
+                StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
+                ((Callback) mFragment).stepUpdate(navStep);
+            }
+        }
+    }
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -304,7 +381,8 @@ public class NavigateActivity extends AppCompatActivity implements
 //    }
     public interface Callback {
         void locationUpdate(Location location);
-        void stepUpdate(String step);
+        void stepUpdate(StepParcelable step);
         void fabMyLocationPressed();
     }
+
 }

@@ -13,5 +13,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.ymsgsoft.michaeltien.hummingbird.NavigateFragment" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:id="@+id/navigate_instruction"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:background="@color/colorPrimaryDark"
+        android:alpha="0.55"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:visibility="invisible"
+        >
 
+    </TextView>
 </FrameLayout>

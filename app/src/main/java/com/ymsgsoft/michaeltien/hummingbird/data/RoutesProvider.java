@@ -32,6 +32,7 @@ public final class RoutesProvider {
         String LEGS = "legs";
         String STEPS = "steps";
         String MICRO_STEPS = "micro_steps";
+        String NAVIGATES = "navigates";
     }
 
     private static Uri buildUri(String... paths) {
@@ -180,6 +181,36 @@ public final class RoutesProvider {
         public static Uri fromStep(long stepId) {
             return buildUri(Path.STEPS, String.valueOf(stepId), Path.MICRO_STEPS);
         }
+    }
+    @TableEndpoint(table = Tables.NAVIGATES) public static class Navigates {
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" +  AUTHORITY + "/" + Path.NAVIGATES;
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + AUTHORITY + "/" + Path.NAVIGATES;
+        @ContentUri(
+                path = Path.NAVIGATES,
+                type = CONTENT_TYPE,
+                defaultSort = NavigateColumns.ID + " ASC"
+        )
+        public static final Uri CONTENT_URI = buildUri(Path.NAVIGATES);
 
+        @InexactContentUri(
+                name = "NAVIGATE_ID",
+                path = Path.NAVIGATES + "/#",
+                type = CONTENT_ITEM_TYPE,
+                whereColumn = NavigateColumns.ID,
+                pathSegment = 1)
+        public static Uri withId(long legId) {
+            return buildUri(Path.NAVIGATES, String.valueOf(legId));
+        }
+
+        @InexactContentUri(
+                name = "FROM_ROUTE",
+                path = Path.ROUTES  + "/#/" + Path.NAVIGATES,
+                type = "vnd.android.cursor.dir/" + AUTHORITY + "/" + Path.NAVIGATES,
+                whereColumn = NavigateColumns.ROUTES_ID,
+                defaultSort = NavigateColumns.ID + " ASC",
+                pathSegment = 1)
+        public static Uri fromRoute(long routeId) {
+            return buildUri(Path.ROUTES, String.valueOf(routeId), Path.NAVIGATES );
+        }
     }
 }

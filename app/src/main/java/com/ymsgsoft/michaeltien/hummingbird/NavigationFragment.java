@@ -11,11 +11,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,66 +30,75 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
+
+import java.util.List;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link NavigationFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link NavigationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+///**
+// * A simple {@link Fragment} subclass.
+// * Activities that contain this fragment must implement the
+// * {@link NavigationFragment.OnFragmentInteractionListener} interface
+// * to handle interaction events.
+// * Use the {@link NavigationFragment#newInstance} factory method to
+// * create an instance of this fragment.
+// */
 public class NavigationFragment extends Fragment implements
         OnMapReadyCallback,
         NavigateActivity.Callback
 {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+//    private static final String ARG_PARAM1 = "param1";
+//    private static final String ARG_PARAM2 = "param2";
     protected GoogleMap mMap;
+    private boolean isMapReady = false;
     protected Marker mMarker;
+    protected Polyline mPolyline;
     protected float  mCurrentCameraZoom = -1;
     protected Location mCurrentLocation;
     protected boolean mPositionSync = true;
     protected int mNavigationMode = 0;
     final static double DISTANCE_TOLERENCE = 2.0; // meters
     final static float ZOOM_LEVEL = 15;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    //    // TODO: Rename and change types of parameters
+    //    private String mParam1;
+    //    private String mParam2;
+    protected RouteParcelable mRouteObject;
+    protected StepParcelable mStepObject;
+    protected TextView mInstructionView;
     private OnFragmentInteractionListener mListener;
 
     public NavigationFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NavigationFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static NavigationFragment newInstance(String param1, String param2) {
-        NavigationFragment fragment = new NavigationFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+//    /**
+//     * Use this factory method to create a new instance of
+//     * this fragment using the provided parameters.
+//     *
+//     * @param param1 Parameter 1.
+//     * @param param2 Parameter 2.
+//     * @return A new instance of fragment NavigationFragment.
+//     */
+//    // TODO: Rename and change types and number of parameters
+//    public static NavigationFragment newInstance(String param1, String param2) {
+//        NavigationFragment fragment = new NavigationFragment();
+//        Bundle args = new Bundle();
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mRouteObject = getArguments().getParcelable(ARG_ROUTE_KEY_ID);
         }
     }
 
@@ -95,10 +107,10 @@ public class NavigationFragment extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootview = inflater.inflate(R.layout.fragment_navigation, container, false);
+        mInstructionView = (TextView) rootview.findViewById(R.id.navigate_instruction);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.navigate_map);
         mapFragment.getMapAsync(this);
-
         return rootview;
     }
 
@@ -140,6 +152,7 @@ public class NavigationFragment extends Fragment implements
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        isMapReady = true;
         mMap = googleMap;
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
@@ -167,9 +180,43 @@ public class NavigationFragment extends Fragment implements
     }
 
     @Override
-    public void stepUpdate(String step) {
-
+    public void stepUpdate(StepParcelable step) {
+        mStepObject = step;
+        if ( isMapReady ) {
+            if ( mStepObject.polyline != null && !mStepObject.polyline.isEmpty())
+                drawPolyline(mStepObject.polyline);
+            // show instruction
+            if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty() )
+                mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
+            mInstructionView.setVisibility(View.VISIBLE);
+        }
     }
+    private void drawPolyline( String polyline) {
+        List<LatLng> points = PolyUtil.decode(polyline);
+        PolylineOptions options = new PolylineOptions()
+                .addAll(points)
+                .color(getResources().getColor(R.color.colorAccent));
+        options.zIndex(10);
+        if ( mPolyline == null) {
+            mPolyline = mMap.addPolyline(options);
+        } else {
+            mPolyline.setPoints(points);
+        }
+        // move camera within range
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for ( LatLng point: points) {
+            builder.include(point);
+        }
+        LatLngBounds bounds = builder.build();
+        int padding = 40; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        try {
+            mMap.animateCamera(cu);
+        } catch (IllegalStateException e){
+            // layout not initialized
+        }
+    }
+
     public static float convertDpToPixel(float dp, Context context){
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();

@@ -15,69 +15,64 @@
         android:layout_marginBottom="1dp"
         android:layout_marginTop="1dp"
         android:orientation="vertical">
-        <!--android:layout_marginLeft="16dp"-->
-        <!--android:layout_marginRight="16dp"-->
-        <!--departure time-->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingStart="16dp"
-            android:id = "@+id/detail_depart_time"
-            android:textColor="#f7fbff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="left"
-            android:background="@color/list_background"
-            android:layout_gravity="top"
-            android:text="9:30 pm"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/list_background"
             android:orientation="horizontal">
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/list_detail_title"
                 android:paddingLeft="16dp"
                 android:paddingStart="16dp"
-                >
-                <!--android:paddingTop="16dp"-->
-                <!--android:paddingBottom="5dp"-->
-                <ImageView
-                    android:id="@+id/list_item_transit_icon2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:tint="#ffffff"
-                    android:src="@drawable/ic_directions_bus"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id = "@+id/detail_transit_no2"
-                    android:textColor="#f7fbff"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:gravity="left"
-                    android:background="@color/list_background"
-                    android:layout_gravity="top"
-                    android:text="99"/>
-            </LinearLayout>
+                android:id = "@+id/detail_depart_time"
+                android:textColor="#f7fbff"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_gravity="left|start"
+                android:text="9:30 pm"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id = "@+id/detail_duration"
                 android:textColor="#f7fbff"
                 android:textSize="16sp"
-                android:gravity="right"
                 android:paddingRight="16dp"
                 android:paddingEnd="16dp"
-                android:background="@color/list_background"
-                android:layout_gravity="right"
+                android:gravity="right|end"
+                android:layout_gravity="right|end"
                 android:text="1 hr 20 min"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/list_background"
+            android:id="@+id/list_detail_title"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            >
+            <!--android:paddingTop="16dp"-->
+            <!--android:paddingBottom="5dp"-->
+            <ImageView
+                android:id="@+id/list_item_transit_icon2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:tint="#ffffff"
+                android:src="@drawable/ic_directions_bus"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id = "@+id/detail_transit_no2"
+                android:textColor="#f7fbff"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="left"
+                android:background="@color/list_background"
+                android:layout_gravity="top"
+                android:text="99"/>
         </LinearLayout>
     </LinearLayout>
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"

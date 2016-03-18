@@ -33,6 +33,7 @@ public final class RoutesDbHelper {
         @Table(LegColumns.class)  @IfNotExists public static final String LEGS = "legs";
         @Table(StepColumns.class)  @IfNotExists public static final String STEPS = "steps";
         @Table(MicroStepColumns.class)  @IfNotExists public static final String MICRO_STEPS = "microSteps";
+        @Table(NavigateColumns.class)  @IfNotExists public static final String NAVIGATES = "navigates";
     }
 
     @OnCreate
@@ -69,6 +70,16 @@ public final class RoutesDbHelper {
                         Tables.MICRO_STEPS + '.' + MicroStepColumns.STEP_ID + " ;" +
                         " END ";
         db.execSQL( trigger3 );
+        String trigger4 =
+                "CREATE TRIGGER delete_navigate_with BEFORE DELETE ON " +
+                        Tables.ROUTES +
+                        " FOR EACH ROW BEGIN" +
+                        " DELETE FROM " + Tables.NAVIGATES +
+                        " WHERE OLD." + RouteColumns.ID +
+                        " =  " +
+                        Tables.NAVIGATES + '.' + NavigateColumns.ROUTES_ID + " ;" +
+                        " END ";
+        db.execSQL( trigger4);
     }
 
     @OnUpgrade

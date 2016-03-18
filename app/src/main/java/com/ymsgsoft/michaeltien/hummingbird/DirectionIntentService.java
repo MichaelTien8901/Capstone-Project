@@ -29,7 +29,6 @@ public class DirectionIntentService extends IntentService {
 
     private static final String FROM_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.FROM_PARAM";
     private static final String TO_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.TO_PARAM";
-
     public DirectionIntentService() {
         super("DirectionIntentService");
     }
@@ -40,7 +39,6 @@ public class DirectionIntentService extends IntentService {
      *
      * @see IntentService
      */
-    // TODO: Customize helper method
     public static void startActionQueryDirection(Context context, String from, String to) {
         Intent intent = new Intent(context, DirectionIntentService.class);
         intent.setAction(ACTION_QUERY_DIRECTION);
@@ -48,7 +46,6 @@ public class DirectionIntentService extends IntentService {
         intent.putExtra(TO_PARAM, to);
         context.startService(intent);
     }
-
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {

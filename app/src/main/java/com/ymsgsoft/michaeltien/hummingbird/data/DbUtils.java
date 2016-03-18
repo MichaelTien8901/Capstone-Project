@@ -12,6 +12,7 @@ import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step_;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.LegsValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.MicroStepsValuesBuilder;
+import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.NavigatesValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.RoutesValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.StepsValuesBuilder;
 
@@ -85,6 +86,38 @@ public class DbUtils {
                 .travelMode(step.travel_mode)
                 .values();
     }
+    static ContentValues createNavigateValuesFromStep(Step step, long routeId){
+        return new NavigatesValuesBuilder()
+                .polyline(step.polyline.points)
+                .instruction(step.html_instructions)
+                .distance(step.distance.value)
+                .distanceText(step.distance.text)
+                .duration(step.duration.value)
+                .durationText(step.duration.text)
+                .startLat(step.start_location.lat.floatValue())
+                .startLng(step.start_location.lng.floatValue())
+                .endLat(step.end_location.lat.floatValue())
+                .endLng(step.end_location.lng.floatValue())
+                .travelMode(step.travel_mode)
+                .routesId(routeId)
+                .values();
+    }
+    static ContentValues createNavigateValuesFromMicroStep(Step_ step, long routeId){
+        return new NavigatesValuesBuilder()
+                .polyline(step.polyline.points)
+                .instruction(step.html_instructions)
+                .distance(step.distance.value)
+                .distanceText(step.distance.text)
+                .duration(step.duration.value)
+                .durationText(step.duration.text)
+                .startLat(step.start_location.lat.floatValue())
+                .startLng(step.start_location.lng.floatValue())
+                .endLat(step.end_location.lat.floatValue())
+                .endLng(step.end_location.lng.floatValue())
+                .travelMode(step.travel_mode)
+                .routesId(routeId)
+                .values();
+    }
     static void extractRouteSummary(Route routeObject, ContentValues values ) {
         //values.put(RouteColumns.);
         String depart_time = "";
@@ -123,7 +156,24 @@ public class DbUtils {
         for ( Leg leg: route.legs) {
             insertLeg( mContext, leg, routeRowId);
         }
+        insertNavigateValues(mContext, route, routeRowId);
     }
+    public static void insertNavigateValues(Context mContext, Route route, long routeRowId) {
+        for ( Leg leg: route.legs) {
+            for (Step step: leg.steps) {
+                if ( step.steps != null && step.steps.size() != 0) {
+                    for ( Step_ microStep: step.steps) {
+                        ContentValues values = createNavigateValuesFromMicroStep(microStep, routeRowId);
+                        mContext.getContentResolver().insert(RoutesProvider.Navigates.CONTENT_URI, values);
+                    }
+                } else {
+                    ContentValues values = createNavigateValuesFromStep(step, routeRowId);
+                    mContext.getContentResolver().insert(RoutesProvider.Navigates.CONTENT_URI, values);
+                }
+            }
+        }
+    }
+
     public static void insertLeg(Context mContext, Leg leg, long routeRowId) {
         ContentValues values = createLegValues(leg, routeRowId);
         Uri legUri = mContext.getContentResolver().insert(RoutesProvider.Legs.CONTENT_URI, values);
