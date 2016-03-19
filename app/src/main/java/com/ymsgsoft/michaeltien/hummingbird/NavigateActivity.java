@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -26,8 +27,12 @@ import com.google.android.gms.location.LocationServices;
 import com.ymsgsoft.michaeltien.hummingbird.data.NavigateColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
+
 import java.text.DateFormat;
 import java.util.Date;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class NavigateActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -70,6 +75,15 @@ public class NavigateActivity extends AppCompatActivity implements
     protected RouteParcelable mRouteObject;
     protected Fragment mFragment;
     protected Cursor mCursor;
+    @Bind(R.id.fab_navigation_forward)
+    FloatingActionButton mForwardButton;
+    @Bind(R.id.fab_navigation_backward)
+    FloatingActionButton mBackwardButton;
+    @Bind(R.id.fab_navigation_mode)
+    FloatingActionButton mModeButton;
+    @Bind(R.id.fab_streetview)
+    FloatingActionButton mStreetviewButton;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -82,22 +96,24 @@ public class NavigateActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigate);
+        ButterKnife.bind(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_navigation);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        findViewById(R.id.fab_navigation_mode).setOnClickListener(new View.OnClickListener() {
+        mModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((Callback) mFragment).fabMyLocationPressed();
             }
         });
-        findViewById(R.id.fab_navigation_forward).setOnClickListener(new View.OnClickListener() {
+        mForwardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navigationForward();
             }
         });
-        findViewById(R.id.fab_navigation_backward).setOnClickListener(new View.OnClickListener() {
+        mBackwardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navigationBackward();
@@ -358,9 +374,12 @@ public class NavigateActivity extends AppCompatActivity implements
             if (mCursor.moveToNext()) {
                 updateCursorStep(mCursor);
             }
+            mForwardButton.setEnabled(!mCursor.isLast());
+            mBackwardButton.setEnabled(!mCursor.isFirst());
         }
     }
     private void navigationBackward(){
+        boolean isBackEnabled = false;
         if ( mCursor != null) {
             if (mCursor.moveToPrevious()) {
                 StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
@@ -374,11 +393,16 @@ public class NavigateActivity extends AppCompatActivity implements
                     int offset = navStep.level;
                     if ( !mCursor.move(-offset)) return; // error
                     StepParcelable navStep0 = StepParcelable.readStepParcelable(mCursor);
+                    isBackEnabled = !(mCursor.isFirst() && navStep.level == 1);
                     mCursor.move(offset);
                     ((Callback) mFragment).stepUpdate(navStep0);
+                } else {
+                    isBackEnabled = !mCursor.isFirst();
                 }
                 ((Callback) mFragment).stepUpdate(navStep);
             }
+            mForwardButton.setEnabled(!mCursor.isLast());
+            mBackwardButton.setEnabled(isBackEnabled);
         }
     }
     /**

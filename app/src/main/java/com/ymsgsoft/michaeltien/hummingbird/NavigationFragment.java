@@ -195,7 +195,7 @@ public class NavigationFragment extends Fragment implements
         mStepObject = step;
         if ( isMapReady ) {
             if ( mStepObject.polyline != null && !mStepObject.polyline.isEmpty())
-                drawPolyline(mStepObject.polyline, mStepObject.level);
+                drawPolyline(mStepObject.polyline, mStepObject.level, mStepObject.level == 0);
             // show instruction
             if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty())
                 if ( mStepObject.level == 0) {
@@ -221,7 +221,7 @@ public class NavigationFragment extends Fragment implements
                 }
         }
     }
-    private void drawPolyline( String polyline, long level) {
+    private void drawPolyline( String polyline, long level, boolean isMoveCamera) {
         List<LatLng> points = PolyUtil.decode(polyline);
         if ( level == 0) {
             if ( mPolyline1 != null) {
@@ -249,17 +249,19 @@ public class NavigationFragment extends Fragment implements
             }
         }
         // move camera within range
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for ( LatLng point: points) {
-            builder.include(point);
-        }
-        LatLngBounds bounds = builder.build();
-        int padding = 40; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        try {
-            mMap.animateCamera(cu);
-        } catch (IllegalStateException e){
-            // layout not initialized
+        if ( isMoveCamera ) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (LatLng point : points) {
+                builder.include(point);
+            }
+            LatLngBounds bounds = builder.build();
+            int padding = 40; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            try {
+                mMap.animateCamera(cu);
+            } catch (IllegalStateException e) {
+                // layout not initialized
+            }
         }
     }
 

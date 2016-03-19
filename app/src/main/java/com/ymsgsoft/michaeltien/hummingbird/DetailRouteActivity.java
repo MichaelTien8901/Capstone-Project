@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
+
 public class DetailRouteActivity extends AppCompatActivity {
 //    protected long mRouteId;
 //    protected String mPolyLine;
@@ -16,8 +18,11 @@ public class DetailRouteActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if ( mRouteObject != null)
+        if ( mRouteObject != null) {
             outState.putParcelable(SAVE_ARG_KEY, mRouteObject);
+            PrefUtils.saveRouteParcelableToPref(this, getString(R.string.intent_route_key), mRouteObject);
+        }
+
     }
 
     @Override
@@ -54,11 +59,14 @@ public class DetailRouteActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-        if ( savedInstanceState == null) {
+        if ( savedInstanceState == null ) {
             mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
         } else {
             if (savedInstanceState.containsKey(SAVE_ARG_KEY))
                 mRouteObject = savedInstanceState.getParcelable(SAVE_ARG_KEY);
+        }
+        if ( mRouteObject == null) {
+            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(this, ARG_ROUTE_KEY_ID);
         }
 
         Bundle arguments = new Bundle();

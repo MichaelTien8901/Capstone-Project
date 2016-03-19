@@ -39,8 +39,9 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin4"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:tint="#ffffff"
+        android:tint="@color/fab_selector"
         android:src="@drawable/ic_arrow_forward" />
+    <!--android:tint="#ffffff"-->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_navigation_backward"
@@ -49,7 +50,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin3"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:tint="#ffffff"
+        android:tint="@color/fab_selector"
         android:src="@drawable/ic_arrow_back" />
 
     <android.support.design.widget.FloatingActionButton
