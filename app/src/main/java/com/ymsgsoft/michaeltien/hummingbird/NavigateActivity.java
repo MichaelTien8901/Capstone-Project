@@ -55,9 +55,11 @@ public class NavigateActivity extends AppCompatActivity implements
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     // Keys for storing activity state in the Bundle.
-    protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
+//    protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
     protected final static String LOCATION_KEY = "location-key";
     protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
+    protected final static String NAVIGATION_POS_KEY = "navigation_pos_key";
+
     /**
         * Provides the entry point to Google Play services.
         */
@@ -75,6 +77,7 @@ public class NavigateActivity extends AppCompatActivity implements
     protected RouteParcelable mRouteObject;
     protected Fragment mFragment;
     protected Cursor mCursor;
+    protected int mCursorPosition;
     @Bind(R.id.fab_navigation_forward)
     FloatingActionButton mForwardButton;
     @Bind(R.id.fab_navigation_backward)
@@ -90,6 +93,8 @@ public class NavigateActivity extends AppCompatActivity implements
         final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( mRouteObject != null)
             outState.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+        if ( mCursor != null)
+            outState.putInt(NAVIGATION_POS_KEY, mCursor.getPosition());
     }
 
     @Override
@@ -123,6 +128,7 @@ public class NavigateActivity extends AppCompatActivity implements
         final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( savedInstanceState == null) {
             mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
+            mCursorPosition = 0;
             Bundle arguments = new Bundle();
             arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
 
@@ -134,6 +140,7 @@ public class NavigateActivity extends AppCompatActivity implements
         } else {
             mFragment = getSupportFragmentManager().findFragmentByTag(NAVIGATION_TAG);
             mRouteObject = savedInstanceState.getParcelable(ARG_ROUTE_KEY_ID);
+
         }
         // Update values using data stored in the Bundle.
         updateValuesFromBundle(savedInstanceState);
@@ -160,7 +167,9 @@ public class NavigateActivity extends AppCompatActivity implements
 //                        REQUESTING_LOCATION_UPDATES_KEY);
 //                setButtonsEnabledState();
 //            }
-
+            if ( savedInstanceState.containsKey(NAVIGATION_POS_KEY)) {
+                mCursorPosition = savedInstanceState.getInt(NAVIGATION_POS_KEY, 0);
+            }
             // Update the value of mCurrentLocation from the Bundle and update the UI to show the
             // correct latitude and longitude.
             if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
@@ -257,7 +266,6 @@ public class NavigateActivity extends AppCompatActivity implements
         // attempt to re-establish the connection.
         Log.i(TAG, "Connection suspended");
         mGoogleApiClient.connect();
-
     }
 
     @Override
@@ -356,10 +364,17 @@ public class NavigateActivity extends AppCompatActivity implements
         mCursor = data;
         if ( mCursor == null) return;
         // start navigation geofencing
-        if ( mCursor.moveToFirst()) {
-            updateCursorStep(mCursor);        }
+        mCursor.moveToPosition(mCursorPosition);
+        adjustPosition(mCursor);
+        completeStepUpdate();
     }
-    void updateCursorStep(Cursor cursor) {
+    void adjustPosition(Cursor cursor) {
+        StepParcelable navStep = StepParcelable.readStepParcelable(cursor);
+        if ( navStep.level == 0 && navStep.count != 0) {
+            cursor.moveToNext();
+        }
+    }
+    void fastUpdateCursorStep(Cursor cursor) {
         StepParcelable navStep = StepParcelable.readStepParcelable(cursor);
         ((Callback) mFragment).stepUpdate(navStep);
         if ( navStep.level == 0 && navStep.count != 0){
@@ -367,62 +382,44 @@ public class NavigateActivity extends AppCompatActivity implements
             navStep = StepParcelable.readStepParcelable(cursor);
             ((Callback) mFragment).stepUpdate(navStep);
         }
+        mForwardButton.setEnabled(!mCursor.isLast());
+        mBackwardButton.setEnabled(!mCursor.isFirst());
     }
 
     private void navigationForward(){
-        if ( mCursor != null) {
-            if (mCursor.moveToNext()) {
-                updateCursorStep(mCursor);
-            }
-            mForwardButton.setEnabled(!mCursor.isLast());
-            mBackwardButton.setEnabled(!mCursor.isFirst());
+        if ( mCursor != null && mCursor.moveToNext()) {
+                fastUpdateCursorStep(mCursor);
         }
     }
     private void navigationBackward(){
-        boolean isBackEnabled = false;
-        if ( mCursor != null) {
-            if (mCursor.moveToPrevious()) {
-                StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
-                if ( navStep.level == 0 ) {
-                    if (navStep.count != 0 ) { // slip
-                        if (!mCursor.moveToPrevious()) return; //error
-                        navStep = StepParcelable.readStepParcelable(mCursor);
-                    }
+        if ( mCursor != null && mCursor.moveToPrevious()) {
+            StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
+            if ( navStep.level == 0 ) {
+                if (navStep.count != 0) { // slip
+                    mCursor.moveToPrevious();
                 }
-                if ( navStep.level != 0) {
-                    int offset = navStep.level;
-                    if ( !mCursor.move(-offset)) return; // error
-                    StepParcelable navStep0 = StepParcelable.readStepParcelable(mCursor);
-                    isBackEnabled = !(mCursor.isFirst() && navStep.level == 1);
-                    mCursor.move(offset);
-                    ((Callback) mFragment).stepUpdate(navStep0);
-                } else {
-                    isBackEnabled = !mCursor.isFirst();
-                }
-                ((Callback) mFragment).stepUpdate(navStep);
             }
-            mForwardButton.setEnabled(!mCursor.isLast());
-            mBackwardButton.setEnabled(isBackEnabled);
+            completeStepUpdate();
         }
     }
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-//    @Override
-//    public void onMapReady(GoogleMap googleMap) {
-//        mMap = googleMap;
-//
-//        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-//    }
+    void completeStepUpdate() {
+        boolean isBackEnabled;
+        StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
+        if ( navStep.level != 0) {
+            int offset = navStep.level;
+            if ( !mCursor.move(-offset)) return; // error
+            StepParcelable navStep0 = StepParcelable.readStepParcelable(mCursor);
+            isBackEnabled = !(mCursor.isFirst() && navStep.level == 1);
+            mCursor.move(offset);
+            ((Callback) mFragment).stepUpdate(navStep0);
+        } else {
+            isBackEnabled = !mCursor.isFirst();
+        }
+        ((Callback) mFragment).stepUpdate(navStep);
+        mForwardButton.setEnabled(!mCursor.isLast());
+        mBackwardButton.setEnabled(isBackEnabled);
+    }
+
     public interface Callback {
         void locationUpdate(Location location);
         void stepUpdate(StepParcelable step);

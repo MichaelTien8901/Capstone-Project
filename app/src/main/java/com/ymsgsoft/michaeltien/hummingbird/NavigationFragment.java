@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -69,9 +70,6 @@ public class NavigationFragment extends Fragment implements
     protected int mNavigationMode = 0;
     final static double DISTANCE_TOLERENCE = 2.0; // meters
     final static float ZOOM_LEVEL = 15;
-    //    // TODO: Rename and change types of parameters
-    //    private String mParam1;
-    //    private String mParam2;
     protected RouteParcelable mRouteObject;
     protected StepParcelable mStepObject;
     @Bind(R.id.navigate_instruction) TextView mInstructionView;
@@ -80,28 +78,10 @@ public class NavigationFragment extends Fragment implements
     @Bind(R.id.navigate_step_icon) ImageView mStepIconView;
 
     private OnFragmentInteractionListener mListener;
-
+    private List<StepParcelable> mPendingStepList;
     public NavigationFragment() {
         // Required empty public constructor
     }
-
-//    /**
-//     * Use this factory method to create a new instance of
-//     * this fragment using the provided parameters.
-//     *
-//     * @param param1 Parameter 1.
-//     * @param param2 Parameter 2.
-//     * @return A new instance of fragment NavigationFragment.
-//     */
-//    // TODO: Rename and change types and number of parameters
-//    public static NavigationFragment newInstance(String param1, String param2) {
-//        NavigationFragment fragment = new NavigationFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -182,12 +162,13 @@ public class NavigationFragment extends Fragment implements
                 }
             }
         });
-//        LatLng Vancouver = new LatLng( 49.264911, -123.241917 );
-//        mMarker = mMap.addMarker(new MarkerOptions().position(Vancouver).title("Marker in Vancouver"));
-//        CameraPosition target = CameraPosition.builder().target(Vancouver).zoom(14).build();
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(Vancouver));
-//        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
-
+        if ( mPendingStepList != null) {
+            for( StepParcelable step: mPendingStepList) {
+                stepUpdate(step);
+            }
+            mPendingStepList.clear();
+            mPendingStepList = null;
+        }
     }
 
     @Override
@@ -219,6 +200,10 @@ public class NavigationFragment extends Fragment implements
                     mDetailedInstructionView.setText(Html.fromHtml(mStepObject.instruction));
                     mDetailedInstructionView.setVisibility(View.VISIBLE);
                 }
+        } else {
+            if ( mPendingStepList == null)
+                mPendingStepList = new ArrayList<StepParcelable>();
+            mPendingStepList.add(step);
         }
     }
     private void drawPolyline( String polyline, long level, boolean isMoveCamera) {
@@ -336,17 +321,7 @@ public class NavigationFragment extends Fragment implements
         LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
         return (bounds.contains(myPosition.getPosition()));
     }
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
+     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
