@@ -28,6 +28,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -62,6 +64,8 @@ public class NavigationFragment extends Fragment implements
     protected GoogleMap mMap;
     private boolean isMapReady = false;
     protected Marker mMarker;
+    protected Marker mFlagMarker;
+    protected Circle mCircle;
     protected Polyline mPolyline0;
     protected Polyline mPolyline1;
     protected float  mCurrentCameraZoom = -1;
@@ -149,14 +153,14 @@ public class NavigationFragment extends Fragment implements
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 mCurrentCameraZoom = cameraPosition.zoom;
-                if ( mCurrentLocation != null) {
-                    float [] result = new float[3];
+                if (mCurrentLocation != null) {
+                    float[] result = new float[3];
                     Location.distanceBetween(
                             mCurrentLocation.getLatitude(),
                             mCurrentLocation.getLongitude(),
                             cameraPosition.target.latitude,
                             cameraPosition.target.longitude, result);
-                    if ( result[0] > DISTANCE_TOLERENCE) {
+                    if (result[0] > DISTANCE_TOLERENCE) {
                         mPositionSync = false;
                     }
                 }
@@ -170,13 +174,30 @@ public class NavigationFragment extends Fragment implements
             mPendingStepList = null;
         }
     }
-
+    private void drawDestination(LatLng center) {
+        if ( mCircle == null ) {
+            CircleOptions option = new CircleOptions().center(center).strokeWidth(2).radius(20).fillColor(0x5500ff00);
+            mCircle = mMap.addCircle(option);
+        } else
+            mCircle.setCenter(center);
+        if ( mFlagMarker == null) {
+            mFlagMarker = mMap.addMarker(new MarkerOptions().position(center));
+            mFlagMarker.setIcon(getBitmapDescriptor(getContext(), R.drawable.ic_flag));
+            mFlagMarker.setAnchor((float)0.25, (float)0.833);
+        } else {
+            mFlagMarker.setPosition(center);
+        }
+    }
     @Override
     public void stepUpdate(StepParcelable step) {
         mStepObject = step;
         if ( isMapReady ) {
+            // draw polyline
             if ( mStepObject.polyline != null && !mStepObject.polyline.isEmpty())
                 drawPolyline(mStepObject.polyline, mStepObject.level, mStepObject.level == 0);
+            // draw end location
+            if ( mStepObject.level != 0 || mStepObject.count == 0)
+                drawDestination(new LatLng(mStepObject.end_lat, mStepObject.end_lng));
             // show instruction
             if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty())
                 if ( mStepObject.level == 0) {
@@ -202,7 +223,8 @@ public class NavigationFragment extends Fragment implements
                 }
         } else {
             if ( mPendingStepList == null)
-                mPendingStepList = new ArrayList<StepParcelable>();
+                mPendingStepList = new ArrayList<>();
+//                mPendingStepList = new ArrayList<StepParcelable>();
             mPendingStepList.add(step);
         }
     }
@@ -287,6 +309,7 @@ public class NavigationFragment extends Fragment implements
             mMarker = mMap.addMarker(new MarkerOptions().position(position));
 //            mMarker.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
             mMarker.setIcon(getBitmapDescriptor(getContext(), R.drawable.ic_person_pin_black));
+            mMarker.setAnchor((float)0.5, (float) (23.0/24.0));
             zoom = ZOOM_LEVEL;
         } else {
             mMarker.setPosition(position);
