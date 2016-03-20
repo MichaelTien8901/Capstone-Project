@@ -238,7 +238,7 @@ public class DbUtils {
      * @param p location
      * @return position of step which is nearest to curror location
      */
-    public static int getNearestNavigationStep(Cursor cursor, LatLng p) {
+    public static int getNearestNavigationStepPosition(Cursor cursor, LatLng p) {
         int pos = -1;
         double min_distance = 1.0E10;
         double distance;
