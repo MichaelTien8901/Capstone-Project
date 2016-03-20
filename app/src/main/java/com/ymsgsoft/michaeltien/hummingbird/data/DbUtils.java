@@ -3,13 +3,17 @@ package com.ymsgsoft.michaeltien.hummingbird.data;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Leg;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step_;
+import com.ymsgsoft.michaeltien.hummingbird.StepParcelable;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.LegsValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.MicroStepsValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.NavigatesValuesBuilder;
@@ -200,5 +204,60 @@ public class DbUtils {
     static void insertMicroStep(Context mContext, Step_ micro_step, long stepRowId) {
         ContentValues values = createMicroStepValues(micro_step, stepRowId);
         mContext.getContentResolver().insert(RoutesProvider.MicroSteps.CONTENT_URI, values);
+    }
+
+    /**
+     *  find the minimum distance between polyline and a point
+     * @param polyline encoded polyine in string
+     * @param p location
+     * @return minimum distance between location and polyline
+     */
+    public static double distanceToPolyline(String polyline, LatLng p) {
+        List<LatLng> points = PolyUtil.decode(polyline);
+        double min_distance = 1.0E10;
+        double distance;
+        int index = 0;
+        LatLng p1=null, p2;
+        for(LatLng point: points) {
+            p2 = p1;
+            p1 = point;
+            if ( index > 1)  {
+                distance = PolyUtil.distanceToLine(p, p1, p2);
+                if ( distance < min_distance)
+                    min_distance = distance;
+            } else if ( index == 1) {
+                min_distance = PolyUtil.distanceToLine(p, p1, p2);
+            }
+            index++;
+        }
+        return min_distance;
+    }
+    /**
+     *  Find the cursor position of the nearest navation step related to location
+     * @param cursor curosr of Navigation Cursor from Content Provider
+     * @param p location
+     * @return position of step which is nearest to curror location
+     */
+    public static int getNearestNavigationStep(Cursor cursor, LatLng p) {
+        int pos = -1;
+        double min_distance = 1.0E10;
+        double distance;
+        cursor.moveToFirst();
+        do {
+            StepParcelable navStep = StepParcelable.readStepParcelable(cursor);
+            if ( navStep.level == 0 && navStep.count != 0) continue;
+            if ( pos == -1) {
+                min_distance = distanceToPolyline(navStep.polyline, p);
+                pos = cursor.getPosition();
+            } else {
+                distance = distanceToPolyline(navStep.polyline, p);
+                if (distance < min_distance) {
+                    min_distance = distance;
+                    pos = cursor.getPosition();
+                }
+            }
+        } while( cursor.moveToNext());
+        cursor.moveToPosition(pos);
+        return pos;
     }
 }
