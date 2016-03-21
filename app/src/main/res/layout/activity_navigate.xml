@@ -39,9 +39,9 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin4"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:tint="@color/fab_selector"
-        android:src="@drawable/ic_arrow_forward" />
-    <!--android:tint="#ffffff"-->
+        app:srcCompat="@drawable/navigate_forward_button" />
+        <!--app:srcCompat="@drawable/ic_arrow_forward" -->
+    <!--android:tint="@color/fab_selector"-->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_navigation_backward"
@@ -50,8 +50,8 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin3"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:tint="@color/fab_selector"
-        android:src="@drawable/ic_arrow_back" />
+        app:srcCompat="@drawable/navigate_backward_button" />
+    <!--android:tint="@color/fab_selector"-->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_navigation_mode"
@@ -61,7 +61,7 @@
         android:layout_marginBottom="@dimen/fab_margin2"
         android:layout_marginEnd="@dimen/fab_margin"
         android:tint="#ffffff"
-        android:src="@drawable/ic_my_location" />
+        app:srcCompat="@drawable/ic_my_location" />
 
 <android.support.design.widget.FloatingActionButton
     android:id="@+id/fab_streetview"
@@ -70,6 +70,6 @@
     android:layout_gravity="bottom|end"
     android:layout_margin="@dimen/fab_margin"
     android:tint="#ffffff"
-    android:src="@drawable/ic_streetview_black" />
+    app:srcCompat="@drawable/ic_streetview_black" />
 
 </android.support.design.widget.CoordinatorLayout>

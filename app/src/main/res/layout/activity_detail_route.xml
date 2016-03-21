@@ -52,7 +52,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin3"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:src="@drawable/ic_navigation"
+        app:srcCompat="@drawable/ic_navigation"
         android:tint="#ffffffff"
         android:alpha="0.55"
         />
@@ -63,7 +63,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin2"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:src="@drawable/ic_add"
+        app:srcCompat="@drawable/ic_add"
         android:tint="#ffffffff"
         android:alpha="0.55"
          />
@@ -73,8 +73,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_remove"
+        app:srcCompat="@drawable/ic_remove"
         android:tint="#ffffffff"
         android:alpha="0.55"
         />
+    <!--android:src="@drawable/ic_remove"-->
 </android.support.design.widget.CoordinatorLayout>

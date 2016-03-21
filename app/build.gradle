@@ -34,18 +34,16 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     apt 'net.simonvt.schematic:schematic:0.6.4'
-//    compile "com.squareup.retrofit:retrofit:$retrofitVersion"
-//    compile "com.squareup.retrofit:converter-gson:$retrofitVersion"
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     //    compile 'com.google.android.gms:play-services:8.4.0'
 //    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
-    compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
-    compile 'com.android.support:design:23.2.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'net.simonvt.schematic:schematic-compiler:0.6.4'
+    compile 'com.android.support:design:23.2.0'
+    compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.android.support:support-v4:23.2.0'
     compile 'com.android.support:recyclerview-v7:23.2.0'
     compile 'com.google.maps.android:android-maps-utils:0.4.3'
