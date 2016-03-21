@@ -238,7 +238,8 @@ public class NavigationFragment extends Fragment implements
             if ( mPolyline0 == null) {
                 PolylineOptions options = new PolylineOptions()
                         .addAll(points)
-                        .color(getResources().getColor(R.color.colorAccent));
+                        .width(15)
+                        .color(Color.BLUE);
                 options.zIndex(1);
                 mPolyline0 = mMap.addPolyline(options);
             } else {
@@ -248,8 +249,9 @@ public class NavigationFragment extends Fragment implements
             if ( mPolyline1 == null) {
                 PolylineOptions options = new PolylineOptions()
                         .addAll(points)
-                        .color(Color.BLUE);
-                options.zIndex(level+1);
+                        .width(15)
+                        .color(getResources().getColor(R.color.colorAccent));
+                options.zIndex(10);
                 mPolyline1 = mMap.addPolyline(options);
             } else {
                 mPolyline1.setPoints(points);
