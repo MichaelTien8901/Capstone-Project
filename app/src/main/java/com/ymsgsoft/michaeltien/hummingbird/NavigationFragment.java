@@ -176,7 +176,7 @@ public class NavigationFragment extends Fragment implements
     }
     private void drawDestination(LatLng center) {
         if ( mCircle == null ) {
-            CircleOptions option = new CircleOptions().center(center).strokeWidth(2).radius(20).fillColor(0x5500ff00);
+            CircleOptions option = new CircleOptions().center(center).strokeWidth(2).radius(20).fillColor(0x5500ff00).zIndex(5);
             mCircle = mMap.addCircle(option);
         } else
             mCircle.setCenter(center);
@@ -184,6 +184,7 @@ public class NavigationFragment extends Fragment implements
             mFlagMarker = mMap.addMarker(new MarkerOptions().position(center));
             mFlagMarker.setIcon(getBitmapDescriptor(getContext(), R.drawable.ic_flag));
             mFlagMarker.setAnchor((float)0.25, (float)0.833);
+
         } else {
             mFlagMarker.setPosition(center);
         }
@@ -194,7 +195,10 @@ public class NavigationFragment extends Fragment implements
         if ( isMapReady ) {
             // draw polyline
             if ( mStepObject.polyline != null && !mStepObject.polyline.isEmpty())
-                drawPolyline(mStepObject.polyline, mStepObject.level, mStepObject.level == 0);
+                drawPolyline(mStepObject.polyline,
+                        mStepObject.level,
+                        mStepObject.level == 0,
+                        mStepObject.level > 0 || (mStepObject.level == 0 && mStepObject.count == 0));
             // draw end location
             if ( mStepObject.level != 0 || mStepObject.count == 0)
                 drawDestination(new LatLng(mStepObject.end_lat, mStepObject.end_lng));
@@ -228,8 +232,10 @@ public class NavigationFragment extends Fragment implements
             mPendingStepList.add(step);
         }
     }
-    private void drawPolyline( String polyline, long level, boolean isMoveCamera) {
+    private void drawPolyline( String polyline, long level, boolean isMoveCamera, boolean isHightLightColor) {
         List<LatLng> points = PolyUtil.decode(polyline);
+
+        int poly_color = isHightLightColor? getResources().getColor(R.color.colorAccent): Color.BLUE;
         if ( level == 0) {
             if ( mPolyline1 != null) {
                 mPolyline1.remove();
@@ -239,18 +245,19 @@ public class NavigationFragment extends Fragment implements
                 PolylineOptions options = new PolylineOptions()
                         .addAll(points)
                         .width(15)
-                        .color(Color.BLUE);
+                        .color(poly_color);
                 options.zIndex(1);
                 mPolyline0 = mMap.addPolyline(options);
             } else {
                 mPolyline0.setPoints(points);
+                mPolyline0.setColor(poly_color);
             }
         } else {
             if ( mPolyline1 == null) {
                 PolylineOptions options = new PolylineOptions()
                         .addAll(points)
                         .width(15)
-                        .color(getResources().getColor(R.color.colorAccent));
+                        .color(poly_color);
                 options.zIndex(10);
                 mPolyline1 = mMap.addPolyline(options);
             } else {
