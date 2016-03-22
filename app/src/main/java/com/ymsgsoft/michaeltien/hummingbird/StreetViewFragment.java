@@ -15,6 +15,7 @@ import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
+import com.google.android.gms.maps.model.StreetViewPanoramaLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class StreetViewFragment extends Fragment
     private List<StepParcelable> mPendingStepList;
     protected RouteParcelable mRouteObject;
     protected StepParcelable mStepObject;
+    StreetViewPanoramaCamera mCamera;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,7 +111,6 @@ public class StreetViewFragment extends Fragment
                 }
             if ( mStepObject.level != 0 || (mStepObject.level == 0 && mStepObject.count != 0)) {
                 // set position of streetview
-                mStreetView.setPosition(new LatLng(mStepObject.start_lat, mStepObject.start_lng),50);
                 // camera to the bearing of direction
                 Location start_location = new Location("");
                 start_location.setLatitude(mStepObject.start_lat);
@@ -119,10 +120,11 @@ public class StreetViewFragment extends Fragment
                 end_location.setLongitude(mStepObject.end_lng);
 
                 // change camera bearing
-                StreetViewPanoramaCamera camera = new StreetViewPanoramaCamera.Builder()
+                mCamera = new StreetViewPanoramaCamera.Builder()
                         .bearing(start_location.bearingTo(end_location))
                         .build();
-                mStreetView.animateTo(camera, 500);
+                mStreetView.setPosition(new LatLng(mStepObject.start_lat, mStepObject.start_lng),50);
+//                mStreetView.animateTo(camera, 1000); // less than 500 might get wrong bearing
             }
         } else {
             if ( mPendingStepList == null)
@@ -141,10 +143,13 @@ public class StreetViewFragment extends Fragment
     public void onStreetViewPanoramaReady(StreetViewPanorama streetViewPanorama) {
         mStreetView = streetViewPanorama;
         isMapReady = true;
-        mStreetView.setOnStreetViewPanoramaCameraChangeListener(new StreetViewPanorama.OnStreetViewPanoramaCameraChangeListener() {
+        mStreetView.setOnStreetViewPanoramaChangeListener(new StreetViewPanorama.OnStreetViewPanoramaChangeListener() {
             @Override
-            public void onStreetViewPanoramaCameraChange(StreetViewPanoramaCamera streetViewPanoramaCamera) {
-
+            public void onStreetViewPanoramaChange(StreetViewPanoramaLocation streetViewPanoramaLocation) {
+                if (streetViewPanoramaLocation != null && mCamera != null) {
+                    mStreetView.animateTo(mCamera, 1000);
+                    mCamera = null;
+                }
             }
         });
         if ( mPendingStepList != null) {
