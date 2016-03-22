@@ -7,7 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -106,6 +106,7 @@ public class NavigateActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_navigation);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         mModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,8 +125,22 @@ public class NavigateActivity extends AppCompatActivity implements
                 navigationBackward();
             }
         });
+        mStreetviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
+                mCursorPosition = 0;
+                Bundle arguments = new Bundle();
+                arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
 
-        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
+                // replace fragment
+                mFragment = new StreetViewFragment();
+                mFragment.setArguments(arguments);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_navigation_container, mFragment, NAVIGATION_TAG)
+                        .commit();
+            }
+        });
         if ( savedInstanceState == null) {
             mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
             mCursorPosition = 0;
@@ -134,11 +149,11 @@ public class NavigateActivity extends AppCompatActivity implements
 
             mFragment = new NavigationFragment();
             mFragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.fragment_navigation_container, mFragment, NAVIGATION_TAG)
                     .commit();
         } else {
-            mFragment = getSupportFragmentManager().findFragmentByTag(NAVIGATION_TAG);
+            mFragment = getFragmentManager().findFragmentByTag(NAVIGATION_TAG);
             mRouteObject = savedInstanceState.getParcelable(ARG_ROUTE_KEY_ID);
 
         }

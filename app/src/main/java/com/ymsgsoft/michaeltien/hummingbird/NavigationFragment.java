@@ -1,5 +1,6 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -10,7 +11,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.util.DisplayMetrics;
@@ -23,8 +23,8 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -103,7 +103,7 @@ public class NavigationFragment extends Fragment implements
         View rootView = inflater.inflate(R.layout.fragment_navigation, container, false);
         ButterKnife.bind(this, rootView);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+        MapFragment mapFragment = (MapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.navigate_map);
         mapFragment.getMapAsync(this);
         return rootView;
@@ -182,7 +182,7 @@ public class NavigationFragment extends Fragment implements
             mCircle.setCenter(center);
         if ( mFlagMarker == null) {
             mFlagMarker = mMap.addMarker(new MarkerOptions().position(center));
-            mFlagMarker.setIcon(getBitmapDescriptor(getContext(), R.drawable.ic_flag));
+            mFlagMarker.setIcon(getBitmapDescriptor(getActivity(), R.drawable.ic_flag));
             mFlagMarker.setAnchor((float)0.25, (float)0.833);
 
         } else {
@@ -209,11 +209,11 @@ public class NavigationFragment extends Fragment implements
                     mInstructionView.setVisibility(View.VISIBLE);
                     mDetailedInstructionView.setVisibility(View.INVISIBLE);
                     if ( mStepObject.travel_mode.equals("WALKING")) {
-                        mStepIconView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_directions_walk));
+                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_walk));
                         mStepTransitNo.setText("");
                         mStepTransitNo.setVisibility(View.INVISIBLE);
                     } else {
-                        mStepIconView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_directions_bus));
+                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_bus));
                         if ( mStepObject.transit_no != null && !mStepObject.transit_no.isEmpty()) {
                             mStepTransitNo.setText(mStepObject.transit_no);
                             mStepTransitNo.setVisibility(View.VISIBLE);
@@ -317,7 +317,7 @@ public class NavigationFragment extends Fragment implements
         if ( mMarker == null) {
             mMarker = mMap.addMarker(new MarkerOptions().position(position));
 //            mMarker.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-            mMarker.setIcon(getBitmapDescriptor(getContext(), R.drawable.ic_person_pin_black));
+            mMarker.setIcon(getBitmapDescriptor(getActivity(), R.drawable.ic_person_pin_black));
             mMarker.setAnchor((float)0.5, (float) (23.0/24.0));
             zoom = ZOOM_LEVEL;
         } else {
