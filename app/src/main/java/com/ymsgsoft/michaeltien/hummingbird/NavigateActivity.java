@@ -134,11 +134,17 @@ public class NavigateActivity extends AppCompatActivity implements
                 arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
 
                 // replace fragment
-                mFragment = new StreetViewFragment();
-                mFragment.setArguments(arguments);
+                Fragment newFragment;
+                if ( mFragment instanceof NavigationFragment)
+                    newFragment = new StreetViewFragment();
+                else
+                    newFragment = new NavigationFragment();
+                newFragment.setArguments(arguments);
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_navigation_container, mFragment, NAVIGATION_TAG)
+                        .replace(R.id.fragment_navigation_container, newFragment, NAVIGATION_TAG)
                         .commit();
+                mFragment = newFragment;
+                completeStepUpdate();
             }
         });
         if ( savedInstanceState == null) {
