@@ -34,8 +34,7 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"
-            >
+            android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -76,7 +75,8 @@
             android:label="@string/title_activity_detail_route"
             android:parentActivityName=".PlanningActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <!--android:launchMode="singleTop"-->
+
+            <!-- android:launchMode="singleTop" -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ymsgsoft.michaeltien.hummingbird.PlanningActivity" />
@@ -91,13 +91,27 @@
 
         <activity
             android:name=".NavigateActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/title_activity_navigate">
-            <!--android:parentActivityName=".DetailRouteActivity"-->
+            android:label="@string/title_activity_navigate"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!-- android:parentActivityName=".DetailRouteActivity" -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ymsgsoft.michaeltien.hummingbird.DetailRouteActivity" />
         </activity>
+
+        <service
+            android:name=".geofencing.GeofenceTransitionsIntentService"
+            android:exported="true" />
+
+        <receiver
+            android:name=".GeofenceReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+            <action android:name="com.ymsgsoft.michaeltien.hummingbird.NAVIGATION_GEOFENCING" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
