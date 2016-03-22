@@ -135,9 +135,13 @@ public class StreetViewFragment extends Fragment
 
     @Override
     public void locationUpdate(Location location) {
-        mCamera = new StreetViewPanoramaCamera.Builder()
-                .bearing(mStreetView.getPanoramaCamera().bearing)
-                .build();
+        if ( !isMapReady ) return;
+        StreetViewPanoramaCamera.Builder builder = new StreetViewPanoramaCamera.Builder();
+        if ( location.hasBearing()) {
+            builder.bearing(location.getBearing());
+        } else
+            builder.bearing(mStreetView.getPanoramaCamera().bearing);
+        mCamera = builder.build();
         mStreetView.setPosition(new LatLng(location.getLatitude(), location.getLongitude()), 50);
     }
 

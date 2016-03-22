@@ -307,6 +307,7 @@ public class NavigationFragment extends Fragment implements
     public void locationUpdate(Location location) {
         // check current marker
         mCurrentLocation = location;
+        if ( !isMapReady) return;
         updateUI();
 
     }
