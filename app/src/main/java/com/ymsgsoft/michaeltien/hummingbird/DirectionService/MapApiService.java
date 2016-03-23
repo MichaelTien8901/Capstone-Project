@@ -27,10 +27,12 @@ public final class  MapApiService {
     public interface DirectionApi {
 //        @GET("/maps/api/directions/json?")
         @GET("/maps/api/directions/json?mode=transit&alternatives=true")
+//        @GET("/maps/api/directions/json?mode=transit&alternatives=true&language=zh-TW") // test different language
         Call<TransitRoutes> getDirections(
             @Query("origin") String origin,
             @Query("destination") String destination,
-            @Query("key") String key
+            @Query("key") String key,
+            @Query("language") String language
                 );
     }
 }
