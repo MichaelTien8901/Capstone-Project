@@ -135,10 +135,14 @@ public class NavigateActivity extends AppCompatActivity implements
 
                 // replace fragment
                 Fragment newFragment;
-                if ( mFragment instanceof NavigationFragment)
+                if ( mFragment instanceof NavigationFragment) {
                     newFragment = new StreetViewFragment();
-                else
+                    mStreetviewButton.setImageResource(R.drawable.ic_map_black);
+                }
+                else {
                     newFragment = new NavigationFragment();
+                    mStreetviewButton.setImageResource(R.drawable.ic_streetview_black);
+                }
                 newFragment.setArguments(arguments);
                 getFragmentManager().beginTransaction()
                         .replace(R.id.fragment_navigation_container, newFragment, NAVIGATION_TAG)
