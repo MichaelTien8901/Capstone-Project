@@ -101,10 +101,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ymsgsoft.michaeltien.hummingbird.DetailRouteActivity" />
         </activity>
-        <activity
-            android:name=".TestActivity"
-            android:label="@string/title_activity_test"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
