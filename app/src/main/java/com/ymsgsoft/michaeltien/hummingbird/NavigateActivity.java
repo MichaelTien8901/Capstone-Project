@@ -165,7 +165,9 @@ public class NavigateActivity extends AppCompatActivity implements
         } else {
             mFragment = getFragmentManager().findFragmentByTag(NAVIGATION_TAG);
             mRouteObject = savedInstanceState.getParcelable(ARG_ROUTE_KEY_ID);
-
+            if ( mFragment instanceof StreetViewFragment) {
+                mStreetviewButton.setImageResource(R.drawable.ic_map_black);
+            }
         }
         // Update values using data stored in the Bundle.
         updateValuesFromBundle(savedInstanceState);
