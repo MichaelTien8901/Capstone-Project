@@ -5,10 +5,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.view.View;
-import android.widget.Button;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,13 +28,15 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        ConnectionCallbacks, OnConnectionFailedListener {
+public class MapsActivity extends AppCompatActivity
+        implements OnMapReadyCallback,
+            ConnectionCallbacks,
+        OnConnectionFailedListener,
+        NavigationView.OnNavigationItemSelectedListener {
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
     private final int MY_SEARCH_ACTIVITY_REQUEST_ID = 1;
 
     private GoogleMap mMap;
-    private Button mSearchButton;
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
     protected int REQUEST_LOCATION = 101;
@@ -47,6 +54,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -58,44 +76,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
-        mSearchButton = (Button) findViewById(R.id.search_button);
-        mSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-//                Intent intent = new Intent(MapsActivity.this, PlaceActivity.class);
-//                String searchText = mSearchButton.getText().toString();
-//                if ( !searchText.equals("Search")) {
-//                    intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
-//                }
-//                startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
-                Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
-                PlaceObject mFromObject = new PlaceObject();
-                mFromObject.title = "Here You Are";
-                //mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
-                mFromObject.placeId = String.format("%f,%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
-                intent.putExtra(getString(R.string.intent_plan_key_from), mFromObject);
-                startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
-            }
-        });
-        if ( savedInstanceState != null) {
+        if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch( requestCode ){
-            case MY_SEARCH_ACTIVITY_REQUEST_ID:
-                if ( resultCode == RESULT_OK) {
-                    String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
-                    //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
-                    CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
-                    mSearchButton.setText(place_name);
-                }
-                break;
-        }
+    private void performSearch() {
+        Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
+        PlaceObject mFromObject = new PlaceObject();
+        mFromObject.title = "Here";
+        //mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
+        mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        intent.putExtra(getString(R.string.intent_plan_key_from), mFromObject);
+        startActivity(intent);
+//        startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
     }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        switch (requestCode) {
+//            case MY_SEARCH_ACTIVITY_REQUEST_ID:
+//                if (resultCode == RESULT_OK) {
+//                    String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
+//                    //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
+//                    CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
+////                    mSearchButton.setText(place_name);
+//                }
+//                break;
+//        }
+//    }
 
     @Override
     protected void onStart() {
@@ -140,7 +147,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        CameraPosition target = CameraPosition.builder().target(Vancouver).zoom(14).build();
 ////        mMap.moveCamera(CameraUpdateFactory.newLatLng(Vancouver));
 //        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
-        if ( locationReady) {
+        if (locationReady) {
             showCurrentPosition();
         } else {
             mapReady = true;
@@ -159,7 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
                 locationReady = true;
-                if ( mapReady) {
+                if (mapReady) {
                     showCurrentPosition();
                     mapReady = false;
                 }
@@ -169,14 +176,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-    protected void showCurrentPosition()
-    {
-        LatLng Here = new LatLng( mLastLocation.getLatitude(), mLastLocation.getLongitude() );
+
+    protected void showCurrentPosition() {
+        LatLng Here = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.addMarker(new MarkerOptions().position(Here).title("You Are Here"));
         CameraPosition target = CameraPosition.builder().target(Here).zoom(14).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
 
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
@@ -184,14 +192,71 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        if ( mLastLocation != null) {
+        if (mLastLocation != null) {
             outState.putParcelable(LAST_LOCATION_KEY, mLastLocation);
         }
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if ( savedInstanceState != null )
+        if (savedInstanceState != null)
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
     }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.test, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if ( id == R.id.action_search) {
+            performSearch();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
 }

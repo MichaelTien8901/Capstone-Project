@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">HummingBird</string>
-    <string name="title_activity_maps">HummingBird</string>
+    <string name="title_activity_maps">Humming Bird Navigation</string>
     <string name="title_activity_place">PlaceActivity</string>
     <string name="action_settings">Settings</string>
 
@@ -22,5 +22,10 @@
     <string name="init_depart_time">Depart Now</string>
     <string name="title_activity_detail_route">Details</string>
     <string name="title_activity_navigate">Navigation</string>
+    <string name="title_activity_test">TestActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="product_name_title">Humming Bird Navigation</string>
 
 </resources>
