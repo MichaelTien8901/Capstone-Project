@@ -10,4 +10,5 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
      >
     <!--tools:layout="@layout/fragment_planning"-->
+    <include layout="@layout/fragment_planning" />
  </android.support.design.internal.ScrimInsetsFrameLayout>
