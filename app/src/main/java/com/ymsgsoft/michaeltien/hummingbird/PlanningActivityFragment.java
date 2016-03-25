@@ -26,7 +26,8 @@ import butterknife.ButterKnife;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PlanningActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class PlanningActivityFragment extends Fragment implements
+        LoaderManager.LoaderCallbacks<Cursor> {
     final String LOG_TAG = PlanningActivityFragment.class.getSimpleName();
     public static final int DIRECTION_LOADER = 0;
     final String PLAN_FROM_ID = "PLAN_FROM_ID";
@@ -40,7 +41,6 @@ public class PlanningActivityFragment extends Fragment implements LoaderManager.
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
     protected RouteAdapter mRouteAdapter;
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if ( mFromObject != null) {
@@ -144,7 +144,6 @@ public class PlanningActivityFragment extends Fragment implements LoaderManager.
         });
         return rootView;
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch( requestCode ){
@@ -191,5 +190,4 @@ public class PlanningActivityFragment extends Fragment implements LoaderManager.
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mRouteAdapter.swapCursor(cursor);
     }
-
 }
