@@ -84,6 +84,7 @@ public class MapsActivity extends AppCompatActivity
         Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
         PlaceObject mFromObject = new PlaceObject();
         mFromObject.title = "Here";
+        if ( mLastLocation == null) return;
         //mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
         mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
         intent.putExtra(getString(R.string.intent_plan_key_from), mFromObject);

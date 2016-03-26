@@ -5,14 +5,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.app.LoaderManager;
-
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.Spanned;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -58,12 +55,14 @@ public class PlanningActivity extends AppCompatActivity implements
         super.onSaveInstanceState(outState);
     }
     private void updateSearchText(){
-        String htmltext = "<html> <font size=\"24\" color=\"red\">" + getString(R.string.plan_from_title) + "</font>" + " " + mFromObject.title + "</html>";
-        Spanned sp = Html.fromHtml(htmltext);
-        mFromTextView.setText(sp);
-        htmltext = "<html> <font size=\"24\" color=\"red\">" + getString(R.string.plan_to_title) + "</font>" + " " + mToObject.title + "</html>";
-        sp = Html.fromHtml(htmltext);
-        mToTextView.setText(sp);
+        mFromTextView.setText(mFromObject.title);
+        mToTextView.setText(mToObject.title);
+//        String htmltext = "<html> <font size=\"24\" color=\"red\">" + getString(R.string.plan_from_title) + "</font>" + " " + mFromObject.title + "</html>";
+//        Spanned sp = Html.fromHtml(htmltext);
+//        mFromTextView.setText(sp);
+//        htmltext = "<html> <font size=\"24\" color=\"red\">" + getString(R.string.plan_to_title) + "</font>" + " " + mToObject.title + "</html>";
+//        sp = Html.fromHtml(htmltext);
+//        mToTextView.setText(sp);
     }
     private void tryQueryRoutes() {
         if ( mFromObject.placeId.isEmpty() || mToObject.placeId.isEmpty()) return;
@@ -134,7 +133,8 @@ public class PlanningActivity extends AppCompatActivity implements
         }
 
         updateSearchText();
-        mFromTextView.setOnClickListener(new View.OnClickListener() {
+//        mFromTextView.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.from_container).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(PlanningActivity.this, PlaceActivity.class);
@@ -145,7 +145,8 @@ public class PlanningActivity extends AppCompatActivity implements
                 startActivityForResult(intent, SEARCH_FROM_REQUEST_ID);
             }
         });
-        mToTextView.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.to_container).setOnClickListener(new View.OnClickListener() {
+//        mToTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(PlanningActivity.this, PlaceActivity.class);

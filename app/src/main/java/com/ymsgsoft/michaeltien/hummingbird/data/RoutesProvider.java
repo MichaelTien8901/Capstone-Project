@@ -33,6 +33,7 @@ public final class RoutesProvider {
         String STEPS = "steps";
         String MICRO_STEPS = "micro_steps";
         String NAVIGATES = "navigates";
+        String HISTORY = "history";
     }
 
     private static Uri buildUri(String... paths) {
@@ -211,6 +212,26 @@ public final class RoutesProvider {
                 pathSegment = 1)
         public static Uri fromRoute(long routeId) {
             return buildUri(Path.ROUTES, String.valueOf(routeId), Path.NAVIGATES );
+        }
+    }
+    @TableEndpoint(table = Tables.HISTORY) public static class History {
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" +  AUTHORITY + "/" + Path.HISTORY;
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + AUTHORITY + "/" + Path.HISTORY;
+        @ContentUri(
+                path = Path.HISTORY,
+                type = CONTENT_TYPE,
+                defaultSort = NavigateColumns.ID + " DESC"
+        )
+        public static final Uri CONTENT_URI = buildUri(Path.HISTORY);
+
+        @InexactContentUri(
+                name = "HISTORY_ID",
+                path = Path.HISTORY + "/#",
+                type = CONTENT_ITEM_TYPE,
+                whereColumn = HistoryColumns.ID,
+                pathSegment = 1)
+        public static Uri withId(long historyId) {
+            return buildUri(Path.HISTORY, String.valueOf(historyId));
         }
     }
 }

@@ -34,6 +34,7 @@ public final class RoutesDbHelper {
         @Table(StepColumns.class)  @IfNotExists public static final String STEPS = "steps";
         @Table(MicroStepColumns.class)  @IfNotExists public static final String MICRO_STEPS = "microSteps";
         @Table(NavigateColumns.class)  @IfNotExists public static final String NAVIGATES = "navigates";
+        @Table(HistoryColumns.class)  @IfNotExists public static final String HISTORY = "history";
     }
 
     @OnCreate

@@ -1,14 +1,97 @@
-<android.support.design.internal.ScrimInsetsFrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_planning_id"
-    android:name="com.ymsgsoft.michaeltien.hummingbird.PlanningActivityFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="32dp"
+    android:id="@+id/fragment_planning_id"
+    >
+    <!--android:paddingTop="@dimen/activity_vertical_margin"-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:id="@+id/from_container"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/plan_from_title"
+            android:id="@+id/title_from"
+            android:textColor="@color/colorGrey"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:paddingRight="16dp"
+            android:paddingEnd="16dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fromTextView"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/text_reverse"
+            android:text="Here"
+            android:textSize="20sp"
+            android:layout_toRightOf="@id/title_from"
+            />
+        <!--android:layout_centerHorizontal="true"-->
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/to_container"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/plan_to_title"
+            android:id="@+id/title_to"
+            android:textColor="@color/colorGrey"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:paddingRight="16dp"
+            android:paddingEnd="16dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/toTextView"
+            android:layout_weight = "0"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/text_reverse"
+            android:text="UBC"
+            android:layout_toRightOf="@id/title_to"
+            android:textSize="20sp" />
+    </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/departTextView"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="32dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/text_reverse"
+        android:textSize="20sp"
+        android:text="@string/init_depart_time"
+        android:textAlignment="center" />
 
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-     >
-    <!--tools:layout="@layout/fragment_planning"-->
-    <include layout="@layout/fragment_planning" />
- </android.support.design.internal.ScrimInsetsFrameLayout>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/routeListView"
+        android:layout_marginTop="24dp"
+
+        android:layout_centerHorizontal="true" />
+
+</LinearLayout>
