@@ -3,15 +3,16 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +42,8 @@ public class PlanningActivity extends AppCompatActivity implements
     @Bind(R.id.toTextView) TextView mToTextView;
     @Bind(R.id.departTextView) TextView mDepartView;
     @Bind(R.id.routeListView) ListView mRouteListView;
+    @Bind(R.id.action_up)
+    ImageButton mUpButton;
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
     protected RouteAdapter mRouteAdapter;
@@ -94,9 +97,9 @@ public class PlanningActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_planning);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRouteAdapter = new RouteAdapter( this, null, 0 );
         mRouteListView.setAdapter(mRouteAdapter);
         getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
@@ -164,7 +167,16 @@ public class PlanningActivity extends AppCompatActivity implements
                 tryQueryRoutes();
             }
         });
-
+        mUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    supportFinishAfterTransition();
+                } else {
+                    onSupportNavigateUp();
+                }
+            }
+        });
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.test_fab);
         if ( fab != null)
             fab.setOnClickListener(new View.OnClickListener() {
