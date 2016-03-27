@@ -8,6 +8,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
         android:background="@color/list_background"
         >
         <TextView
@@ -37,6 +39,8 @@
         android:orientation="horizontal"
         android:background="@color/list_background"
         android:id = "@+id/list_item_routes_container"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
         >
         <ImageView
             android:id="@+id/list_item_route_icon"
