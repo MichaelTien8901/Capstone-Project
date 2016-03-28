@@ -23,8 +23,7 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:gravity="left"
-        android:background="@color/list_background"
         android:layout_gravity="top"
         android:text="99"/>
-
+    <!--android:background="@color/list_background"-->
 </LinearLayout>

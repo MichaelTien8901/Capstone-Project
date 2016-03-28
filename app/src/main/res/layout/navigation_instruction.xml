@@ -14,8 +14,8 @@
             android:id="@+id/navigate_step_icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="16dp"
-            android:paddingStart="16dp"
+            android:paddingLeft="40dp"
+            android:paddingStart="40dp"
             android:layout_gravity="left|top"
             android:gravity="top"
             />
@@ -34,6 +34,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
             android:id="@+id/navigate_instruction"
             android:textSize="20sp"
             android:textColor="#ffffff"

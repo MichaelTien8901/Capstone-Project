@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".PlanningActivity"
+    android:fitsSystemWindows="true"
+    >
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/plan_action_bar_size"
+        android:id="@+id/app_bar_layout"
         android:theme="@style/AppTheme.AppBarOverlay">
 
     <FrameLayout
         android:id="@+id/up_container"
         android:background="@android:color/transparent"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/plan_action_bar_size"
+        android:layout_height="wrap_content"
         >
+        <!--android:layout_height="@dimen/plan_action_bar_size"-->
         <!--<android.support.v7.widget.Toolbar-->
             <!--android:id="@+id/toolbar"-->
             <!--android:layout_width="match_parent"-->
@@ -67,6 +71,7 @@
                 android:textColor="@color/text_reverse"
                 android:text="Here"
                 android:textSize="20sp"
+                android:maxLines="1"
                 android:layout_toRightOf="@id/title_from"
                 />
             <!--android:layout_centerHorizontal="true"-->
@@ -98,7 +103,8 @@
                 android:layout_weight = "0"
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@color/text_reverse"
-                android:text="UBC"
+                android:text="UBC. This is a very long line address for UBC to display"
+                android:maxLines="1"
                 android:layout_toRightOf="@id/title_to"
                 android:textSize="20sp" />
         </RelativeLayout>

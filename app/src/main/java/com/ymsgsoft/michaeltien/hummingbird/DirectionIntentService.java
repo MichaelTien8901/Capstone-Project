@@ -7,9 +7,9 @@ import android.content.Intent;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.MapApiService;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
 import com.ymsgsoft.michaeltien.hummingbird.data.DbUtils;
+import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -52,6 +52,8 @@ public class DirectionIntentService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_QUERY_DIRECTION.equals(action)) {
+                // delete all route
+                getContentResolver().delete(RoutesProvider.Routes.CONTENT_URI, null, null);
                 final String param1 = intent.getStringExtra(FROM_PARAM);
                 final String param2 = intent.getStringExtra(TO_PARAM);
                 try {
@@ -76,15 +78,17 @@ public class DirectionIntentService extends IntentService {
         String key = getString(R.string.google_maps_server_key);
         String origin = from;
         String destination = to;
-        String lang = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            lang = Locale.getDefault().toLanguageTag();
-        } else {
-            lang = Locale.getDefault().getLanguage();
-            if ( !Locale.getDefault().getCountry().equals(""))
-                lang = lang + "-" + Locale.getDefault().getCountry();
-        }
-        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key, lang);
+
+//        String lang = null;
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//            lang = Locale.getDefault().toLanguageTag();
+//        } else {
+//            lang = Locale.getDefault().getLanguage();
+//            if ( !Locale.getDefault().getCountry().equals(""))
+//                lang = lang + "-" + Locale.getDefault().getCountry();
+//        }
+//        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key, lang);
+        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key);
         MapApiService.TransitRoutes transitRoutes = call.execute().body();
         // load into contextProvider
         if ( "OK".equals(transitRoutes.status)) {

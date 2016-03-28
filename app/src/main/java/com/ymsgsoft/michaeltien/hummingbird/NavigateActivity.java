@@ -1,20 +1,20 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.Manifest;
+import android.app.Fragment;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -33,6 +33,7 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class NavigateActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -103,54 +104,55 @@ public class NavigateActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_navigate);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_navigation);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_navigation);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-        mModeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((Callback) mFragment).fabMyLocationPressed();
-            }
-        });
-        mForwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigationForward();
-            }
-        });
-        mBackwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigationBackward();
-            }
-        });
-        mStreetviewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
-                mCursorPosition = 0;
-                Bundle arguments = new Bundle();
-                arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
-
-                // replace fragment
-                Fragment newFragment;
-                if ( mFragment instanceof NavigationFragment) {
-                    newFragment = new StreetViewFragment();
-                    mStreetviewButton.setImageResource(R.drawable.ic_map_black);
-                }
-                else {
-                    newFragment = new NavigationFragment();
-                    mStreetviewButton.setImageResource(R.drawable.ic_streetview_black);
-                }
-                newFragment.setArguments(arguments);
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_navigation_container, newFragment, NAVIGATION_TAG)
-                        .commit();
-                mFragment = newFragment;
-                completeStepUpdate();
-            }
-        });
+//        mModeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ((Callback) mFragment).fabMyLocationPressed();
+//            }
+//        });
+//        mForwardButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                navigationForward();
+//            }
+//        });
+//        mBackwardButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                navigationBackward();
+//            }
+//        });
+//        mStreetviewButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
+//                mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
+//                mCursorPosition = 0;
+//                Bundle arguments = new Bundle();
+//                arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+//
+//                // replace fragment
+//                Fragment newFragment;
+//                if ( mFragment instanceof NavigationFragment) {
+//                    newFragment = new StreetViewFragment();
+//                    mStreetviewButton.setImageResource(R.drawable.ic_map_black);
+//                }
+//                else {
+//                    newFragment = new NavigationFragment();
+//                    mStreetviewButton.setImageResource(R.drawable.ic_streetview_black);
+//                }
+//                newFragment.setArguments(arguments);
+//                getFragmentManager().beginTransaction()
+//                        .replace(R.id.fragment_navigation_container, newFragment, NAVIGATION_TAG)
+//                        .commit();
+//                mFragment = newFragment;
+//                completeStepUpdate();
+//            }
+//        });
         if ( savedInstanceState == null) {
             mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
             mCursorPosition = 0;
@@ -446,7 +448,57 @@ public class NavigateActivity extends AppCompatActivity implements
         mForwardButton.setEnabled(!mCursor.isLast());
         mBackwardButton.setEnabled(isBackEnabled);
     }
+    @OnClick(R.id.fab_navigation_forward)
+    public void forwardPressed(){
+        navigationForward();
+    }
+    @OnClick(R.id.fab_navigation_backward)
+    public void backwardPressed(){
+        navigationBackward();
+    }
+    @OnClick(R.id.action_up)
+    public void backPressed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            supportFinishAfterTransition();
+        } else {
+            onSupportNavigateUp();
+        }
+    }
+    @OnClick(R.id.action_home)
+    public void homePressed() {
+        Intent intent = new Intent(this, MapsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+    @OnClick(R.id.fab_navigation_mode)
+    public void modePressed() {
+        ((Callback) mFragment).fabMyLocationPressed();
+    }
+    @OnClick(R.id.fab_streetview)
+    public void streetViewPressed() {
+        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
+        mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
+        mCursorPosition = 0;
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
 
+        // replace fragment
+        Fragment newFragment;
+        if ( mFragment instanceof NavigationFragment) {
+            newFragment = new StreetViewFragment();
+            mStreetviewButton.setImageResource(R.drawable.ic_map_black);
+        }
+        else {
+            newFragment = new NavigationFragment();
+            mStreetviewButton.setImageResource(R.drawable.ic_streetview_black);
+        }
+        newFragment.setArguments(arguments);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_navigation_container, newFragment, NAVIGATION_TAG)
+                .commit();
+        mFragment = newFragment;
+        completeStepUpdate();
+    }
     public interface Callback {
         void locationUpdate(Location location);
         void stepUpdate(StepParcelable step);

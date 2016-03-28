@@ -9,72 +9,73 @@
     >
     <!--tools:showIn="@layout/activity_detail_route"-->
     <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
-        android:layout_marginTop="1dp"
-        android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/list_background"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingStart="16dp"
-                android:id = "@+id/detail_depart_time"
-                android:textColor="#f7fbff"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_gravity="left|start"
-                android:text="9:30 pm"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id = "@+id/detail_duration"
-                android:textColor="#f7fbff"
-                android:textSize="16sp"
-                android:paddingRight="16dp"
-                android:paddingEnd="16dp"
-                android:gravity="right|end"
-                android:layout_gravity="right|end"
-                android:text="1 hr 20 min"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@color/list_background"
-            android:id="@+id/list_detail_title"
-            android:paddingLeft="16dp"
-            android:paddingStart="16dp"
-            >
-            <!--android:paddingTop="16dp"-->
-            <!--android:paddingBottom="5dp"-->
-            <ImageView
-                android:id="@+id/list_item_transit_icon2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left"
-                android:tint="#ffffff"
-                android:src="@drawable/ic_directions_bus"
-                />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id = "@+id/detail_transit_no2"
-                android:textColor="#f7fbff"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="left"
-                android:background="@color/list_background"
-                android:layout_gravity="top"
-                android:text="99"/>
-        </LinearLayout>
-    </LinearLayout>
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="1dp"-->
+        <!--android:layout_marginTop="1dp"-->
+        <!--android:orientation="vertical">-->
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@color/list_background"-->
+            <!--android:orientation="horizontal">-->
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:paddingLeft="16dp"-->
+                <!--android:paddingStart="16dp"-->
+                <!--android:id = "@+id/detail_depart_time"-->
+                <!--android:textColor="#f7fbff"-->
+                <!--android:textSize="16sp"-->
+                <!--android:textStyle="bold"-->
+                <!--android:layout_gravity="left|start"-->
+                <!--android:text="9:30 pm"/>-->
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id = "@+id/detail_duration"-->
+                <!--android:textColor="#f7fbff"-->
+                <!--android:textSize="16sp"-->
+                <!--android:paddingRight="16dp"-->
+                <!--android:paddingEnd="16dp"-->
+                <!--android:gravity="right|end"-->
+                <!--android:layout_gravity="right|end"-->
+                <!--android:text="1 hr 20 min"/>-->
+        <!--</LinearLayout>-->
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:background="@color/list_background"-->
+            <!--android:id="@+id/list_detail_title"-->
+            <!--android:paddingLeft="16dp"-->
+            <!--android:paddingStart="16dp"-->
+            <!-->-->
+            <!--&lt;!&ndash;android:paddingTop="16dp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:paddingBottom="5dp"&ndash;&gt;-->
+            <!--<ImageView-->
+                <!--android:id="@+id/list_item_transit_icon2"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:gravity="left"-->
+                <!--android:tint="#ffffff"-->
+                <!--android:src="@drawable/ic_directions_bus"-->
+                <!--/>-->
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id = "@+id/detail_transit_no2"-->
+                <!--android:textColor="#f7fbff"-->
+                <!--android:textSize="16sp"-->
+                <!--android:textStyle="bold"-->
+                <!--android:gravity="left"-->
+                <!--android:background="@color/list_background"-->
+                <!--android:layout_gravity="top"-->
+                <!--android:text="99"/>-->
+        <!--</LinearLayout>-->
+    <!--</LinearLayout>-->
+    <!--<include layout="@layout/route_title_view"/>-->
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -33,7 +33,7 @@ public class TestDirectionApi  extends AndroidTestCase  {
         String key = mContext.getString(R.string.google_maps_server_key);
         String origin = "place_id:ChIJAx7UL8xyhlQR86Iqc-fUncc";
         String destination = "place_id:ChIJNbea5OF2hlQRDfHhEXerrAM";
-        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key, "us");
+        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key);
         MapApiService.TransitRoutes transitRoutes = call.execute().body();
         assertTrue(LOG_TAG + ": retrofit query direction status return: " + transitRoutes.status, transitRoutes.status.equals("OK"));
     }
@@ -46,7 +46,7 @@ public class TestDirectionApi  extends AndroidTestCase  {
         String key = mContext.getString(R.string.google_maps_server_key);
         String origin = "place_id:ChIJAx7UL8xyhlQR86Iqc-fUncc";
         String destination = "place_id:ChIJNbea5OF2hlQRDfHhEXerrAM";
-        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key, "us");
+        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key );
 
         call.enqueue(new Callback<MapApiService.TransitRoutes>() {
             @Override

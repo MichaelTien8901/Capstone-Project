@@ -12,7 +12,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +28,7 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PlanningActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -36,14 +37,15 @@ public class PlanningActivity extends AppCompatActivity implements
     public static final int DIRECTION_LOADER = 0;
     final String PLAN_FROM_ID = "PLAN_FROM_ID";
     final String PLAN_TO_ID = "PLAN_TO_ID";
+    final String PLAN_LIST_VISIBLE_ID = "PLAN_LIST_VISIBLE_ID";
     private final int SEARCH_FROM_REQUEST_ID = 1;
     private final int SEARCH_TO_REQUEST_ID = 2;
     @Bind(R.id.fromTextView) TextView mFromTextView;
     @Bind(R.id.toTextView) TextView mToTextView;
     @Bind(R.id.departTextView) TextView mDepartView;
     @Bind(R.id.routeListView) ListView mRouteListView;
-    @Bind(R.id.action_up)
-    ImageButton mUpButton;
+//    @Bind(R.id.action_up) ImageButton mUpButton;
+    @Bind(R.id.fragment_planning_id) LinearLayout mListLayout;
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
     protected RouteAdapter mRouteAdapter;
@@ -55,6 +57,7 @@ public class PlanningActivity extends AppCompatActivity implements
         if ( mToObject != null) {
             outState.putParcelable(PLAN_TO_ID, mToObject);
         }
+        outState.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE);
         super.onSaveInstanceState(outState);
     }
     private void updateSearchText(){
@@ -102,7 +105,7 @@ public class PlanningActivity extends AppCompatActivity implements
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRouteAdapter = new RouteAdapter( this, null, 0 );
         mRouteListView.setAdapter(mRouteAdapter);
-        getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
+//        getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
         mRouteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -118,11 +121,19 @@ public class PlanningActivity extends AppCompatActivity implements
         if ( savedInstanceState != null) {
             mFromObject = savedInstanceState.getParcelable(PLAN_FROM_ID);
             mToObject = savedInstanceState.getParcelable(PLAN_TO_ID);
+            if (savedInstanceState.getBoolean(PLAN_LIST_VISIBLE_ID))
+                getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
         } else {
+            Intent intent = getIntent();
             final String ARG_PLAN_FROM_ID = getString(R.string.intent_plan_key_from);
             final String ARG_PLAN_TO_ID = getString(R.string.intent_plan_key_to);
-            mFromObject = getIntent().getParcelableExtra(ARG_PLAN_FROM_ID);
-            mToObject = getIntent().getParcelableExtra(ARG_PLAN_TO_ID);
+            mFromObject = intent.getParcelableExtra(ARG_PLAN_FROM_ID);
+            if ( mFromObject != null)
+                mToObject = intent.getParcelableExtra(ARG_PLAN_TO_ID);
+            else {
+                // from back or up
+                getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
+            }
         }
         if ( mFromObject == null) {
             mFromObject = new PlaceObject();
@@ -136,45 +147,12 @@ public class PlanningActivity extends AppCompatActivity implements
         }
 
         updateSearchText();
-//        mFromTextView.setOnClickListener(new View.OnClickListener() {
-        findViewById(R.id.from_container).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(PlanningActivity.this, PlaceActivity.class);
-                String searchText = mFromObject.title;
-                if (!searchText.equals("Here")) {
-                    intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
-                }
-                startActivityForResult(intent, SEARCH_FROM_REQUEST_ID);
-            }
-        });
-        findViewById(R.id.to_container).setOnClickListener(new View.OnClickListener() {
-//        mToTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(PlanningActivity.this, PlaceActivity.class);
-                String searchText = mToObject.title;
-                if (!searchText.equals("")) {
-                    intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
-                }
-                startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
-            }
-        });
+
         mDepartView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // test query
                 tryQueryRoutes();
-            }
-        });
-        mUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    supportFinishAfterTransition();
-                } else {
-                    onSupportNavigateUp();
-                }
             }
         });
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.test_fab);
@@ -210,6 +188,8 @@ public class PlanningActivity extends AppCompatActivity implements
                     mFromObject.title = place_name.toString();
                     mFromObject.placeId = place_id;
                     updateSearchText();
+                    tryQueryRoutes();
+//                    getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
                 }
 
                 break;
@@ -221,6 +201,9 @@ public class PlanningActivity extends AppCompatActivity implements
                     mToObject.title = place_name.toString();
                     mToObject.placeId = place_id;
                     updateSearchText();
+                    tryQueryRoutes();
+//        getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
+
                 }
                 break;
         }
@@ -244,6 +227,9 @@ public class PlanningActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mRouteAdapter.swapCursor(cursor);
+        if ( cursor != null) {
+            mListLayout.setVisibility(View.VISIBLE);
+        }
     }
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
@@ -266,5 +252,30 @@ public class PlanningActivity extends AppCompatActivity implements
 //
 //        return super.onOptionsItemSelected(item);
 //    }
-
+    @OnClick(R.id.action_up)
+    public void backPressed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            supportFinishAfterTransition();
+        } else {
+            onSupportNavigateUp();
+        }
+    }
+    @OnClick(R.id.from_container)
+    public void searchFromPlace() {
+        Intent intent = new Intent(PlanningActivity.this, PlaceActivity.class);
+        String searchText = mFromObject.title;
+        if (!searchText.equals("Here")) {
+            intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
+        }
+        startActivityForResult(intent, SEARCH_FROM_REQUEST_ID);
+    }
+    @OnClick(R.id.to_container)
+    public void searchToPlace() {
+        Intent intent = new Intent(PlanningActivity.this, PlaceActivity.class);
+        String searchText = mToObject.title;
+        if (!searchText.equals("")) {
+            intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
+        }
+        startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
+    }
 }
