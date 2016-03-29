@@ -1,7 +1,11 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -465,6 +469,10 @@ public class NavigateActivity extends AppCompatActivity implements
         }
     }
     @OnClick(R.id.action_home)
+    public void homePressedClick() {
+        DialogFragment newFragment = new ConfirmHomeDialog();
+        newFragment.show(getFragmentManager(), "TagHomeDialog");
+    }
     public void homePressed() {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -504,5 +512,23 @@ public class NavigateActivity extends AppCompatActivity implements
         void stepUpdate(StepParcelable step);
         void fabMyLocationPressed();
     }
-
+    public static class ConfirmHomeDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.dialog_confirm_home_title)
+                    .setPositiveButton(R.string.dialog_confirm_home_positive, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ((NavigateActivity)getActivity()).homePressed();
+                        }
+                    })
+                    .setNegativeButton(R.string.dialog_confirm_home_negative, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            return builder.create();
+        }
+    }
 }
