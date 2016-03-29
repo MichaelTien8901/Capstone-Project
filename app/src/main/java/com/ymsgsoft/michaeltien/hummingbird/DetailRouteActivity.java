@@ -1,8 +1,14 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -13,14 +19,20 @@ import android.widget.TextView;
 
 import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class DetailRouteActivity extends AppCompatActivity {
-//    protected long mRouteId;
-//    protected String mPolyLine;
+public class DetailRouteActivity extends AppCompatActivity implements FavoriteDialog.FavoriteDialogListener {
     static final String SAVE_ARG_KEY = "save_arg_key";
+    final String PLAN_FROM_ID = "PLAN_FROM_ID";
+    final String PLAN_TO_ID = "PLAN_TO_ID";
+
     protected RouteParcelable mRouteObject;
+    protected PlaceObject mFromObject;
+    protected PlaceObject mToObject;
+    @Bind(R.id.fab_add)
+    FloatingActionButton mAddRemoveBtn;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -29,7 +41,12 @@ public class DetailRouteActivity extends AppCompatActivity {
             outState.putParcelable(SAVE_ARG_KEY, mRouteObject);
             PrefUtils.saveRouteParcelableToPref(this, getString(R.string.intent_route_key), mRouteObject);
         }
-
+        if ( mFromObject != null) {
+            outState.putParcelable(PLAN_FROM_ID, mFromObject);
+        }
+        if ( mToObject != null) {
+            outState.putParcelable(PLAN_TO_ID, mToObject);
+        }
     }
 
     @Override
@@ -41,42 +58,26 @@ public class DetailRouteActivity extends AppCompatActivity {
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        findViewById(R.id.fab_add).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Add", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-//        findViewById(R.id.fab_remove).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Remove", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//
-//            }
-//        });
-//        findViewById(R.id.fab_navigate).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Navigate", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//                Intent intent = new Intent(DetailRouteActivity.this, NavigateActivity.class);
-//                intent.putExtra(getString(R.string.intent_route_key), mRouteObject);
-//                startActivity(intent);
-//            }
-//        });
         final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( savedInstanceState == null ) {
             mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
+            mFromObject = getIntent().getParcelableExtra(PLAN_FROM_ID);
+            mToObject = getIntent().getParcelableExtra(PLAN_TO_ID);
         } else {
             if (savedInstanceState.containsKey(SAVE_ARG_KEY))
                 mRouteObject = savedInstanceState.getParcelable(SAVE_ARG_KEY);
+            if (savedInstanceState.containsKey(PLAN_FROM_ID))
+                mFromObject = savedInstanceState.getParcelable(PLAN_FROM_ID);
+            if ( savedInstanceState.containsKey(PLAN_TO_ID))
+                mToObject = savedInstanceState.getParcelable(PLAN_TO_ID);
         }
         if ( mRouteObject == null) {
-            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(this, ARG_ROUTE_KEY_ID);
+            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(this, getString(R.string.intent_route_key));
+//            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(this, ARG_ROUTE_KEY_ID);
         }
-
+        if ( mRouteObject.isFavorite) {
+            mAddRemoveBtn.setImageResource(R.drawable.ic_remove);
+        }
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
 
@@ -126,15 +127,33 @@ public class DetailRouteActivity extends AppCompatActivity {
 
     }
     @OnClick(R.id.fab_add)
-    public void addFavorite(View view) {
-        Snackbar.make(view, "Add", Snackbar.LENGTH_LONG)
-            .setAction("Action", null).show();
+    public void addFavoriteClick(View view) {
+        if ( !mRouteObject.isFavorite) {
+            String suggest_name;
+            if (mFromObject.title.length() > 0)
+                suggest_name = mFromObject.title + " to " + mToObject.title;
+            else
+                suggest_name = mToObject.title;
+            DialogFragment newFragment = new FavoriteDialog();
+            Bundle bundle = new Bundle();
+            bundle.putString("SUGGEST_NAME", suggest_name);
+            newFragment.setArguments(bundle);
+            newFragment.show(getFragmentManager(), "TagFavoriteDialog");
+        } else {
+            DialogFragment newFragment = new ConfirmRemoveDialog();
+            newFragment.show(getFragmentManager(), "TagFavoriteDialog");
+        }
     }
 
-    @OnClick(R.id.fab_remove)
-    public void removeFavorite(View view) {
-        Snackbar.make(view, "Remove", Snackbar.LENGTH_LONG)
-            .setAction("Action", null).show();
+//    @OnClick(R.id.fab_remove)
+//    public void removeFavoriteClick(View view) {
+//        DirectionIntentService.startActionRemoveFavorite(this, mRouteObject.routeId );
+//        mRouteObject.isFavorite = false;
+//    }
+    public void removeFavorite() {
+        DirectionIntentService.startActionRemoveFavorite(this, mRouteObject.routeId );
+        mRouteObject.isFavorite = false;
+        mAddRemoveBtn.setImageResource(R.drawable.ic_add);
     }
     @OnClick(R.id.action_up)
     public void backPressed() {
@@ -149,5 +168,35 @@ public class DetailRouteActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    //  FavoriteDialog.FavoriteDialogListener
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog, String saveName) {
+        DirectionIntentService.startActionSaveFavorite(this, mFromObject, mToObject, saveName, mRouteObject.routeId );
+        mRouteObject.isFavorite = true;
+        mAddRemoveBtn.setImageResource(R.drawable.ic_remove);
+    }
+    public static class ConfirmRemoveDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.dialog_favorite_remove_confirm)
+                    .setPositiveButton(R.string.dialog_favorite_remove, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Activity activity = getActivity();
+                            if (activity instanceof DetailRouteActivity) {
+                                ((DetailRouteActivity) activity).removeFavorite();
+                            }
+                        }
+                    })
+                    .setNegativeButton(R.string.dialog_favorite_negative, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            return builder.create();
+        }
     }
 }

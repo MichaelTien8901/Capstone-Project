@@ -30,7 +30,8 @@ public class DbUtils {
     static ContentValues createRouteValues(Route route) {
         RoutesValuesBuilder builder = new RoutesValuesBuilder()
                 .overviewPolylines(route.overview_polyline.points)
-                .summary(route.summary);
+                .summary(route.summary)
+                .isFavorite(0);
         StringBuilder warnings = new StringBuilder();
         for ( String s: route.warnings) {
             warnings.append(s + "  " );

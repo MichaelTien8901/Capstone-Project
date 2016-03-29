@@ -29,4 +29,10 @@
     <string name="product_name_title">Humming Bird Navigation</string>
     <string name="up">Up</string>
     <string name="home">home</string>
+    <string name="nav_favorite_title">Favorites</string>
+    <string name="dialog_favorite_positive">Save</string>
+    <string name="dialog_favorite_negative">Cancel</string>
+    <string name="dialog_favorite_title">Save as favorite route?</string>
+    <string name="dialog_favorite_remove">Remove</string>
+    <string name="dialog_favorite_remove_confirm">Remove from Favorite List?</string>
 </resources>

@@ -34,6 +34,7 @@ public final class RoutesProvider {
         String MICRO_STEPS = "micro_steps";
         String NAVIGATES = "navigates";
         String HISTORY = "history";
+        String FAVORTE = "favorite";
     }
 
     private static Uri buildUri(String... paths) {
@@ -232,6 +233,26 @@ public final class RoutesProvider {
                 pathSegment = 1)
         public static Uri withId(long historyId) {
             return buildUri(Path.HISTORY, String.valueOf(historyId));
+        }
+    }
+    @TableEndpoint(table = Tables.FAVORITES) public static class Favorite {
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" +  AUTHORITY + "/" + Path.FAVORTE;
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + AUTHORITY + "/" + Path.FAVORTE;
+        @ContentUri(
+                path = Path.FAVORTE,
+                type = CONTENT_TYPE,
+                defaultSort = FavoriteColumns.ID + " DESC"
+        )
+        public static final Uri CONTENT_URI = buildUri(Path.FAVORTE);
+
+        @InexactContentUri(
+                name = "FAVORTE_ID",
+                path = Path.FAVORTE + "/#",
+                type = CONTENT_ITEM_TYPE,
+                whereColumn = FavoriteColumns.ID,
+                pathSegment = 1)
+        public static Uri withId(long favoriteId) {
+            return buildUri(Path.FAVORTE, String.valueOf(favoriteId));
         }
     }
 }

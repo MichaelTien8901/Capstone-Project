@@ -44,7 +44,6 @@ public class PlanningActivity extends AppCompatActivity implements
     @Bind(R.id.toTextView) TextView mToTextView;
     @Bind(R.id.departTextView) TextView mDepartView;
     @Bind(R.id.routeListView) ListView mRouteListView;
-//    @Bind(R.id.action_up) ImageButton mUpButton;
     @Bind(R.id.fragment_planning_id) LinearLayout mListLayout;
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
@@ -63,12 +62,6 @@ public class PlanningActivity extends AppCompatActivity implements
     private void updateSearchText(){
         mFromTextView.setText(mFromObject.title);
         mToTextView.setText(mToObject.title);
-//        String htmltext = "<html> <font size=\"24\" color=\"red\">" + getString(R.string.plan_from_title) + "</font>" + " " + mFromObject.title + "</html>";
-//        Spanned sp = Html.fromHtml(htmltext);
-//        mFromTextView.setText(sp);
-//        htmltext = "<html> <font size=\"24\" color=\"red\">" + getString(R.string.plan_to_title) + "</font>" + " " + mToObject.title + "</html>";
-//        sp = Html.fromHtml(htmltext);
-//        mToTextView.setText(sp);
     }
     private void tryQueryRoutes() {
         if ( mFromObject.placeId.isEmpty() || mToObject.placeId.isEmpty()) return;
@@ -115,6 +108,8 @@ public class PlanningActivity extends AppCompatActivity implements
                 // launch detail activity
                 Intent intent = new Intent(PlanningActivity.this, DetailRouteActivity.class);
                 intent.putExtra(getString(R.string.intent_route_key), selected.mData);
+                intent.putExtra(PLAN_FROM_ID, mFromObject);
+                intent.putExtra(PLAN_TO_ID, mToObject);
                 startActivity(intent);
             }
         });
@@ -189,7 +184,6 @@ public class PlanningActivity extends AppCompatActivity implements
                     mFromObject.placeId = place_id;
                     updateSearchText();
                     tryQueryRoutes();
-//                    getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
                 }
 
                 break;
@@ -202,8 +196,6 @@ public class PlanningActivity extends AppCompatActivity implements
                     mToObject.placeId = place_id;
                     updateSearchText();
                     tryQueryRoutes();
-//        getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
-
                 }
                 break;
         }

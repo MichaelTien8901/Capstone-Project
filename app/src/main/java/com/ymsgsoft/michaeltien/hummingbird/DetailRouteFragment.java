@@ -145,8 +145,6 @@ public class DetailRouteFragment extends Fragment implements
         final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( savedInstanceState != null && savedInstanceState.containsKey(SAVE_ARG_KEY)) {
                 mRouteObject = savedInstanceState.getParcelable(SAVE_ARG_KEY);
-//                mRouteId = mRouteObject.routeId;
-//                mOverviewPolyline = mRouteObject.overviewPolyline;
         }
         if ( mRouteObject == null) {
             mRouteObject = PrefUtils.restoreRouteParcelableFromPref(getContext(), ARG_ROUTE_KEY_ID);

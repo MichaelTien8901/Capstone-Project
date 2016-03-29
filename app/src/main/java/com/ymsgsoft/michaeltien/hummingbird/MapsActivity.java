@@ -142,12 +142,6 @@ public class MapsActivity extends AppCompatActivity
 //        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 //        rlp.setMargins(0, 0, 30, 30);
 
-        // Add a marker in Sydney and move the camera
-//        LatLng Vancouver = new LatLng( 49.264911, -123.241917 );
-//        mMap.addMarker(new MarkerOptions().position(Vancouver).title("Marker in Vancouver"));
-//        CameraPosition target = CameraPosition.builder().target(Vancouver).zoom(14).build();
-////        mMap.moveCamera(CameraUpdateFactory.newLatLng(Vancouver));
-//        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
         if (locationReady) {
             showCurrentPosition();
         } else {
@@ -171,8 +165,6 @@ public class MapsActivity extends AppCompatActivity
                     showCurrentPosition();
                     mapReady = false;
                 }
-//            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-//            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
             }
         }
 
@@ -226,7 +218,6 @@ public class MapsActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if ( id == R.id.action_search) {
             performSearch();

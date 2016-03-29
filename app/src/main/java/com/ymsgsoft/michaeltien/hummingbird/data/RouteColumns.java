@@ -23,4 +23,5 @@ public interface RouteColumns {
     @DataType(TEXT) String EXT_DEPART_TIME = "depart_time";
     @DataType(TEXT) String EXT_DURATION = "duration";
     @DataType(TEXT) String EXT_TRANSIT_NO = "transit_number";
+    @DataType(INTEGER) String IS_FAVORITE = "is_favorite";
 }
