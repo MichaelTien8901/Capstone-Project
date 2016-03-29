@@ -59,7 +59,6 @@
         android:paddingRight="@dimen/list_side_margin"
         android:paddingEnd="@dimen/list_side_margin"
         android:paddingTop="@dimen/list_side_margin"
-        android:background="@color/list_background"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/list_item_favorite" />
 

@@ -20,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,8 +35,10 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
-import com.ymsgsoft.michaeltien.hummingbird.playservices.DividerItemDecoration;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAdapter;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -55,7 +58,8 @@ public class MapsActivity extends AppCompatActivity
     protected Location mLastLocation;
     protected int REQUEST_LOCATION = 101;
     private Boolean locationReady = false, mapReady = false;
-
+    @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
+    @Bind(R.id.list_favorites)  RecyclerView mRecyclerView;
     @Override
     public void onConnectionSuspended(int i) {
         // The connection to Google Play services was lost for some reason. We call connect() to
@@ -68,12 +72,13 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -94,12 +99,11 @@ public class MapsActivity extends AppCompatActivity
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
         }
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list_favorites);
         mAdapter = new FavoriteRecyclerViewAdapter(this, R.layout.list_item_favorite, null, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL,
-                getResources().getDrawable(R.drawable.line_divider)));
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL,
+//                getResources().getDrawable(R.drawable.line_divider)));
+        mRecyclerView.setAdapter(mAdapter);
         getSupportLoaderManager().initLoader(FAVORITE_LOADER, null, this);
     }
     private void performSearch() {
@@ -292,7 +296,8 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void OnItemClick(FavoriteRecyclerViewAdapter.FavoriteObject data, int position) {
-
+        Toast.makeText(this, data.id_name, Toast.LENGTH_SHORT).show();
+        mDrawer.closeDrawers();
     }
 
 }

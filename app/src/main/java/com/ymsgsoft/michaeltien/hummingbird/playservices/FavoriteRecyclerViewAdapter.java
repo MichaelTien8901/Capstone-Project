@@ -37,7 +37,7 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
     public void onBindViewHolder (final ViewHolder holder, Cursor cursor) {
         FavoriteObject data = holder.bindData(cursor);
         holder.mIdView.setText(data.id_name);
-        String time_formatted = DateFormat.getDateInstance().format(data.query_time);
+        String time_formatted = DateFormat.getDateTimeInstance().format(data.query_time*1000);
         holder.mDateTimeView.setText(time_formatted);
     }
 
@@ -72,12 +72,12 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
         }
     }
     public class FavoriteObject {
-        String id_name;
-        String start_name;
-        String start_place_id;
-        String end_name;
-        String end_place_id;
-        long routeId;
-        long query_time;
+        public String id_name;
+        public String start_name;
+        public String start_place_id;
+        public String end_name;
+        public String end_place_id;
+        public long routeId;
+        public long query_time;
     }
 }
