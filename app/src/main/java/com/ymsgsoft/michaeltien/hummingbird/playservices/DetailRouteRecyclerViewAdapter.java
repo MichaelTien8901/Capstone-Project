@@ -9,15 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ymsgsoft.michaeltien.hummingbird.MyOnItemClickListener;
+import com.ymsgsoft.michaeltien.hummingbird.OnStepItemClickListener;
 import com.ymsgsoft.michaeltien.hummingbird.R;
 import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 
 public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<DetailRouteRecyclerViewAdapter.ViewHolder> {
     protected int mLayout;
     protected Context mContext;
-    protected MyOnItemClickListener mListener;
-    public DetailRouteRecyclerViewAdapter(Context context, int layout, Cursor c, MyOnItemClickListener listener) {
+    protected OnStepItemClickListener mListener;
+    public DetailRouteRecyclerViewAdapter(Context context, int layout, Cursor c, OnStepItemClickListener listener) {
         super(c);
         mLayout = layout;
         mContext = context;

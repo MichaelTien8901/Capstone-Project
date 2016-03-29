@@ -38,6 +38,7 @@ public class DirectionIntentService extends IntentService {
     private static final String TO_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.TO_PARAM";
     private static final String ID_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.ID_PARAM";
     private static final String ROUTE_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.ROUTE_PARAM";
+    private static final String TIME_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.TIME_PARAM";
     public DirectionIntentService() {
         super("DirectionIntentService");
     }
@@ -55,13 +56,15 @@ public class DirectionIntentService extends IntentService {
         intent.putExtra(TO_PARAM, to);
         context.startService(intent);
     }
-    public static void startActionSaveFavorite(Context context, PlaceObject from, PlaceObject to, String id_name, long routeId) {
+    public static void startActionSaveFavorite(Context context, PlaceObject from, PlaceObject to,
+                                               String id_name, long routeId, long start_time) {
         Intent intent = new Intent(context, DirectionIntentService.class);
         intent.setAction(ACTION_ADD_FAVORITE_ROUTE);
         intent.putExtra(FROM_PARAM, from);
         intent.putExtra(TO_PARAM, to);
         intent.putExtra(ID_PARAM, id_name);
         intent.putExtra(ROUTE_PARAM, routeId);
+        intent.putExtra(TIME_PARAM, start_time);
         context.startService(intent);
     }
     public static void startActionRemoveFavorite(Context context,long routeId) {
@@ -91,7 +94,8 @@ public class DirectionIntentService extends IntentService {
                 final PlaceObject mTo = intent.getParcelableExtra(TO_PARAM);
                 final String id_name = intent.getStringExtra(ID_PARAM);
                 final long routeId = intent.getLongExtra(ROUTE_PARAM, 0);
-                handleActionAddFavorite(mFrom, mTo, id_name, routeId);
+                long start_time = intent.getLongExtra(TIME_PARAM, 0);
+                handleActionAddFavorite(mFrom, mTo, id_name, routeId, start_time);
             } else if ( ACTION_REMOVE_FAVORITE_ROUTE.equals(action)) {
                 final long routeId = intent.getLongExtra(ROUTE_PARAM, 0);
                 handleActionRemoveFavorite(routeId);
@@ -127,7 +131,7 @@ public class DirectionIntentService extends IntentService {
             }
         }
     }
-    private void handleActionAddFavorite( PlaceObject from, PlaceObject to, String save_name, long routeId){
+    private void handleActionAddFavorite( PlaceObject from, PlaceObject to, String save_name, long routeId, long start_time){
         // route table
         ContentValues values = new RoutesValuesBuilder().isFavorite(1).values();
         String mSelectionClause = RouteColumns.ID + "= ?";
@@ -142,6 +146,7 @@ public class DirectionIntentService extends IntentService {
                 .startPlaceId(from.placeId)
                 .endName(to.title)
                 .endPlaceId(to.placeId)
+                .queryTime(start_time)
                 .values();
         getContentResolver().insert(RoutesProvider.Favorite.CONTENT_URI, favorValues);
     }

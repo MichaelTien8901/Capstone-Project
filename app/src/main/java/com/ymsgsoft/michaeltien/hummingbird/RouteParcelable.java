@@ -14,6 +14,7 @@ public class RouteParcelable implements Parcelable {
     public String transitNo;
     public String departTime;
     public String duration;
+    public long deparTimeValue;
     public Boolean isFavorite;
 
     public RouteParcelable() {
@@ -24,13 +25,15 @@ public class RouteParcelable implements Parcelable {
             String transitNo,
             String departTime,
             String duration,
-            Boolean isFavorite) {
+            Boolean isFavorite,
+            long deparTimeValue) {
         this.routeId = routeId;
         this.overviewPolyline = overviewPolyline;
         this.transitNo = transitNo;
         this.departTime = departTime;
         this.duration = duration;
         this.isFavorite = isFavorite;
+        this.deparTimeValue = deparTimeValue;
     }
 
     public class RoutePojo {
@@ -40,6 +43,7 @@ public class RouteParcelable implements Parcelable {
         public String departTime;
         public String duration;
         public Boolean isFavorite;
+        public long deparTimeValue;
         public RoutePojo( RouteParcelable p) {
             this.routeId = p.routeId;
             this.overviewPolyline = p.overviewPolyline;
@@ -47,6 +51,7 @@ public class RouteParcelable implements Parcelable {
             this.departTime = p.departTime;
             this.duration = p.duration;
             this.isFavorite = p.isFavorite;
+            this.deparTimeValue = p.deparTimeValue;
         }
         public String serialize() {
             // Serialize this class into a JSON string using GSON
@@ -66,7 +71,8 @@ public class RouteParcelable implements Parcelable {
                 pojo.transitNo,
                 pojo.departTime,
                 pojo.duration,
-                pojo.isFavorite);
+                pojo.isFavorite,
+                pojo.deparTimeValue);
     }
 
     @Override
@@ -81,6 +87,7 @@ public class RouteParcelable implements Parcelable {
         dest.writeString(this.transitNo);
         dest.writeString(this.departTime);
         dest.writeString(this.duration);
+        dest.writeLong(this.deparTimeValue);
         dest.writeValue(this.isFavorite);
     }
 
@@ -90,6 +97,7 @@ public class RouteParcelable implements Parcelable {
         this.transitNo = in.readString();
         this.departTime = in.readString();
         this.duration = in.readString();
+        this.deparTimeValue = in.readLong();
         this.isFavorite = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 

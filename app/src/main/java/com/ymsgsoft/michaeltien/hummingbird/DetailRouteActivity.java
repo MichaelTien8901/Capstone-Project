@@ -144,7 +144,6 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
             newFragment.show(getFragmentManager(), "TagFavoriteDialog");
         }
     }
-
 //    @OnClick(R.id.fab_remove)
 //    public void removeFavoriteClick(View view) {
 //        DirectionIntentService.startActionRemoveFavorite(this, mRouteObject.routeId );
@@ -169,14 +168,18 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
-
     //  FavoriteDialog.FavoriteDialogListener
     @Override
     public void onDialogPositiveClick(DialogFragment dialog, String saveName) {
-        DirectionIntentService.startActionSaveFavorite(this, mFromObject, mToObject, saveName, mRouteObject.routeId );
+        addFavorite(saveName);
+    }
+
+    private void addFavorite(String saveName) {
+        DirectionIntentService.startActionSaveFavorite(this, mFromObject, mToObject, saveName, mRouteObject.routeId, mRouteObject.deparTimeValue);
         mRouteObject.isFavorite = true;
         mAddRemoveBtn.setImageResource(R.drawable.ic_remove);
     }
+
     public static class ConfirmRemoveDialog extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {

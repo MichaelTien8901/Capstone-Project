@@ -46,7 +46,7 @@ public class DetailRouteFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        MyOnItemClickListener {
+        OnStepItemClickListener {
     static final String SAVE_ARG_KEY = "save_arg_key";
     protected int REQUEST_LOCATION = 101;
     protected DetailRouteRecyclerViewAdapter mAdapter;

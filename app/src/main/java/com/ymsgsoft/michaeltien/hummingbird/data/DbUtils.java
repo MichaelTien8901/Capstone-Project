@@ -132,12 +132,14 @@ public class DbUtils {
         String depart_time = "";
         String duration = "";
         String transitNo;
-//        Boolean break_flag1 = false;
+        long depart_time_value = 0;
         List<String> transit_list = new ArrayList<>();
 
         for ( Leg legObject: routeObject.legs ) {
-            if ( depart_time.isEmpty())
+            if ( depart_time.isEmpty()) {
                 depart_time = legObject.departure_time.text;
+                depart_time_value = legObject.departure_time.value;
+            }
             if ( duration.isEmpty())
                 duration = legObject.duration.text;
             for (Step step: legObject.steps) {
@@ -149,6 +151,7 @@ public class DbUtils {
         values.put(RouteColumns.EXT_DEPART_TIME, depart_time);
         values.put(RouteColumns.EXT_DURATION, duration);
         values.put(RouteColumns.EXT_TRANSIT_NO, transitNo);
+        values.put(RouteColumns.DEPART_TIME_VALUE, depart_time_value);
     }
     static void extractStepSummary(Step stepObject, ContentValues values ) {
         if ( stepObject.transit_details != null && stepObject.transit_details.line != null) {

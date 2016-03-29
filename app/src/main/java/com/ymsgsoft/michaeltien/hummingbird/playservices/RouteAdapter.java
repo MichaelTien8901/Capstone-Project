@@ -91,6 +91,7 @@ public class RouteAdapter extends CursorAdapter {
             mData.departTime = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DEPART_TIME));
             mData.duration = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION));
             mData.isFavorite = cursor.getInt(cursor.getColumnIndex(RouteColumns.IS_FAVORITE)) == 1;
+            mData.deparTimeValue = cursor.getLong(cursor.getColumnIndex(RouteColumns.DEPART_TIME_VALUE));
         }
         public RouteHolder(View view) {
             imageIcon = (ImageView) view.findViewById(R.id.list_item_route_icon);

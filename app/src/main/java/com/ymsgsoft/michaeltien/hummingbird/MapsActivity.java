@@ -3,14 +3,20 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,14 +33,22 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
+import com.ymsgsoft.michaeltien.hummingbird.playservices.DividerItemDecoration;
+import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAdapter;
 
 public class MapsActivity extends AppCompatActivity
-        implements OnMapReadyCallback,
-            ConnectionCallbacks,
+        implements
+        OnMapReadyCallback,
+        ConnectionCallbacks,
         OnConnectionFailedListener,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        LoaderManager.LoaderCallbacks<Cursor>,
+        OnFavoriteItemClickListener {
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
     private final int MY_SEARCH_ACTIVITY_REQUEST_ID = 1;
+    protected FavoriteRecyclerViewAdapter mAdapter;
+    public static final int FAVORITE_LOADER =1;
 
     private GoogleMap mMap;
     protected GoogleApiClient mGoogleApiClient;
@@ -79,6 +93,14 @@ public class MapsActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
         }
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list_favorites);
+        mAdapter = new FavoriteRecyclerViewAdapter(this, R.layout.list_item_favorite, null, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL,
+                getResources().getDrawable(R.drawable.line_divider)));
+        recyclerView.setAdapter(mAdapter);
+        getSupportLoaderManager().initLoader(FAVORITE_LOADER, null, this);
     }
     private void performSearch() {
         Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
@@ -249,6 +271,28 @@ public class MapsActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this,
+                RoutesProvider.Favorite.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mAdapter.swapCursor(cursor);
+    }
+    @Override
+    public void onLoaderReset(Loader loader) {
+        mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void OnItemClick(FavoriteRecyclerViewAdapter.FavoriteObject data, int position) {
+
     }
 
 }
