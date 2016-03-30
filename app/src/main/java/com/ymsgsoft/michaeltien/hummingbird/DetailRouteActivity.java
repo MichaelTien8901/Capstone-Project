@@ -21,10 +21,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class DetailRouteActivity extends AppCompatActivity implements FavoriteDialog.FavoriteDialogListener {
-    static final String SAVE_ARG_KEY = "save_arg_key";
-    final String PLAN_FROM_ID = "PLAN_FROM_ID";
-    final String PLAN_TO_ID = "PLAN_TO_ID";
-
+    final String SAVE_ROUTE_KEY = "save_arg_key";
+    final String SAVE_FROM_ID = "SAVE_FROM_ID";
+    final String SAVE_TO_ID = "SAVE_TO_ID";
+    public static final String ARG_ROUTE_KEY = "arg_intent_key_route_no";
     protected RouteParcelable mRouteObject;
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
@@ -34,14 +34,14 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if ( mRouteObject != null) {
-            outState.putParcelable(SAVE_ARG_KEY, mRouteObject);
-            PrefUtils.saveRouteParcelableToPref(this, getString(R.string.intent_route_key), mRouteObject);
+            outState.putParcelable(SAVE_ROUTE_KEY, mRouteObject);
+            PrefUtils.saveRouteParcelableToPref(this, DetailRouteActivity.ARG_ROUTE_KEY, mRouteObject);
         }
         if ( mFromObject != null) {
-            outState.putParcelable(PLAN_FROM_ID, mFromObject);
+            outState.putParcelable(SAVE_FROM_ID, mFromObject);
         }
         if ( mToObject != null) {
-            outState.putParcelable(PLAN_TO_ID, mToObject);
+            outState.putParcelable(SAVE_TO_ID, mToObject);
         }
     }
 
@@ -54,28 +54,27 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( savedInstanceState == null ) {
-            mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
-            mFromObject = getIntent().getParcelableExtra(PLAN_FROM_ID);
-            mToObject = getIntent().getParcelableExtra(PLAN_TO_ID);
+            mRouteObject = getIntent().getParcelableExtra(DetailRouteActivity.ARG_ROUTE_KEY);
+            mFromObject = getIntent().getParcelableExtra(PlanningActivity.PLAN_FROM_ID);
+            mToObject = getIntent().getParcelableExtra(PlanningActivity.PLAN_TO_ID);
         } else {
-            if (savedInstanceState.containsKey(SAVE_ARG_KEY))
-                mRouteObject = savedInstanceState.getParcelable(SAVE_ARG_KEY);
-            if (savedInstanceState.containsKey(PLAN_FROM_ID))
-                mFromObject = savedInstanceState.getParcelable(PLAN_FROM_ID);
-            if ( savedInstanceState.containsKey(PLAN_TO_ID))
-                mToObject = savedInstanceState.getParcelable(PLAN_TO_ID);
+            if (savedInstanceState.containsKey(SAVE_ROUTE_KEY))
+                mRouteObject = savedInstanceState.getParcelable(SAVE_ROUTE_KEY);
+            if (savedInstanceState.containsKey(SAVE_FROM_ID))
+                mFromObject = savedInstanceState.getParcelable(SAVE_FROM_ID);
+            if ( savedInstanceState.containsKey(SAVE_TO_ID))
+                mToObject = savedInstanceState.getParcelable(SAVE_TO_ID);
         }
         if ( mRouteObject == null) {
-            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(this, getString(R.string.intent_route_key));
+            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(this, ARG_ROUTE_KEY);
 //            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(this, ARG_ROUTE_KEY_ID);
         }
         if ( mRouteObject.isFavorite) {
             mAddRemoveBtn.setImageResource(R.drawable.ic_remove);
         }
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+        arguments.putParcelable(ARG_ROUTE_KEY, mRouteObject);
 
         DetailRouteFragment fragment = new DetailRouteFragment();
         fragment.setArguments(arguments);
@@ -90,38 +89,13 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
             mTransitNoView.setTransitNo(mRouteObject.transitNo);
         }
     }
-//    private void createDetailTitleView(LayoutInflater inflater) {
-//        ((TextView) findViewById(R.id.detail_depart_time)).setText(mRouteObject.departTime);
-//        ((TextView) findViewById(R.id.detail_duration)).setText(mRouteObject.duration);
-//        String[] transits = mRouteObject.transitNo.split(",");
-//        TextView transitNoView = (TextView) findViewById(R.id.detail_transit_no2);
-//        if ( !transits[0].equals("null"))
-//            transitNoView.setText(transits[0]);
-//        else
-//            transitNoView.setText("");
-//        // create rest of bus number
-//        if ( transits.length > 1 ) {
-//            LinearLayout detail_title_container = (LinearLayout) findViewById(R.id.list_detail_title);
-//            for (int i = 1; i < transits.length && i < 3; i++) {
-//                View childView = inflater.inflate(R.layout.list_item_transit_no, null);
-//                ImageView image = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
-//                image.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_bus));
-//                TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
-//                if (!transits[i].equals("null"))
-//                    textView.setText(transits[i]);
-//                else
-//                    textView.setText("");
-//                detail_title_container.addView(childView);
-//            }
-//        }
-//    }
 
     @OnClick(R.id.fab_navigate)
     public void navigate(View view) {
         Snackbar.make(view, "Navigate", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
         Intent intent = new Intent(DetailRouteActivity.this, NavigateActivity.class);
-        intent.putExtra(getString(R.string.intent_route_key), mRouteObject);
+        intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY, mRouteObject);
         startActivity(intent);
 
     }

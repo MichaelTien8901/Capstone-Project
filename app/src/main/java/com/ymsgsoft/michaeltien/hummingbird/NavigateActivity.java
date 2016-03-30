@@ -95,9 +95,8 @@ public class NavigateActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( mRouteObject != null)
-            outState.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+            outState.putParcelable(DetailRouteActivity.ARG_ROUTE_KEY, mRouteObject);
         if ( mCursor != null)
             outState.putInt(NAVIGATION_POS_KEY, mCursor.getPosition());
     }
@@ -111,12 +110,11 @@ public class NavigateActivity extends AppCompatActivity implements
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_navigation);
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if ( savedInstanceState == null) {
-            mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
+            mRouteObject = getIntent().getParcelableExtra(DetailRouteActivity.ARG_ROUTE_KEY);
             mCursorPosition = 0;
             Bundle arguments = new Bundle();
-            arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+            arguments.putParcelable(DetailRouteActivity.ARG_ROUTE_KEY, mRouteObject);
 
             mFragment = new NavigationFragment();
             mFragment.setArguments(arguments);
@@ -125,7 +123,7 @@ public class NavigateActivity extends AppCompatActivity implements
                     .commit();
         } else {
             mFragment = getFragmentManager().findFragmentByTag(NAVIGATION_TAG);
-            mRouteObject = savedInstanceState.getParcelable(ARG_ROUTE_KEY_ID);
+            mRouteObject = savedInstanceState.getParcelable(DetailRouteActivity.ARG_ROUTE_KEY);
             if ( mFragment instanceof StreetViewFragment) {
                 mStreetviewButton.setImageResource(R.drawable.ic_map_black);
             }
@@ -439,11 +437,10 @@ public class NavigateActivity extends AppCompatActivity implements
     }
     @OnClick(R.id.fab_streetview)
     public void streetViewPressed() {
-        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-        mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
+        mRouteObject = getIntent().getParcelableExtra(DetailRouteActivity.ARG_ROUTE_KEY);
         mCursorPosition = 0;
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
+        arguments.putParcelable(DetailRouteActivity.ARG_ROUTE_KEY,mRouteObject);
 
         // replace fragment
         Fragment newFragment;

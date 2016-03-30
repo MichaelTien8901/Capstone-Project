@@ -104,10 +104,10 @@ public class DetailRouteFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
+
         Bundle arguments = getArguments();
-        if (arguments != null && arguments.containsKey(ARG_ROUTE_KEY_ID)) {
-                mRouteObject = arguments.getParcelable(ARG_ROUTE_KEY_ID);
+        if (arguments != null && arguments.containsKey(DetailRouteActivity.ARG_ROUTE_KEY)) {
+                mRouteObject = arguments.getParcelable(DetailRouteActivity.ARG_ROUTE_KEY);
         }
     }
 
@@ -115,7 +115,7 @@ public class DetailRouteFragment extends Fragment implements
     public void onSaveInstanceState(Bundle outState) {
         if ( mRouteObject != null) {
             outState.putParcelable(SAVE_ARG_KEY, mRouteObject);
-            PrefUtils.saveRouteParcelableToPref(getContext(), getString(R.string.intent_route_key), mRouteObject);
+            PrefUtils.saveRouteParcelableToPref(getContext(), DetailRouteActivity.ARG_ROUTE_KEY, mRouteObject);
         }
         super.onSaveInstanceState(outState);
     }
@@ -142,12 +142,12 @@ public class DetailRouteFragment extends Fragment implements
                     .build();
         }
 
-        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
+;
         if ( savedInstanceState != null && savedInstanceState.containsKey(SAVE_ARG_KEY)) {
                 mRouteObject = savedInstanceState.getParcelable(SAVE_ARG_KEY);
         }
         if ( mRouteObject == null) {
-            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(getContext(), ARG_ROUTE_KEY_ID);
+            mRouteObject = PrefUtils.restoreRouteParcelableFromPref(getContext(), DetailRouteActivity.ARG_ROUTE_KEY);
         }
         if ( mRouteObject != null) {
             mRouteId = mRouteObject.routeId;

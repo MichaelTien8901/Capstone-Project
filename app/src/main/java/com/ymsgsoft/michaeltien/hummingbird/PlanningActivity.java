@@ -35,10 +35,11 @@ import butterknife.OnClick;
 public class PlanningActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
     final String LOG_TAG = PlaceActivity.class.getSimpleName();
+
     private SimpleDateFormat mFormatter = new SimpleDateFormat("MMMM dd yyyy hh:mm aa");
     public static final int DIRECTION_LOADER = 0;
-    final String PLAN_FROM_ID = "PLAN_FROM_ID";
-    final String PLAN_TO_ID = "PLAN_TO_ID";
+    public static final String PLAN_FROM_ID = "SAVE_FROM_ID";
+    public static final String PLAN_TO_ID = "SAVE_TO_ID";
     final String PLAN_LIST_VISIBLE_ID = "PLAN_LIST_VISIBLE_ID";
     private final int SEARCH_FROM_REQUEST_ID = 1;
     private final int SEARCH_TO_REQUEST_ID = 2;
@@ -109,7 +110,7 @@ public class PlanningActivity extends AppCompatActivity implements
                 mRouteAdapter.selectedRouteId = selected.mData.routeId;
                 // launch detail activity
                 Intent intent = new Intent(PlanningActivity.this, DetailRouteActivity.class);
-                intent.putExtra(getString(R.string.intent_route_key), selected.mData);
+                intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY,selected.mData);
                 intent.putExtra(PLAN_FROM_ID, mFromObject);
                 intent.putExtra(PLAN_TO_ID, mToObject);
                 startActivity(intent);
@@ -122,12 +123,13 @@ public class PlanningActivity extends AppCompatActivity implements
                 getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
         } else {
             Intent intent = getIntent();
-            final String ARG_PLAN_FROM_ID = getString(R.string.intent_plan_key_from);
-            final String ARG_PLAN_TO_ID = getString(R.string.intent_plan_key_to);
-            mFromObject = intent.getParcelableExtra(ARG_PLAN_FROM_ID);
-            if ( mFromObject != null)
-                mToObject = intent.getParcelableExtra(ARG_PLAN_TO_ID);
-            else {
+            mFromObject = intent.getParcelableExtra(PLAN_FROM_ID);
+            if ( mFromObject != null) {
+                mToObject = intent.getParcelableExtra(PLAN_TO_ID);
+                if (mToObject != null) {
+                    tryQueryRoutes();
+                }
+            } else {
                 // from back or up
                 getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
             }
@@ -144,12 +146,11 @@ public class PlanningActivity extends AppCompatActivity implements
         }
         updateSearchText();
         AdView mAdView = (AdView) findViewById(R.id.adView);
-//        AdRequest adRequest = new AdRequest.Builder().build();
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
+        AdRequest.Builder builder = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR);        // All emulators
+//                .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
 //                .setLocation(currentLocation)
-                .build();
+        AdRequest adRequest = builder.build();
         mAdView.loadAd(adRequest);
 
         mDepartView.setOnClickListener(new View.OnClickListener() {
@@ -228,7 +229,7 @@ public class PlanningActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mRouteAdapter.swapCursor(cursor);
-        if ( cursor != null) {
+        if ( cursor != null && cursor.getCount() != 0) {
             mListLayout.setVisibility(View.VISIBLE);
         }
     }

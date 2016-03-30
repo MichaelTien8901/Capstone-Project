@@ -33,5 +33,13 @@
         ads:adUnitId="@string/banner_ad_unit_id">
         <!--android:layout_gravity="bottom"-->
     </com.google.android.gms.ads.AdView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:tint="#ffffff"
+        app:srcCompat="@drawable/ic_map_directions" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -45,9 +45,8 @@ public class StreetViewFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
         if (getArguments() != null) {
-            mRouteObject = getArguments().getParcelable(ARG_ROUTE_KEY_ID);
+            mRouteObject = getArguments().getParcelable(DetailRouteActivity.ARG_ROUTE_KEY);
         }
 
     }

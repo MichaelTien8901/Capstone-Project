@@ -19,23 +19,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -49,6 +44,7 @@ import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAda
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -62,6 +58,8 @@ public class MapsActivity extends AppCompatActivity
     final String LOG_TAG = MapsActivity.class.getSimpleName();
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
     private final int MY_SEARCH_ACTIVITY_REQUEST_ID = 1;
+    private final int SEARCH_TO_REQUEST_ID = 2;
+
     protected FavoriteRecyclerViewAdapter mAdapter;
     public static final int FAVORITE_LOADER =1;
     /**
@@ -148,34 +146,49 @@ public class MapsActivity extends AppCompatActivity
         mAdView.loadAd(adRequest);
         buildGoogleApiClient();
     }
-    private void performSearch() {
-        Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
-        PlaceObject mFromObject = new PlaceObject();
-        mFromObject.title = "Here";
-        if ( mLastLocation == null) return;
-        //mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
-        mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        intent.putExtra(getString(R.string.intent_plan_key_from), mFromObject);
-        startActivity(intent);
-//        startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
-    }
+//    private void performSearch() {
+//        Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
+//        PlaceObject mFromObject = new PlaceObject();
+//        mFromObject.title = "Here";
+//        if ( mLastLocation == null) return;
+//        //mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
+//        mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
+//        intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
+//        startActivity(intent);
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case MY_SEARCH_ACTIVITY_REQUEST_ID:
-                if (resultCode == RESULT_OK) {
-                    String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
-                    //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
-                    CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
-//                    mSearchButton.setText(place_name);
-                }
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+//            case MY_SEARCH_ACTIVITY_REQUEST_ID:
+//                String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
+//                //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
+//                CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
+////                    mSearchButton.setText(place_name);
+//                break;
+//            case PLACE_PICKER_REQUEST:
+//                if ( resultCode == RESULT_OK) {
+//                    Place place = PlacePicker.getPlace(this, data);
+//                    String placeId = place.getId();
+//                }
+//                break;
+            case SEARCH_TO_REQUEST_ID:
+                if (mLastLocation == null) return;
+                PlaceObject mToObject = new PlaceObject();
+                String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
+                CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
+                mToObject.title = place_name.toString();
+                mToObject.placeId = place_id;
+                PlaceObject mFromObject = new PlaceObject();
+                mFromObject.title = "Here";
+                mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
+                intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
+                intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
+                startActivity(intent);
                 break;
-            case PLACE_PICKER_REQUEST:
-                if ( resultCode == RESULT_OK) {
-                    Place place = PlacePicker.getPlace(this, data);
-                    String placeId = place.getId();
-                }
+            }
         }
     }
 
@@ -264,12 +277,12 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_options, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_main_options, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -278,26 +291,26 @@ public class MapsActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-        if ( id == R.id.action_search) {
-//            performSearch();
-//            return true;
-            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-            try {
-                startActivityForResult(
-                        builder.build(this), PLACE_PICKER_REQUEST);
-
-            } catch (GooglePlayServicesNotAvailableException
-                    | GooglePlayServicesRepairableException e) {
-                // What did you do?? This is why we check Google Play services in onResume!!!
-                // The difference in these exception types is the difference between pausing
-                // for a moment to prompt the user to update/install/enable Play services vs
-                // complete and utter failure.
-                // If you prefer to manage Google Play services dynamically, then you can do so
-                // by responding to these exceptions in the right moment. But I prefer a cleaner
-                // user experience, which is why you check all of this when the app resumes,
-                // and then disable/enable features based on that availability.
-            }
-        }
+//        if ( id == R.id.action_search) {
+////            performSearch();
+////            return true;
+//            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+//            try {
+//                startActivityForResult(
+//                        builder.build(this), PLACE_PICKER_REQUEST);
+//
+//            } catch (GooglePlayServicesNotAvailableException
+//                    | GooglePlayServicesRepairableException e) {
+//                // What did you do?? This is why we check Google Play services in onResume!!!
+//                // The difference in these exception types is the difference between pausing
+//                // for a moment to prompt the user to update/install/enable Play services vs
+//                // complete and utter failure.
+//                // If you prefer to manage Google Play services dynamically, then you can do so
+//                // by responding to these exceptions in the right moment. But I prefer a cleaner
+//                // user experience, which is why you check all of this when the app resumes,
+//                // and then disable/enable features based on that availability.
+//            }
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -420,5 +433,11 @@ public class MapsActivity extends AppCompatActivity
             showCurrentPosition();
 //            mapReady = false;
         }
+    }
+    @OnClick(R.id.fab_direction)
+    public void directionPressed() {
+        Intent intent = new Intent(this, PlaceActivity.class);
+        startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
+
     }
 }
