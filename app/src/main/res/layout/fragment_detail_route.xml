@@ -75,7 +75,7 @@
                 <!--android:text="99"/>-->
         <!--</LinearLayout>-->
     <!--</LinearLayout>-->
-    <!--<include layout="@layout/route_title_view"/>-->
+    <!--<include layout="@layout/transit_no_view"/>-->
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="0dp"

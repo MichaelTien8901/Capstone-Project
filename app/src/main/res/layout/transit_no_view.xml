@@ -2,13 +2,7 @@
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="1dp"
-    android:layout_marginTop="1dp"
     android:orientation="vertical"
-    android:layout_marginStart="32dp"
-    android:layout_marginLeft="32dp"
-    android:layout_marginRight="40dp"
-    android:layout_marginEnd="40dp"
     android:background="@android:color/transparent"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
@@ -49,8 +43,6 @@
         android:paddingLeft="16dp"
         android:paddingStart="16dp"
         >
-        <!--android:paddingTop="16dp"-->
-        <!--android:paddingBottom="5dp"-->
         <ImageView
             android:id="@+id/list_item_transit_icon2"
             android:layout_width="wrap_content"
