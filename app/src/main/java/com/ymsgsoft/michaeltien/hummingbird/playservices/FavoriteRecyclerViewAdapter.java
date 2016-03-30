@@ -13,6 +13,7 @@ import com.ymsgsoft.michaeltien.hummingbird.R;
 import com.ymsgsoft.michaeltien.hummingbird.data.FavoriteColumns;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Michael Tien on 2016/3/28.
@@ -37,7 +38,9 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
     public void onBindViewHolder (final ViewHolder holder, Cursor cursor) {
         FavoriteObject data = holder.bindData(cursor);
         holder.mIdView.setText(data.id_name);
-        String time_formatted = DateFormat.getDateTimeInstance().format(data.query_time*1000);
+//        String time_formatted = DateFormat.getDateTimeInstance().format(data.query_time*1000);
+        DateFormat formatter = new SimpleDateFormat("MMM/dd/yyyy HH:mm");
+        String time_formatted = formatter.format(data.query_time*1000);
         holder.mDateTimeView.setText(time_formatted);
     }
 

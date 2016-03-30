@@ -34,11 +34,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ymsgsoft.michaeltien.hummingbird.TransitNoView.TransitNoView;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAdapter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -60,6 +62,8 @@ public class MapsActivity extends AppCompatActivity
     private Boolean locationReady = false, mapReady = false;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
     @Bind(R.id.list_favorites)  RecyclerView mRecyclerView;
+    @Bind(R.id.test_transit)
+    TransitNoView mTestTransitView;
     @Override
     public void onConnectionSuspended(int i) {
         // The connection to Google Play services was lost for some reason. We call connect() to
@@ -299,5 +303,9 @@ public class MapsActivity extends AppCompatActivity
         Toast.makeText(this, data.id_name, Toast.LENGTH_SHORT).show();
         mDrawer.closeDrawers();
     }
-
+    @OnClick(R.id.test_button)
+    public void testClick() {
+        mTestTransitView.setTransitNo("30,null,21");
+        mTestTransitView.setDeartureTime("TOMORROW");
+    }
 }

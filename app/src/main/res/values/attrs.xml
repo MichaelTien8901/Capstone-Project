@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TransitNoView">
+        <attr name="transit_numbers" format="string" />
+        <attr name="departure" format="string"/>
+        <attr name="duration" format="string"/>
+        <attr name="layout_file" format="reference"/>
+        <attr name="res_icon" format="reference"/>
+        <attr name="max_icons" format="integer"/>
+    </declare-styleable>
+</resources>
