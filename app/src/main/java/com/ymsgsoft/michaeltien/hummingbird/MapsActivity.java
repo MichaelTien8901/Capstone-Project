@@ -40,7 +40,6 @@ import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAda
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -302,10 +301,5 @@ public class MapsActivity extends AppCompatActivity
     public void OnItemClick(FavoriteRecyclerViewAdapter.FavoriteObject data, int position) {
         Toast.makeText(this, data.id_name, Toast.LENGTH_SHORT).show();
         mDrawer.closeDrawers();
-    }
-    @OnClick(R.id.test_button)
-    public void testClick() {
-        mTestTransitView.setTransitNo("30,null,21");
-        mTestTransitView.setDeartureTime("TOMORROW");
     }
 }

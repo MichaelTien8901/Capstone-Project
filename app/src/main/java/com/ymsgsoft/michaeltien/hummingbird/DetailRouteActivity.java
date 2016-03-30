@@ -11,12 +11,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import com.ymsgsoft.michaeltien.hummingbird.TransitNoView.TransitNoView;
 import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
 
 import butterknife.Bind;
@@ -31,9 +28,8 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
     protected RouteParcelable mRouteObject;
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
-    @Bind(R.id.fab_add)
-    FloatingActionButton mAddRemoveBtn;
-
+    @Bind(R.id.fab_add) FloatingActionButton mAddRemoveBtn;
+    @Bind(R.id.transit_no_view) TransitNoView mTransitNoView;
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -88,34 +84,37 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
                 .add(R.id.fragment_detail_container, fragment, "fragment_detail_tag")
                 .commit();
         if ( mRouteObject != null && mRouteObject.transitNo != null) {
-            createDetailTitleView(getLayoutInflater());
+//            createDetailTitleView(getLayoutInflater());
+            mTransitNoView.setDeartureTime(mRouteObject.departTime);
+            mTransitNoView.setDuration(mRouteObject.duration);
+            mTransitNoView.setTransitNo(mRouteObject.transitNo);
         }
     }
-    private void createDetailTitleView(LayoutInflater inflater) {
-        ((TextView) findViewById(R.id.detail_depart_time)).setText(mRouteObject.departTime);
-        ((TextView) findViewById(R.id.detail_duration)).setText(mRouteObject.duration);
-        String[] transits = mRouteObject.transitNo.split(",");
-        TextView transitNoView = (TextView) findViewById(R.id.detail_transit_no2);
-        if ( !transits[0].equals("null"))
-            transitNoView.setText(transits[0]);
-        else
-            transitNoView.setText("");
-        // create rest of bus number
-        if ( transits.length > 1 ) {
-            LinearLayout detail_title_container = (LinearLayout) findViewById(R.id.list_detail_title);
-            for (int i = 1; i < transits.length && i < 3; i++) {
-                View childView = inflater.inflate(R.layout.list_item_transit_no, null);
-                ImageView image = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
-                image.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_bus));
-                TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
-                if (!transits[i].equals("null"))
-                    textView.setText(transits[i]);
-                else
-                    textView.setText("");
-                detail_title_container.addView(childView);
-            }
-        }
-    }
+//    private void createDetailTitleView(LayoutInflater inflater) {
+//        ((TextView) findViewById(R.id.detail_depart_time)).setText(mRouteObject.departTime);
+//        ((TextView) findViewById(R.id.detail_duration)).setText(mRouteObject.duration);
+//        String[] transits = mRouteObject.transitNo.split(",");
+//        TextView transitNoView = (TextView) findViewById(R.id.detail_transit_no2);
+//        if ( !transits[0].equals("null"))
+//            transitNoView.setText(transits[0]);
+//        else
+//            transitNoView.setText("");
+//        // create rest of bus number
+//        if ( transits.length > 1 ) {
+//            LinearLayout detail_title_container = (LinearLayout) findViewById(R.id.list_detail_title);
+//            for (int i = 1; i < transits.length && i < 3; i++) {
+//                View childView = inflater.inflate(R.layout.list_item_transit_no, null);
+//                ImageView image = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
+//                image.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_bus));
+//                TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
+//                if (!transits[i].equals("null"))
+//                    textView.setText(transits[i]);
+//                else
+//                    textView.setText("");
+//                detail_title_container.addView(childView);
+//            }
+//        }
+//    }
 
     @OnClick(R.id.fab_navigate)
     public void navigate(View view) {
