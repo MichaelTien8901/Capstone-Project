@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.RouteAdapter;
 
@@ -140,8 +142,15 @@ public class PlanningActivity extends AppCompatActivity implements
             mToObject.title = "";
             mToObject.placeId = "";
         }
-
         updateSearchText();
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+//        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+                .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
+//                .setLocation(currentLocation)
+                .build();
+        mAdView.loadAd(adRequest);
 
         mDepartView.setOnClickListener(new View.OnClickListener() {
             @Override

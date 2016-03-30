@@ -22,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -105,6 +107,15 @@ public class MapsActivity extends AppCompatActivity
 //                getResources().getDrawable(R.drawable.line_divider)));
         mRecyclerView.setAdapter(mAdapter);
         getSupportLoaderManager().initLoader(FAVORITE_LOADER, null, this);
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+//        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+                .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
+//                .setLocation(currentLocation)
+                .build();
+        mAdView.loadAd(adRequest);
+
     }
     private void performSearch() {
         Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
