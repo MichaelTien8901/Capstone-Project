@@ -112,51 +112,6 @@ public class NavigateActivity extends AppCompatActivity implements
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-//        mModeButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ((Callback) mFragment).fabMyLocationPressed();
-//            }
-//        });
-//        mForwardButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                navigationForward();
-//            }
-//        });
-//        mBackwardButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                navigationBackward();
-//            }
-//        });
-//        mStreetviewButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                final String ARG_ROUTE_KEY_ID = getString(R.string.intent_route_key);
-//                mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
-//                mCursorPosition = 0;
-//                Bundle arguments = new Bundle();
-//                arguments.putParcelable(ARG_ROUTE_KEY_ID, mRouteObject);
-//
-//                // replace fragment
-//                Fragment newFragment;
-//                if ( mFragment instanceof NavigationFragment) {
-//                    newFragment = new StreetViewFragment();
-//                    mStreetviewButton.setImageResource(R.drawable.ic_map_black);
-//                }
-//                else {
-//                    newFragment = new NavigationFragment();
-//                    mStreetviewButton.setImageResource(R.drawable.ic_streetview_black);
-//                }
-//                newFragment.setArguments(arguments);
-//                getFragmentManager().beginTransaction()
-//                        .replace(R.id.fragment_navigation_container, newFragment, NAVIGATION_TAG)
-//                        .commit();
-//                mFragment = newFragment;
-//                completeStepUpdate();
-//            }
-//        });
         if ( savedInstanceState == null) {
             mRouteObject = getIntent().getParcelableExtra(ARG_ROUTE_KEY_ID);
             mCursorPosition = 0;

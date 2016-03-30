@@ -2,18 +2,11 @@ package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +18,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -182,7 +173,7 @@ public class NavigationFragment extends Fragment implements
             mCircle.setCenter(center);
         if ( mFlagMarker == null) {
             mFlagMarker = mMap.addMarker(new MarkerOptions().position(center));
-            mFlagMarker.setIcon(getBitmapDescriptor(getActivity(), R.drawable.ic_flag));
+            mFlagMarker.setIcon(Utils.getBitmapDescriptor(getActivity(), R.drawable.ic_flag));
             mFlagMarker.setAnchor((float)0.25, (float)0.833);
 
         } else {
@@ -281,28 +272,6 @@ public class NavigationFragment extends Fragment implements
         }
     }
 
-    public static float convertDpToPixel(float dp, Context context){
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return px;
-    }
-
-    private static BitmapDescriptor getBitmapDescriptor(Context context, int id) {
-        Drawable vectorDrawable;
-        if ( Build.VERSION.SDK_INT < 21) {
-            vectorDrawable = ContextCompat.getDrawable(context, id);
-        } else
-            vectorDrawable = context.getDrawable(id);
-        int h = (int) convertDpToPixel(40, context);
-        int w = (int) convertDpToPixel(40, context);
-        vectorDrawable.setBounds(0, 0, w, h);
-        Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bm);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bm);
-    }
-
     @Override
     public void locationUpdate(Location location) {
         // check current marker
@@ -318,7 +287,7 @@ public class NavigationFragment extends Fragment implements
         if ( mMarker == null) {
             mMarker = mMap.addMarker(new MarkerOptions().position(position));
 //            mMarker.setIcon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-            mMarker.setIcon(getBitmapDescriptor(getActivity(), R.drawable.ic_person_pin_black));
+            mMarker.setIcon(Utils.getBitmapDescriptor(getActivity(), R.drawable.ic_person_pin_black));
             mMarker.setAnchor((float)0.5, (float) (23.0/24.0));
             zoom = ZOOM_LEVEL;
         } else {

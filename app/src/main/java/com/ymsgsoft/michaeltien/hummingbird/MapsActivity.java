@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -25,16 +26,23 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAdapter;
@@ -47,21 +55,44 @@ public class MapsActivity extends AppCompatActivity
         OnMapReadyCallback,
         ConnectionCallbacks,
         OnConnectionFailedListener,
+        LocationListener,
         NavigationView.OnNavigationItemSelectedListener,
         LoaderManager.LoaderCallbacks<Cursor>,
         OnFavoriteItemClickListener {
+    final String LOG_TAG = MapsActivity.class.getSimpleName();
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
     private final int MY_SEARCH_ACTIVITY_REQUEST_ID = 1;
     protected FavoriteRecyclerViewAdapter mAdapter;
     public static final int FAVORITE_LOADER =1;
+    /**
+     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
+     */
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    /**
+     * The fastest rate for active location updates. Exact. Updates will never be more frequent
+     * than this value.
+     */
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     private GoogleMap mMap;
+    /**
+     * Provides the entry point to Google Play services.
+     */
     protected GoogleApiClient mGoogleApiClient;
+    /**
+     * Stores parameters for requests to the FusedLocationProviderApi.
+     */
+    protected LocationRequest mLocationRequest;
     protected Location mLastLocation;
     protected int REQUEST_LOCATION = 101;
+    final int PLACE_PICKER_REQUEST = 102;
     private Boolean locationReady = false, mapReady = false;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
     @Bind(R.id.list_favorites)  RecyclerView mRecyclerView;
+    private Marker mMarker;
+
     @Override
     public void onConnectionSuspended(int i) {
         // The connection to Google Play services was lost for some reason. We call connect() to
@@ -115,7 +146,7 @@ public class MapsActivity extends AppCompatActivity
 //                .setLocation(currentLocation)
                 .build();
         mAdView.loadAd(adRequest);
-
+        buildGoogleApiClient();
     }
     private void performSearch() {
         Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
@@ -128,19 +159,25 @@ public class MapsActivity extends AppCompatActivity
         startActivity(intent);
 //        startActivityForResult(intent, MY_SEARCH_ACTIVITY_REQUEST_ID);
     }
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        switch (requestCode) {
-//            case MY_SEARCH_ACTIVITY_REQUEST_ID:
-//                if (resultCode == RESULT_OK) {
-//                    String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
-//                    //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
-//                    CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
-////                    mSearchButton.setText(place_name);
-//                }
-//                break;
-//        }
-//    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case MY_SEARCH_ACTIVITY_REQUEST_ID:
+                if (resultCode == RESULT_OK) {
+                    String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
+                    //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
+                    CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
+//                    mSearchButton.setText(place_name);
+                }
+                break;
+            case PLACE_PICKER_REQUEST:
+                if ( resultCode == RESULT_OK) {
+                    Place place = PlacePicker.getPlace(this, data);
+                    String placeId = place.getId();
+                }
+        }
+    }
 
     @Override
     protected void onStart() {
@@ -154,31 +191,10 @@ public class MapsActivity extends AppCompatActivity
         super.onStop();
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.getUiSettings().setMapToolbarEnabled(false);
-
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map);
-//        View toolbar = ((View) mapFragment.getView().findViewById(Integer.parseInt("1")).
-//                getParent()).findViewById(Integer.parseInt("4"));
-//        // and next place it, for example, on bottom right (as Google Maps app)
-//        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) toolbar.getLayoutParams();
-//        // position on right bottom
-//        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-//        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-//        rlp.setMargins(0, 0, 30, 30);
-
         if (locationReady) {
             showCurrentPosition();
         } else {
@@ -188,31 +204,36 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Check Permissions Now
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_LOCATION);
-        } else {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mLastLocation != null) {
-                locationReady = true;
-                if (mapReady) {
-                    showCurrentPosition();
-                    mapReady = false;
-                }
-            }
-        }
-
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            // Check Permissions Now
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    REQUEST_LOCATION);
+//        } else {
+//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//            if (mLastLocation != null) {
+//                locationReady = true;
+//                if (mapReady) {
+//                    showCurrentPosition();
+//                    mapReady = false;
+//                }
+//            }
+//        }
+        startLocationUpdates();
     }
 
     protected void showCurrentPosition() {
-        LatLng Here = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(Here).title("You Are Here"));
-        CameraPosition target = CameraPosition.builder().target(Here).zoom(14).build();
+        LatLng here = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        if ( mMarker == null) {
+            mMarker = mMap.addMarker(new MarkerOptions().position(here).title("You Are Here"));
+            mMarker.setIcon(Utils.getBitmapDescriptor(this, R.drawable.ic_person_pin_black));
+            mMarker.setAnchor((float)0.5, (float) (23.0/24.0));
+        } else {
+            mMarker.setPosition(here);
+        }
+        CameraPosition target = CameraPosition.builder().target(here).zoom(14).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
-
     }
 
     @Override
@@ -249,6 +270,7 @@ public class MapsActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_main_options, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -257,8 +279,24 @@ public class MapsActivity extends AppCompatActivity
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if ( id == R.id.action_search) {
-            performSearch();
-            return true;
+//            performSearch();
+//            return true;
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            try {
+                startActivityForResult(
+                        builder.build(this), PLACE_PICKER_REQUEST);
+
+            } catch (GooglePlayServicesNotAvailableException
+                    | GooglePlayServicesRepairableException e) {
+                // What did you do?? This is why we check Google Play services in onResume!!!
+                // The difference in these exception types is the difference between pausing
+                // for a moment to prompt the user to update/install/enable Play services vs
+                // complete and utter failure.
+                // If you prefer to manage Google Play services dynamically, then you can do so
+                // by responding to these exceptions in the right moment. But I prefer a cleaner
+                // user experience, which is why you check all of this when the app resumes,
+                // and then disable/enable features based on that availability.
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -309,5 +347,78 @@ public class MapsActivity extends AppCompatActivity
     public void OnItemClick(FavoriteRecyclerViewAdapter.FavoriteObject data, int position) {
         Toast.makeText(this, data.id_name, Toast.LENGTH_SHORT).show();
         mDrawer.closeDrawers();
+    }
+    /**
+     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
+     * LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        Log.i(LOG_TAG, "Building GoogleApiClient");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        createLocationRequest();
+    }
+    /**
+     * Requests location updates from the FusedLocationApi.
+     */
+    protected void startLocationUpdates() {
+        // The final argument to {@code requestLocationUpdates()} is a LocationListener
+        // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Check Permissions Now
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION);
+        } else {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+    /**
+     * Removes location updates from the FusedLocationApi.
+     */
+    protected void stopLocationUpdates() {
+        // It is a good practice to remove location requests when the activity is in a paused or
+        // stopped state. Doing so helps battery performance and is especially
+        // recommended in applications that request frequent location updates.
+
+        // The final argument to {@code requestLocationUpdates()} is a LocationListener
+        // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+
+        // Sets the desired interval for active location updates. This interval is
+        // inexact. You may not receive updates at all if no location sources are available, or
+        // you may receive them slower than requested. You may also receive updates faster than
+        // requested if other applications are requesting location at a faster interval.
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        locationReady = true;
+        if (mapReady) {
+            showCurrentPosition();
+//            mapReady = false;
+        }
     }
 }

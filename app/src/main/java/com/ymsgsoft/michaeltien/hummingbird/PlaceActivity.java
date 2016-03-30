@@ -16,8 +16,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.PlaceAutocompleteAdapter;
 
 public class PlaceActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
@@ -28,8 +26,8 @@ public class PlaceActivity extends FragmentActivity implements GoogleApiClient.O
     private PlaceAutocompleteAdapter mAdapter;
     private AutoCompleteTextView mAutocompleteView;
 
-    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
-            new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
+//    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
+//            new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +54,8 @@ public class PlaceActivity extends FragmentActivity implements GoogleApiClient.O
 
         // Set up the adapter that will retrieve suggestions from the Places Geo Data API that cover
         // the entire world.
-        mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SYDNEY,
-                null);
+        mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, null, null);
+//        mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SYDNEY, null);
         mAutocompleteView.setAdapter(mAdapter);
 
         // Set up the 'clear text' button that clears the text in the autocomplete view
