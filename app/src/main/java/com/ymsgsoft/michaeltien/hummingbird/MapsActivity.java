@@ -178,6 +178,7 @@ public class MapsActivity extends AppCompatActivity
                 CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
                 mToObject.title = place_name.toString();
                 mToObject.placeId = place_id;
+                DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                 PlaceObject mFromObject = new PlaceObject();
                 mFromObject.title = "Here";
                 mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());

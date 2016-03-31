@@ -12,9 +12,7 @@ import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
  */
 public interface HistoryColumns {
     @DataType(INTEGER) @PrimaryKey @AutoIncrement String ID = "_id";
-    @DataType(TEXT) String START_NAME = "start_name";
-    @DataType(TEXT) String START_PLACE_ID = "start_place_id";
-    @DataType(TEXT) String END_NAME = "end_name";
-    @DataType(TEXT) String END_PLACE_ID = "end_place_id";
+    @DataType(TEXT) String PLACE_NAME = "place_name";
+    @DataType(TEXT) String PLACE_ID = "place_id";
     @DataType(INTEGER) String QUERY_TIME = "query_time"; // seconds
 }

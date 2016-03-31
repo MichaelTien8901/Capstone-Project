@@ -35,7 +35,8 @@ public class DbUtils {
         RoutesValuesBuilder builder = new RoutesValuesBuilder()
                 .overviewPolylines(route.overview_polyline.points)
                 .summary(route.summary)
-                .isFavorite(0);
+                .isFavorite(0)
+                .isArchive(0);
         StringBuilder warnings = new StringBuilder();
         for ( String s: route.warnings) {
             warnings.append(s + "  " );

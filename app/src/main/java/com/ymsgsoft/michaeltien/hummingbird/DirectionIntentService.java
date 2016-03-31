@@ -8,9 +8,11 @@ import android.content.Intent;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.MapApiService;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
 import com.ymsgsoft.michaeltien.hummingbird.data.DbUtils;
+import com.ymsgsoft.michaeltien.hummingbird.data.HistoryColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.FavoritesValuesBuilder;
+import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.HistoryValuesBuilder;
 import com.ymsgsoft.michaeltien.hummingbird.generated_data.values.RoutesValuesBuilder;
 
 import java.io.IOException;
@@ -33,12 +35,14 @@ public class DirectionIntentService extends IntentService {
     private static final String ACTION_QUERY_DIRECTION = "com.ymsgsoft.michaeltien.hummingbird.action.query_direction";
     private static final String ACTION_ADD_FAVORITE_ROUTE = "com.ymsgsoft.michaeltien.hummingbird.action.add_favorite_route";
     private static final String ACTION_REMOVE_FAVORITE_ROUTE = "com.ymsgsoft.michaeltien.hummingbird.action.remove_favorite_route";
+    private static final String ACTION_ADD_PLACE_HISTORY = "com.ymsgsoft.michaeltien.hummingbird.action.add_place_history";
 
     private static final String FROM_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.FROM_PARAM";
     private static final String TO_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.TO_PARAM";
     private static final String ID_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.ID_PARAM";
     private static final String ROUTE_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.ROUTE_PARAM";
     private static final String TIME_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.TIME_PARAM";
+    private static final String PLACE_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.PLACE_PARAM";
     public DirectionIntentService() {
         super("DirectionIntentService");
     }
@@ -73,14 +77,28 @@ public class DirectionIntentService extends IntentService {
         intent.putExtra(ROUTE_PARAM, routeId);
         context.startService(intent);
     }
+    public static void startActionSavePlace(Context context, PlaceObject place, long query_time) {
+        Intent intent = new Intent(context, DirectionIntentService.class);
+        intent.setAction( ACTION_ADD_PLACE_HISTORY);
+        intent.putExtra(PLACE_PARAM, place);
+        intent.putExtra(TIME_PARAM, query_time);
+        context.startService(intent);
+    }
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_QUERY_DIRECTION.equals(action)) {
-                // delete all route, except favorite
+                // save favorite
+                ContentValues values = new RoutesValuesBuilder().isArchive(1).values();
                 String mSelectionClause = RouteColumns.IS_FAVORITE + "= ?";
-                String[] mSelectionArgs = {"0"};
+                String[] mSelectionArgs = {String.valueOf(1)};
+                getContentResolver().update(RoutesProvider.Routes.CONTENT_URI, values,
+                        mSelectionClause, mSelectionArgs);
+
+                // delete all route, except marked archieve
+                mSelectionClause = RouteColumns.IS_ARCHIVE + "= ?";
+                mSelectionArgs[0] ="0";
                 getContentResolver().delete(RoutesProvider.Routes.CONTENT_URI,
                         mSelectionClause, mSelectionArgs);
                 final String param1 = intent.getStringExtra(FROM_PARAM);
@@ -99,6 +117,10 @@ public class DirectionIntentService extends IntentService {
             } else if ( ACTION_REMOVE_FAVORITE_ROUTE.equals(action)) {
                 final long routeId = intent.getLongExtra(ROUTE_PARAM, 0);
                 handleActionRemoveFavorite(routeId);
+            } else if ( ACTION_ADD_PLACE_HISTORY.equals(action)) {
+                long query_time = intent.getLongExtra(TIME_PARAM, 0);
+                PlaceObject place = intent.getParcelableExtra(PLACE_PARAM);
+                handleActionAddPlaceHistory( place, query_time);
             }
         }
     }
@@ -152,11 +174,30 @@ public class DirectionIntentService extends IntentService {
     }
     private void handleActionRemoveFavorite( long routeId){
         // route table
-        ContentValues values = new RoutesValuesBuilder().isFavorite(0).values();
+        ContentValues values = new RoutesValuesBuilder().isFavorite(0).isArchive(0).values();
         String mSelectionClause = RouteColumns.ID + "= ?";
         String[] mSelectionArgs = {String.valueOf(routeId)};
         getContentResolver().update(RoutesProvider.Routes.CONTENT_URI, values,
                 mSelectionClause, mSelectionArgs);
         getContentResolver().delete(RoutesProvider.Favorite.CONTENT_URI, mSelectionClause, mSelectionArgs);
+    }
+    private void handleActionAddPlaceHistory( PlaceObject place, long query_time) {
+        ContentValues values = new HistoryValuesBuilder()
+                .queryTime(query_time)
+                .values();
+        String mSelectionClause = HistoryColumns.PLACE_ID + "= ?";
+        String[] mSelectionArgs = {place.placeId};
+        int count = getContentResolver().update(RoutesProvider.History.CONTENT_URI,
+                values,
+                mSelectionClause,
+                mSelectionArgs
+                );
+        if ( count == 0) {
+            values = new HistoryValuesBuilder()
+                    .placeId(place.placeId)
+                    .placeName(place.title)
+                    .queryTime(query_time).values();
+            getContentResolver().insert(RoutesProvider.History.CONTENT_URI, values);
+        }
     }
 }

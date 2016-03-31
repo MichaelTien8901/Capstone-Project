@@ -193,6 +193,8 @@ public class PlanningActivity extends AppCompatActivity implements
                     CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
                     mFromObject.title = place_name.toString();
                     mFromObject.placeId = place_id;
+                    DirectionIntentService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
+
                     updateSearchText();
                     tryQueryRoutes();
                 }
@@ -205,6 +207,7 @@ public class PlanningActivity extends AppCompatActivity implements
                     CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
                     mToObject.title = place_name.toString();
                     mToObject.placeId = place_id;
+                    DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                     updateSearchText();
                     tryQueryRoutes();
                 }
@@ -224,7 +227,7 @@ public class PlanningActivity extends AppCompatActivity implements
 //        base_url.buildUpon().appendPath(RouteProvider.)
         return new CursorLoader(this,
                 RoutesProvider.Routes.CONTENT_URI,
-                null, RouteColumns.IS_FAVORITE + "=?", new String[]{"0"},null);
+                null, RouteColumns.IS_ARCHIVE + "=?", new String[]{"0"},null);
     }
 
     @Override
