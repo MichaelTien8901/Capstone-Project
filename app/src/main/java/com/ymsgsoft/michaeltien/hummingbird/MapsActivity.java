@@ -132,8 +132,6 @@ public class MapsActivity extends AppCompatActivity
 
         mAdapter = new FavoriteRecyclerViewAdapter(this, R.layout.list_item_favorite, null, this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL,
-//                getResources().getDrawable(R.drawable.line_divider)));
         mRecyclerView.setAdapter(mAdapter);
         getSupportLoaderManager().initLoader(FAVORITE_LOADER, null, this);
         AdView mAdView = (AdView) findViewById(R.id.adView);
@@ -217,22 +215,22 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            // Check Permissions Now
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                    REQUEST_LOCATION);
-//        } else {
-//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//            if (mLastLocation != null) {
-//                locationReady = true;
-//                if (mapReady) {
-//                    showCurrentPosition();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Check Permissions Now
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION);
+        } else {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                locationReady = true;
+                if (mapReady) {
+                    showCurrentPosition();
 //                    mapReady = false;
-//                }
-//            }
-//        }
+                }
+            }
+        }
         startLocationUpdates();
     }
 

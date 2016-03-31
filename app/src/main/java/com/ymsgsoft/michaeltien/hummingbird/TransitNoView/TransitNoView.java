@@ -18,6 +18,7 @@ import com.ymsgsoft.michaeltien.hummingbird.R;
 public class TransitNoView extends LinearLayout {
     private String mTransitNumbers;
     int mIconSrc; // icon resource
+    int mWalkIconSrc;
     int mMaxIcons;
     private String mDepartureTime;
     private String mDuration;
@@ -39,6 +40,7 @@ public class TransitNoView extends LinearLayout {
             mDuration = a.getString(R.styleable.TransitNoView_duration);
             layout = a.getResourceId(R.styleable.TransitNoView_layout_file, 0);
             mIconSrc = a.getResourceId(R.styleable.TransitNoView_res_icon, 0);
+            mWalkIconSrc = a.getResourceId(R.styleable.TransitNoView_walk_icon, 0);
             mMaxIcons = a.getInteger(R.styleable.TransitNoView_max_icons, 3);
         } finally {
             a.recycle();
@@ -52,8 +54,11 @@ public class TransitNoView extends LinearLayout {
         mDurationTextView.setText(mDuration);
         mTransitNoView = (TextView) findViewById(R.id.detail_transit_no2);
         ImageView image = (ImageView) findViewById(R.id.list_item_transit_icon2);
-        image.setImageDrawable(getResources().getDrawable(mIconSrc));
+//        image.setImageDrawable(getResources().getDrawable(mIconSrc));
         String[] transits = mTransitNumbers.split(",");
+        if ( transits[0].equals("walk")) {
+            image.setImageDrawable(getResources().getDrawable(mWalkIconSrc));
+        } else
         if ( !transits[0].equals("null"))
             mTransitNoView.setText(transits[0]);
         else
@@ -64,22 +69,35 @@ public class TransitNoView extends LinearLayout {
             for (int i = 1; i < transits.length && i < mMaxIcons; i++) {
                 View childView = mInflater.inflate(R.layout.list_item_transit_no, null);
                 ImageView image1 = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
-                image1.setImageDrawable(getResources().getDrawable(mIconSrc));
                 TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
-                if (!transits[i].equals("null"))
-                    textView.setText(transits[i]);
-                else
+                if ( transits[i].equals("w")) {
+                    image1.setImageDrawable(getResources().getDrawable(mWalkIconSrc));
                     textView.setText("");
-                mDetail_title_container.addView(childView);
+                } else {
+                    image1.setImageDrawable(getResources().getDrawable(mIconSrc));
+                    if (!transits[i].equals("null"))
+                        textView.setText(transits[i]);
+                    else
+                        textView.setText("");
+                    mDetail_title_container.addView(childView);
+                }
             }
         }
     }
     private void refreshView() {
         String[] transits = mTransitNumbers.split(",");
-        if ( !transits[0].equals("null"))
-            mTransitNoView.setText(transits[0]);
-        else
+        ImageView image = (ImageView) findViewById(R.id.list_item_transit_icon2);
+
+        if ( transits[0].equals("walk")) {
+            image.setImageDrawable(getResources().getDrawable(mWalkIconSrc));
             mTransitNoView.setText("");
+        } else {
+            image.setImageDrawable(getResources().getDrawable(mIconSrc));
+            if (!transits[0].equals("null"))
+                mTransitNoView.setText(transits[0]);
+            else
+                mTransitNoView.setText("");
+        }
         boolean doBreak = false;
         while (!doBreak) {
             int count = mDetail_title_container.getChildCount();

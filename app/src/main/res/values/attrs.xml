@@ -6,6 +6,7 @@
         <attr name="duration" format="string"/>
         <attr name="layout_file" format="reference"/>
         <attr name="res_icon" format="reference"/>
+        <attr name="walk_icon" format="reference" />
         <attr name="max_icons" format="integer"/>
     </declare-styleable>
 </resources>

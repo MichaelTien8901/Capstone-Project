@@ -13,6 +13,7 @@
         custom:duration="1 hr 20 min"
         custom:layout_file="@layout/transit_no_view"
         custom:res_icon="@drawable/ic_directions_bus"
+        custom:walk_icon="@drawable/ic_directions_walk"
         custom:max_icons="3"
         />
 </FrameLayout>

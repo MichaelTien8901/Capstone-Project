@@ -9,6 +9,10 @@ import android.text.TextUtils;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.ArrivalTime;
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.DepartureTime;
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Distance;
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Duration;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Leg;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Step;
@@ -40,6 +44,14 @@ public class DbUtils {
         return builder.values();
     }
     static ContentValues createLegValues(Leg leg, long routeId) {
+        if ( leg.departure_time == null)
+            leg.departure_time = new DepartureTime();
+        if ( leg.arrival_time == null)
+            leg.arrival_time = new ArrivalTime();
+        if ( leg.duration == null)
+            leg.duration = new Duration();
+        if ( leg.distance == null)
+            leg.distance = new Distance();
         return new LegsValuesBuilder()
                 .routesId( routeId)
                 .arrivalTime(leg.arrival_time.value)
@@ -132,20 +144,32 @@ public class DbUtils {
         String depart_time = "";
         String duration = "";
         String transitNo;
+        Boolean isWalking = false;
         long depart_time_value = 0;
         List<String> transit_list = new ArrayList<>();
 
         for ( Leg legObject: routeObject.legs ) {
-            if ( depart_time.isEmpty()) {
+            if ( depart_time.isEmpty() && legObject.departure_time != null) {
                 depart_time = legObject.departure_time.text;
                 depart_time_value = legObject.departure_time.value;
             }
-            if ( duration.isEmpty())
+            if ( duration.isEmpty() && legObject.duration != null)
                 duration = legObject.duration.text;
             for (Step step: legObject.steps) {
-                if ( step.travel_mode.equals("TRANSIT"))
-                    transit_list.add(step.transit_details.line.short_name);
+                if ( step.travel_mode.equals("TRANSIT")) {
+                    if ( step.transit_details != null &&
+                            step.transit_details.line != null &&
+                            step.transit_details.line.short_name != null )
+                        transit_list.add(step.transit_details.line.short_name);
+                    else
+                        transit_list.add("null");
+                } else if (step.travel_mode.equals("WALKING")) {
+                    isWalking = true;
+                }
             }
+        }
+        if ( transit_list.size() == 0 && isWalking) {
+            transit_list.add("walk");
         }
         transitNo = TextUtils.join(",", transit_list);
         values.put(RouteColumns.EXT_DEPART_TIME, depart_time);

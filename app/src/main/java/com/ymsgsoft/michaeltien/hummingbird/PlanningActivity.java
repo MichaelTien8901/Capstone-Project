@@ -21,6 +21,7 @@ import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.RouteAdapter;
 
@@ -223,7 +224,7 @@ public class PlanningActivity extends AppCompatActivity implements
 //        base_url.buildUpon().appendPath(RouteProvider.)
         return new CursorLoader(this,
                 RoutesProvider.Routes.CONTENT_URI,
-                null,null,null,null);
+                null, RouteColumns.IS_FAVORITE + "=?", new String[]{"0"},null);
     }
 
     @Override
