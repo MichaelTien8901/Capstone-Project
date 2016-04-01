@@ -61,14 +61,14 @@ public class DirectionIntentService extends IntentService {
         context.startService(intent);
     }
     public static void startActionSaveFavorite(Context context, PlaceObject from, PlaceObject to,
-                                               String id_name, long routeId, long start_time) {
+                                               String id_name, RouteParcelable routeObject, long query_time) {
         Intent intent = new Intent(context, DirectionIntentService.class);
         intent.setAction(ACTION_ADD_FAVORITE_ROUTE);
         intent.putExtra(FROM_PARAM, from);
         intent.putExtra(TO_PARAM, to);
         intent.putExtra(ID_PARAM, id_name);
-        intent.putExtra(ROUTE_PARAM, routeId);
-        intent.putExtra(TIME_PARAM, start_time);
+        intent.putExtra(ROUTE_PARAM, routeObject);
+        intent.putExtra(TIME_PARAM, query_time);
         context.startService(intent);
     }
     public static void startActionRemoveFavorite(Context context,long routeId) {
@@ -111,9 +111,9 @@ public class DirectionIntentService extends IntentService {
                 final PlaceObject mFrom = intent.getParcelableExtra(FROM_PARAM);
                 final PlaceObject mTo = intent.getParcelableExtra(TO_PARAM);
                 final String id_name = intent.getStringExtra(ID_PARAM);
-                final long routeId = intent.getLongExtra(ROUTE_PARAM, 0);
-                long start_time = intent.getLongExtra(TIME_PARAM, 0);
-                handleActionAddFavorite(mFrom, mTo, id_name, routeId, start_time);
+                final RouteParcelable routeObject = intent.getParcelableExtra(ROUTE_PARAM);
+                long query_time = intent.getLongExtra(TIME_PARAM, 0);
+                handleActionAddFavorite(mFrom, mTo, id_name, routeObject, query_time);
             } else if ( ACTION_REMOVE_FAVORITE_ROUTE.equals(action)) {
                 final long routeId = intent.getLongExtra(ROUTE_PARAM, 0);
                 handleActionRemoveFavorite(routeId);
@@ -153,22 +153,24 @@ public class DirectionIntentService extends IntentService {
             }
         }
     }
-    private void handleActionAddFavorite( PlaceObject from, PlaceObject to, String save_name, long routeId, long start_time){
+    private void handleActionAddFavorite( PlaceObject from, PlaceObject to, String save_name, RouteParcelable routeObject, long start_time){
         // route table
         ContentValues values = new RoutesValuesBuilder().isFavorite(1).values();
         String mSelectionClause = RouteColumns.ID + "= ?";
-        String[] mSelectionArgs = {String.valueOf(routeId)};
+        String[] mSelectionArgs = {String.valueOf(routeObject.routeId)};
         getContentResolver().update(RoutesProvider.Routes.CONTENT_URI, values,
                 mSelectionClause, mSelectionArgs);
         // favorite table
         ContentValues favorValues = new FavoritesValuesBuilder()
                 .idName(save_name)
-                .routesId(routeId)
+                .routesId(routeObject.routeId)
                 .startName(from.title)
                 .startPlaceId(from.placeId)
                 .endName(to.title)
                 .endPlaceId(to.placeId)
                 .queryTime(start_time)
+                .duration(routeObject.duration)
+                .transitNo(routeObject.transitNo)
                 .values();
         getContentResolver().insert(RoutesProvider.Favorite.CONTENT_URI, favorValues);
     }

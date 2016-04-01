@@ -2,11 +2,11 @@
 <resources>
     <declare-styleable name="TransitNoView">
         <attr name="transit_numbers" format="string" />
-        <attr name="departure" format="string"/>
-        <attr name="duration" format="string"/>
         <attr name="layout_file" format="reference"/>
         <attr name="res_icon" format="reference"/>
         <attr name="walk_icon" format="reference" />
         <attr name="max_icons" format="integer"/>
+        <attr name="text_color" format="color" />
+        <attr name="tint_color" format="color" />
     </declare-styleable>
 </resources>

@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import com.ymsgsoft.michaeltien.hummingbird.TransitNoView.TransitNoView;
 import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
@@ -30,6 +31,9 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
     protected PlaceObject mToObject;
     @Bind(R.id.fab_add) FloatingActionButton mAddRemoveBtn;
     @Bind(R.id.transit_no_view) TransitNoView mTransitNoView;
+    @Bind(R.id.detail_depart_time)
+    TextView mDepartTime;
+    @Bind(R.id.detail_duration) TextView mDuration;
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -84,8 +88,8 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
                 .commit();
         if ( mRouteObject != null && mRouteObject.transitNo != null) {
 //            createDetailTitleView(getLayoutInflater());
-            mTransitNoView.setDeartureTime(mRouteObject.departTime);
-            mTransitNoView.setDuration(mRouteObject.duration);
+            mDepartTime.setText(mRouteObject.departTime);
+            mDuration.setText(mRouteObject.duration);
             mTransitNoView.setTransitNo(mRouteObject.transitNo);
         }
     }
@@ -148,7 +152,12 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
     }
 
     private void addFavorite(String saveName) {
-        DirectionIntentService.startActionSaveFavorite(this, mFromObject, mToObject, saveName, mRouteObject.routeId, mRouteObject.deparTimeValue);
+        DirectionIntentService.startActionSaveFavorite(this,
+                mFromObject,
+                mToObject,
+                saveName,
+                mRouteObject,
+                mRouteObject.deparTimeValue == 0 ? System.currentTimeMillis() / 1000: mRouteObject.deparTimeValue );
         mRouteObject.isFavorite = true;
         mAddRemoveBtn.setImageResource(R.drawable.ic_remove);
     }

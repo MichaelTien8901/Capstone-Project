@@ -5,6 +5,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/list_item_transit_right"
         android:gravity="left"
         android:tint="#ffffff"
         android:src="@drawable/ic_chevron_right" />

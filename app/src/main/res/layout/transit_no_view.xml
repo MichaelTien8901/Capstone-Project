@@ -1,47 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:background="@android:color/transparent"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <!--android:background="@color/list_background"-->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingStart="16dp"
-            android:id = "@+id/detail_depart_time"
-            android:textColor="#f7fbff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_gravity="left|start"
-            android:text="9:30 pm"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id = "@+id/detail_duration"
-            android:textColor="#f7fbff"
-            android:textSize="16sp"
-            android:paddingRight="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="right|end"
-            android:layout_gravity="right|end"
-            android:text="1 hr 20 min"/>
-        <!--android:paddingRight="16dp"-->
-        <!--android:paddingEnd="16dp"-->
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/list_detail_title"
-        android:paddingLeft="16dp"
-        android:paddingStart="16dp"
         >
         <ImageView
             android:id="@+id/list_item_transit_icon2"
@@ -62,4 +29,4 @@
             android:layout_gravity="top"
             android:text="99"/>
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

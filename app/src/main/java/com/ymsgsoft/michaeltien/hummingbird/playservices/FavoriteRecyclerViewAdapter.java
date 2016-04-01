@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.ymsgsoft.michaeltien.hummingbird.OnFavoriteItemClickListener;
 import com.ymsgsoft.michaeltien.hummingbird.R;
+import com.ymsgsoft.michaeltien.hummingbird.TransitNoView.TransitNoView;
 import com.ymsgsoft.michaeltien.hummingbird.data.FavoriteColumns;
 
 import java.text.DateFormat;
@@ -42,12 +43,15 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
         DateFormat formatter = new SimpleDateFormat("MMM/dd/yyyy HH:mm");
         String time_formatted = formatter.format(data.query_time*1000);
         holder.mDateTimeView.setText(time_formatted);
+        holder.mTransNoView.setTransitNo(data.transitNo);
+//        holder.mTransNoView.setDuration(data.duration);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final View mView;
         public final TextView mIdView;
         public final TextView mDateTimeView;
+        public final TransitNoView mTransNoView;
         public FavoriteObject mItem;
 
         public ViewHolder(View itemView) {
@@ -56,6 +60,7 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
             mView = itemView;
             mIdView = (TextView) itemView.findViewById(R.id.favor_list_item_id_name);
             mDateTimeView = (TextView) itemView.findViewById(R.id.favor_list_item_departure_time);
+            mTransNoView = (TransitNoView) itemView.findViewById(R.id.transit_no_view);
         }
         public FavoriteObject bindData(Cursor cursor) {
             mItem = new FavoriteObject();
@@ -66,6 +71,8 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
             mItem.end_name   = cursor.getString(cursor.getColumnIndex(FavoriteColumns.END_NAME));
             mItem.end_place_id = cursor.getString(cursor.getColumnIndex(FavoriteColumns.END_PLACE_ID));
             mItem.query_time = cursor.getLong(cursor.getColumnIndex(FavoriteColumns.QUERY_TIME));
+            mItem.transitNo = cursor.getString(cursor.getColumnIndex(FavoriteColumns.TRANSIT_NO));
+            mItem.duration = cursor.getString(cursor.getColumnIndex(FavoriteColumns.DURATION));
             return mItem;
         }
         @Override
@@ -82,5 +89,7 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
         public String end_place_id;
         public long routeId;
         public long query_time;
+        public String transitNo;
+        public String duration;
     }
 }

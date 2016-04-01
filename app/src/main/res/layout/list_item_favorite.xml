@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="8dp"
-    >
+    android:paddingBottom="8dp">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,4 +22,16 @@
         android:gravity="left"
         android:maxLines="1"
         android:text="UBC TO BCIT"/>
+    <com.ymsgsoft.michaeltien.hummingbird.TransitNoView.TransitNoView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/transit_no_view"
+        custom:transit_numbers="55,1,null,4"
+        custom:layout_file="@layout/transit_no_view"
+        custom:res_icon="@drawable/ic_directions_bus"
+        custom:walk_icon="@drawable/ic_directions_walk"
+        custom:tint_color="#000000"
+        custom:text_color="#000000"
+        custom:max_icons="3"
+        />
 </LinearLayout>

@@ -4,16 +4,57 @@
     android:layout_height="match_parent"
     android:background="@color/list_background"
     xmlns:custom="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/transparent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!--android:background="@color/list_background"-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:id = "@+id/list_item_depart_time"
+            android:textColor="#f7fbff"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_gravity="left|start"
+            android:text="9:30 pm"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id = "@+id/list_item_duration"
+            android:textColor="#f7fbff"
+            android:textSize="16sp"
+            android:paddingRight="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="right|end"
+            android:layout_gravity="right|end"
+            android:text="1 hr 20 min"/>
+        <!--android:paddingRight="16dp"-->
+        <!--android:paddingEnd="16dp"-->
+    </LinearLayout>
+
     <com.ymsgsoft.michaeltien.hummingbird.TransitNoView.TransitNoView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/transit_no_view"
         custom:transit_numbers="55,1,null,4"
-        custom:departure="3:20pm"
-        custom:duration="1 hr 20 min"
         custom:layout_file="@layout/transit_no_view"
         custom:res_icon="@drawable/ic_directions_bus"
         custom:walk_icon="@drawable/ic_directions_walk"
+        custom:text_color="#ffffff"
+        custom:tint_color="#ffffff"
         custom:max_icons="3"
+        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
         />
+    </LinearLayout>
 </FrameLayout>

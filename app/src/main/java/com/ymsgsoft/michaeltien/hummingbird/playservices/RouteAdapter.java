@@ -6,6 +6,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.ymsgsoft.michaeltien.hummingbird.R;
 import com.ymsgsoft.michaeltien.hummingbird.RouteParcelable;
@@ -42,11 +43,11 @@ public class RouteAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         final RouteAdapter.RouteHolder mHolder = (RouteAdapter.RouteHolder) view.getTag();
         mHolder.bindData(cursor);
-        mHolder.mTransitView.setDeartureTime(mHolder.mData.departTime);
-        mHolder.mTransitView.setDuration(mHolder.mData.duration);
+//        mHolder.mTransitView.setDeartureTime(mHolder.mData.departTime);
+//        mHolder.mTransitView.setDuration(mHolder.mData.duration);
         mHolder.mTransitView.setTransitNo(mHolder.mData.transitNo);
-//        mHolder.departTime.setText( mHolder.mData.departTime);
-//        mHolder.duration.setText( mHolder.mData.duration);
+        mHolder.departTime.setText( mHolder.mData.departTime);
+        mHolder.duration.setText( mHolder.mData.duration);
 //        mHolder.imageIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_bus));
 //        String[] transits = mHolder.mData.transitNo.split(",");
 //        if ( !transits[0].equals("null"))
@@ -80,9 +81,9 @@ public class RouteAdapter extends CursorAdapter {
     public class RouteHolder {
         TransitNoView mTransitView;
 //        ImageView imageIcon;
-//        TextView departTime;
+        TextView departTime;
 //        TextView transitNo;
-//        TextView duration;
+        TextView duration;
 //        LinearLayout mContainer;
         public RouteParcelable mData;
         public void bindData(Cursor cursor) {
@@ -98,9 +99,9 @@ public class RouteAdapter extends CursorAdapter {
         public RouteHolder(View view) {
             mTransitView = (TransitNoView) view.findViewById(R.id.transit_no_view);
 //            imageIcon = (ImageView) view.findViewById(R.id.list_item_route_icon);
-//            departTime = (TextView) view.findViewById(R.id.list_item_depart_time);
+            departTime = (TextView) view.findViewById(R.id.list_item_depart_time);
 //            transitNo = (TextView) view.findViewById(R.id.list_item_transit_no);
-//            duration = (TextView) view.findViewById(R.id.list_item_duration);
+            duration = (TextView) view.findViewById(R.id.list_item_duration);
 //            mContainer = (LinearLayout) view.findViewById(R.id.list_item_routes_container);
         }
     }

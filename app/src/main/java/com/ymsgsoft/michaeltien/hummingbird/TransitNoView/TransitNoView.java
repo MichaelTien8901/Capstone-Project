@@ -20,12 +20,10 @@ public class TransitNoView extends LinearLayout {
     int mIconSrc; // icon resource
     int mWalkIconSrc;
     int mMaxIcons;
-    private String mDepartureTime;
-    private String mDuration;
+    int mTextColor;
+    int mTintColor;
 
     private final LinearLayout mDetail_title_container;
-    private TextView mDepartureTextView;
-    private TextView mDurationTextView;
     private TextView mTransitNoView;
     public TransitNoView(Context context, AttributeSet attrs){
         super(context, attrs);
@@ -36,24 +34,22 @@ public class TransitNoView extends LinearLayout {
                 0, 0);
         try {
             mTransitNumbers = a.getString(R.styleable.TransitNoView_transit_numbers);
-            mDepartureTime = a.getString(R.styleable.TransitNoView_departure);
-            mDuration = a.getString(R.styleable.TransitNoView_duration);
             layout = a.getResourceId(R.styleable.TransitNoView_layout_file, 0);
             mIconSrc = a.getResourceId(R.styleable.TransitNoView_res_icon, 0);
             mWalkIconSrc = a.getResourceId(R.styleable.TransitNoView_walk_icon, 0);
             mMaxIcons = a.getInteger(R.styleable.TransitNoView_max_icons, 3);
+            mTextColor = a.getColor(R.styleable.TransitNoView_text_color, 0xffffff);
+            mTintColor = a.getColor(R.styleable.TransitNoView_tint_color, 0xffffff);
         } finally {
             a.recycle();
         }
         LayoutInflater mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mInflater.inflate(layout, this, true);
-        mDepartureTextView = (TextView) findViewById(R.id.detail_depart_time);
-        mDepartureTextView.setText(mDepartureTime);
 
-        mDurationTextView = (TextView) findViewById(R.id.detail_duration);
-        mDurationTextView.setText(mDuration);
         mTransitNoView = (TextView) findViewById(R.id.detail_transit_no2);
+        mTransitNoView.setTextColor(mTextColor);
         ImageView image = (ImageView) findViewById(R.id.list_item_transit_icon2);
+        image.setColorFilter(mTintColor);
 //        image.setImageDrawable(getResources().getDrawable(mIconSrc));
         String[] transits = mTransitNumbers.split(",");
         if ( transits[0].equals("walk")) {
@@ -70,11 +66,14 @@ public class TransitNoView extends LinearLayout {
                 View childView = mInflater.inflate(R.layout.list_item_transit_no, null);
                 ImageView image1 = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
                 TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
+                textView.setTextColor(mTextColor);
                 if ( transits[i].equals("w")) {
                     image1.setImageDrawable(getResources().getDrawable(mWalkIconSrc));
+                    image1.setColorFilter(mTintColor);
                     textView.setText("");
                 } else {
                     image1.setImageDrawable(getResources().getDrawable(mIconSrc));
+                    image1.setColorFilter(mTintColor);
                     if (!transits[i].equals("null"))
                         textView.setText(transits[i]);
                     else
@@ -87,7 +86,6 @@ public class TransitNoView extends LinearLayout {
     private void refreshView() {
         String[] transits = mTransitNumbers.split(",");
         ImageView image = (ImageView) findViewById(R.id.list_item_transit_icon2);
-
         if ( transits[0].equals("walk")) {
             image.setImageDrawable(getResources().getDrawable(mWalkIconSrc));
             mTransitNoView.setText("");
@@ -116,9 +114,12 @@ public class TransitNoView extends LinearLayout {
         if ( transits.length > 1 ) {
             for (int i = 1; i < transits.length && i < mMaxIcons; i++) {
                 View childView = mInflater.inflate(R.layout.list_item_transit_no, null);
+                ((ImageView) childView.findViewById(R.id.list_item_transit_right)).setColorFilter(mTintColor);
                 ImageView image1 = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
                 image1.setImageDrawable(getResources().getDrawable(mIconSrc));
+                image1.setColorFilter(mTintColor);
                 TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
+                textView.setTextColor(mTextColor);
                 if (!transits[i].equals("null"))
                     textView.setText(transits[i]);
                 else
@@ -130,13 +131,5 @@ public class TransitNoView extends LinearLayout {
     public void setTransitNo(String transitNos) {
         mTransitNumbers = transitNos;
         refreshView();
-    }
-    public void setDeartureTime(String deartureTime) {
-        mDepartureTime = deartureTime;
-        mDepartureTextView.setText(mDepartureTime);
-    }
-    public void setDuration(String duration) {
-        mDuration = duration;
-        mDurationTextView.setText(mDuration);
     }
 }

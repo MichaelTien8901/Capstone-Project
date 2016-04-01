@@ -19,4 +19,6 @@ public interface  FavoriteColumns {
     @DataType(TEXT) String END_PLACE_ID = "end_place_id";
     @DataType(INTEGER) String QUERY_TIME = "query_time"; // seconds
     @DataType(INTEGER) String ROUTES_ID = "routeId";
+    @DataType(TEXT) String TRANSIT_NO = "transit_no";
+    @DataType(TEXT) String DURATION = "duration";
 }

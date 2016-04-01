@@ -3,24 +3,17 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -39,8 +32,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
-import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAdapter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,16 +43,13 @@ public class MapsActivity extends AppCompatActivity
         ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener,
-        NavigationView.OnNavigationItemSelectedListener,
-        LoaderManager.LoaderCallbacks<Cursor>,
-        OnFavoriteItemClickListener {
+        NavigationView.OnNavigationItemSelectedListener {
     final String LOG_TAG = MapsActivity.class.getSimpleName();
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
     private final int MY_SEARCH_ACTIVITY_REQUEST_ID = 1;
     private final int SEARCH_TO_REQUEST_ID = 2;
 
-    protected FavoriteRecyclerViewAdapter mAdapter;
-    public static final int FAVORITE_LOADER =1;
+    public static final int FAVORITE_REQUEST_ID =3;
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
@@ -88,7 +76,6 @@ public class MapsActivity extends AppCompatActivity
     final int PLACE_PICKER_REQUEST = 102;
     private Boolean locationReady = false, mapReady = false;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
-    @Bind(R.id.list_favorites)  RecyclerView mRecyclerView;
     private Marker mMarker;
 
     @Override
@@ -129,11 +116,6 @@ public class MapsActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
         }
-
-        mAdapter = new FavoriteRecyclerViewAdapter(this, R.layout.list_item_favorite, null, this);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mAdapter);
-        getSupportLoaderManager().initLoader(FAVORITE_LOADER, null, this);
         AdView mAdView = (AdView) findViewById(R.id.adView);
 //        AdRequest adRequest = new AdRequest.Builder().build();
         AdRequest adRequest = new AdRequest.Builder()
@@ -318,48 +300,19 @@ public class MapsActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
+        if ( id == R.id.nav_history) {
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_favorites) {
+            Intent intent = new Intent(this, FavoriteActivity.class);
+            startActivityForResult(intent, FAVORITE_REQUEST_ID);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    @Override
-    public Loader onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this,
-                RoutesProvider.Favorite.CONTENT_URI,
-                null,
-                null,
-                null,
-                null);
-    }
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mAdapter.swapCursor(cursor);
-    }
-    @Override
-    public void onLoaderReset(Loader loader) {
-        mAdapter.swapCursor(null);
-    }
 
-    @Override
-    public void OnItemClick(FavoriteRecyclerViewAdapter.FavoriteObject data, int position) {
-        Toast.makeText(this, data.id_name, Toast.LENGTH_SHORT).show();
-        mDrawer.closeDrawers();
-    }
     /**
      * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
      * LocationServices API.
