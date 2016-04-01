@@ -188,9 +188,18 @@ public class MapsActivity extends AppCompatActivity
             return null;
         }
     }
+    void startActivityPlanning( PlaceObject mFromObject, PlaceObject mToObject) {
+        Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
+        intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
+        intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
+        startActivity(intent);
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
+            PlaceObject mToObject = new PlaceObject();
+            PlaceObject mFromObject = new PlaceObject();
             switch (requestCode) {
             case FAVORITE_REQUEST_ID:
                 String start_place_id = data.getStringExtra(FavoriteActivity.START_PLACEID_PARAM);
@@ -200,6 +209,19 @@ public class MapsActivity extends AppCompatActivity
                 long routeId = data.getLongExtra(FavoriteActivity.ROUTE_ID_PARAM, 0);
                 startActivityRouteDetails(start_name, start_place_id, end_name, end_place_id, routeId);
                 break;
+            case HISTORY_REQUEST_ID:
+                String place_id1 = data.getStringExtra(HistoryActivity.PLACEID_PARAM);
+                String place_name1 = data.getStringExtra(HistoryActivity.PLACE_PARAM);
+                mToObject.title = place_name1;
+                mToObject.placeId = place_id1;
+                mFromObject.title = "Here";
+                mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                // save history, again to update query time
+                DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
+                // go to planning
+                startActivityPlanning(mFromObject, mToObject);
+                break;
+
 //            case PLACE_PICKER_REQUEST:
 //                if ( resultCode == RESULT_OK) {
 //                    Place place = PlacePicker.getPlace(this, data);
@@ -208,20 +230,14 @@ public class MapsActivity extends AppCompatActivity
 //                break;
             case SEARCH_TO_REQUEST_ID:
                 if (mLastLocation == null) return;
-                PlaceObject mToObject = new PlaceObject();
                 String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
                 CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
                 mToObject.title = place_name.toString();
                 mToObject.placeId = place_id;
                 DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
-                PlaceObject mFromObject = new PlaceObject();
                 mFromObject.title = "Here";
                 mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
-                intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
-                intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
-                startActivity(intent);
-                break;
+                startActivityPlanning(mFromObject, mToObject);
             }
         }
     }
@@ -354,8 +370,9 @@ public class MapsActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if ( id == R.id.nav_history) {
+            Intent intent = new Intent(this, HistoryActivity.class);
+            startActivityForResult(intent, HISTORY_REQUEST_ID);
         } else if (id == R.id.nav_manage) {
-
         } else if (id == R.id.nav_favorites) {
             Intent intent = new Intent(this, FavoriteActivity.class);
             startActivityForResult(intent, FAVORITE_REQUEST_ID);

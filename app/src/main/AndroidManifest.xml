@@ -104,6 +104,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ymsgsoft.michaeltien.hummingbird.MapsActivity" />
         </activity>
+        <activity
+            android:name=".HistoryActivity"
+            android:label="@string/title_activity_History"
+            android:parentActivityName=".MapsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ymsgsoft.michaeltien.hummingbird.MapsActivity" />
+        </activity>
     </application>
 
 </manifest>
