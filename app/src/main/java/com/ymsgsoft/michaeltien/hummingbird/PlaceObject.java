@@ -23,7 +23,10 @@ public class PlaceObject implements Parcelable {
 
     public PlaceObject() {
     }
-
+    public PlaceObject(String aTitle, String aPlaceId) {
+        title = aTitle;
+        placeId = aPlaceId;
+    }
     protected PlaceObject(Parcel in) {
         this.title = in.readString();
         this.placeId = in.readString();

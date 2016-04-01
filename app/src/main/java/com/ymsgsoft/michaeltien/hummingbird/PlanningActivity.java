@@ -112,8 +112,8 @@ public class PlanningActivity extends AppCompatActivity implements
                 // launch detail activity
                 Intent intent = new Intent(PlanningActivity.this, DetailRouteActivity.class);
                 intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY,selected.mData);
-                intent.putExtra(PLAN_FROM_ID, mFromObject);
-                intent.putExtra(PLAN_TO_ID, mToObject);
+                intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
+                intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
                 startActivity(intent);
             }
         });

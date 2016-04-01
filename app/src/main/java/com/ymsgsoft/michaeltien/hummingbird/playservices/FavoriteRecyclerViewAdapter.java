@@ -44,7 +44,7 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
         String time_formatted = formatter.format(data.query_time*1000);
         holder.mDateTimeView.setText(time_formatted);
         holder.mTransNoView.setTransitNo(data.transitNo);
-//        holder.mTransNoView.setDuration(data.duration);
+        holder.mDuration.setText(data.duration);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -52,6 +52,7 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
         public final TextView mIdView;
         public final TextView mDateTimeView;
         public final TransitNoView mTransNoView;
+        public final TextView mDuration;
         public FavoriteObject mItem;
 
         public ViewHolder(View itemView) {
@@ -61,6 +62,7 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
             mIdView = (TextView) itemView.findViewById(R.id.favor_list_item_id_name);
             mDateTimeView = (TextView) itemView.findViewById(R.id.favor_list_item_departure_time);
             mTransNoView = (TransitNoView) itemView.findViewById(R.id.transit_no_view);
+            mDuration = (TextView) itemView.findViewById(R.id.favor_list_item_duration);
         }
         public FavoriteObject bindData(Cursor cursor) {
             mItem = new FavoriteObject();

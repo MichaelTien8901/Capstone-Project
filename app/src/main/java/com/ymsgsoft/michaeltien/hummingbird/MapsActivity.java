@@ -3,7 +3,9 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -32,6 +34,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
+import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -46,10 +50,11 @@ public class MapsActivity extends AppCompatActivity
         NavigationView.OnNavigationItemSelectedListener {
     final String LOG_TAG = MapsActivity.class.getSimpleName();
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
-    private final int MY_SEARCH_ACTIVITY_REQUEST_ID = 1;
-    private final int SEARCH_TO_REQUEST_ID = 2;
 
-    public static final int FAVORITE_REQUEST_ID =3;
+    private final int SEARCH_TO_REQUEST_ID = 2;
+    public final int FAVORITE_REQUEST_ID = 3;
+    public final int HISTORY_REQUEST_ID = 4;
+    public final int PLACE_PICKER_REQUEST = 102;
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
@@ -73,7 +78,6 @@ public class MapsActivity extends AppCompatActivity
     protected LocationRequest mLocationRequest;
     protected Location mLastLocation;
     protected int REQUEST_LOCATION = 101;
-    final int PLACE_PICKER_REQUEST = 102;
     private Boolean locationReady = false, mapReady = false;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
     private Marker mMarker;
@@ -136,17 +140,66 @@ public class MapsActivity extends AppCompatActivity
 //        intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
 //        startActivity(intent);
 //    }
+    private void startActivityRouteDetails(String startName, String startPlaceId, String endName, String endPlaceId, long routeId){
+        new LoadRouteTask().execute(
+                String.valueOf(routeId),
+                startName,
+                startPlaceId,
+                endName,
+                endPlaceId);
+    }
+    private class LoadRouteTask extends AsyncTask<String, Void, RouteParcelable> {
+        PlaceObject mFromObject, mToObject;
+        @Override
+        protected void onPostExecute(RouteParcelable routeObject) {
+            Intent intent = new Intent(MapsActivity.this, DetailRouteActivity.class);
+            intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY,routeObject);
+            intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
+            intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
+            startActivity(intent);
+        }
 
+        @Override
+        protected RouteParcelable doInBackground(String... params) {
+            mFromObject = new PlaceObject(params[1], params[2]);
+            mToObject = new PlaceObject(params[3], params[4]);
+            RouteParcelable mData;
+            Cursor cursor = getContentResolver().query(
+                    RoutesProvider.Routes.CONTENT_URI,
+                    null,
+                    RouteColumns.ID + " =?",
+                    new String[]{params[0]},
+                    null );
+            if ( cursor != null ) {
+                if ( cursor.moveToFirst()) {
+                    mData = new RouteParcelable();
+                    mData.routeId = cursor.getInt(cursor.getColumnIndex(RouteColumns.ID));
+                    mData.overviewPolyline = cursor.getString(cursor.getColumnIndex(RouteColumns.OVERVIEW_POLYLINES));
+                    mData.transitNo = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_TRANSIT_NO));
+                    mData.departTime = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DEPART_TIME));
+                    mData.duration = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION));
+                    mData.isFavorite = cursor.getInt(cursor.getColumnIndex(RouteColumns.IS_FAVORITE)) == 1;
+                    mData.deparTimeValue = cursor.getLong(cursor.getColumnIndex(RouteColumns.DEPART_TIME_VALUE));
+                    cursor.close();
+                    return mData;
+                }
+                cursor.close();
+            }
+            return null;
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
-//            case MY_SEARCH_ACTIVITY_REQUEST_ID:
-//                String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
-//                //String place_name = data.getStringExtra(PlaceActivity.PLACE_TEXT);
-//                CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
-////                    mSearchButton.setText(place_name);
-//                break;
+            case FAVORITE_REQUEST_ID:
+                String start_place_id = data.getStringExtra(FavoriteActivity.START_PLACEID_PARAM);
+                String start_name = data.getStringExtra(FavoriteActivity.START_PARAM);
+                String end_place_id = data.getStringExtra(FavoriteActivity.END_PLACEID_PARAM);
+                String end_name = data.getStringExtra(FavoriteActivity.END_PARAM);
+                long routeId = data.getLongExtra(FavoriteActivity.ROUTE_ID_PARAM, 0);
+                startActivityRouteDetails(start_name, start_place_id, end_name, end_place_id, routeId);
+                break;
 //            case PLACE_PICKER_REQUEST:
 //                if ( resultCode == RESULT_OK) {
 //                    Place place = PlacePicker.getPlace(this, data);

@@ -1,30 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
+<android.support.v7.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
+<LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="8dp">
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
+        android:id = "@+id/favor_list_item_id_name"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:background="@color/list_background"
+        android:textColor="#ffffff"
+        android:gravity="left"
+        android:maxLines="1"
+        android:text="UBC TO BCIT"/>
+    <!--android:textSize="16sp"-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
         android:id = "@+id/favor_list_item_departure_time"
-        android:textSize="10dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#000000"
         android:gravity="left"
         android:text="9:30 pm"/>
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:id = "@+id/favor_list_item_id_name"
-        android:textSize="16sp"
+        android:paddingRight="8dp"
+        android:paddingEnd="8dp"
+        android:id = "@+id/favor_list_item_duration"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#000000"
-        android:gravity="left"
-        android:maxLines="1"
-        android:text="UBC TO BCIT"/>
+        android:gravity="right"
+        android:text="1 hour 4min"/>
+    </LinearLayout>
+    <!--android:textSize="10dp"-->
     <com.ymsgsoft.michaeltien.hummingbird.TransitNoView.TransitNoView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
         android:id="@+id/transit_no_view"
         custom:transit_numbers="55,1,null,4"
         custom:layout_file="@layout/transit_no_view"
@@ -35,3 +66,4 @@
         custom:max_icons="3"
         />
 </LinearLayout>
+</android.support.v7.widget.CardView>

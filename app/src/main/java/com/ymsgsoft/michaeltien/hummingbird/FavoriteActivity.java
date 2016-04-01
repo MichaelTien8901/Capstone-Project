@@ -20,7 +20,6 @@ import com.ymsgsoft.michaeltien.hummingbird.data.FavoriteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAdapter;
 
-
 public class FavoriteActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>,
         OnFavoriteItemClickListener {
@@ -28,6 +27,7 @@ public class FavoriteActivity extends AppCompatActivity
     public static final String END_PLACEID_PARAM = "end_placeid_param";
     public static final String START_PARAM = "start_param";
     public static final String END_PARAM = "end_param";
+    public static final String ROUTE_ID_PARAM = "route_id_param";
     private final int FAVORITE_LOADER = 200;
     protected FavoriteRecyclerViewAdapter mAdapter;
     @Override
@@ -127,6 +127,7 @@ public class FavoriteActivity extends AppCompatActivity
         resultData.putExtra(END_PLACEID_PARAM, data.end_place_id);
         resultData.putExtra(START_PARAM, data.start_name);
         resultData.putExtra(END_PARAM, data.end_name);
+        resultData.putExtra(ROUTE_ID_PARAM, data.routeId);
         setResult(RESULT_OK,resultData);
         finish();
     }
