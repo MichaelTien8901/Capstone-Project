@@ -34,7 +34,7 @@ public final class RoutesProvider {
         String MICRO_STEPS = "micro_steps";
         String NAVIGATES = "navigates";
         String HISTORY = "history";
-        String FAVORTE = "favorite";
+        String FAVORITE = "favorite";
     }
 
     private static Uri buildUri(String... paths) {
@@ -236,23 +236,23 @@ public final class RoutesProvider {
         }
     }
     @TableEndpoint(table = Tables.FAVORITES) public static class Favorite {
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" +  AUTHORITY + "/" + Path.FAVORTE;
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + AUTHORITY + "/" + Path.FAVORTE;
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" +  AUTHORITY + "/" + Path.FAVORITE;
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + AUTHORITY + "/" + Path.FAVORITE;
         @ContentUri(
-                path = Path.FAVORTE,
+                path = Path.FAVORITE,
                 type = CONTENT_TYPE,
                 defaultSort = FavoriteColumns.ID + " DESC"
         )
-        public static final Uri CONTENT_URI = buildUri(Path.FAVORTE);
+        public static final Uri CONTENT_URI = buildUri(Path.FAVORITE);
 
         @InexactContentUri(
                 name = "FAVORTE_ID",
-                path = Path.FAVORTE + "/#",
+                path = Path.FAVORITE + "/#",
                 type = CONTENT_ITEM_TYPE,
                 whereColumn = FavoriteColumns.ID,
                 pathSegment = 1)
         public static Uri withId(long favoriteId) {
-            return buildUri(Path.FAVORTE, String.valueOf(favoriteId));
+            return buildUri(Path.FAVORITE, String.valueOf(favoriteId));
         }
     }
 }

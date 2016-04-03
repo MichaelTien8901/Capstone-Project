@@ -49,6 +49,7 @@ public class MapsActivity extends AppCompatActivity
         LocationListener,
         NavigationView.OnNavigationItemSelectedListener {
     final String LOG_TAG = MapsActivity.class.getSimpleName();
+    public static final String PLACE_PARAM = "place_param";
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
 
     private final int SEARCH_TO_REQUEST_ID = 2;

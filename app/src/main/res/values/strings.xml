@@ -42,4 +42,9 @@
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="title_activity_favorite">Favorites</string>
     <string name="title_activity_History">Recent</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
+    <string name="widget_title">Hummingbird Navigation</string>
+    <string name="empty_recent_list">No Recent Places</string>
 </resources>

@@ -31,18 +31,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * <p/>
  */
 public class DirectionIntentService extends IntentService {
+
     // IntentService can perform, e.g. ACTION_QUERY_DIRECTION
     private static final String ACTION_QUERY_DIRECTION = "com.ymsgsoft.michaeltien.hummingbird.action.query_direction";
     private static final String ACTION_ADD_FAVORITE_ROUTE = "com.ymsgsoft.michaeltien.hummingbird.action.add_favorite_route";
     private static final String ACTION_REMOVE_FAVORITE_ROUTE = "com.ymsgsoft.michaeltien.hummingbird.action.remove_favorite_route";
     private static final String ACTION_ADD_PLACE_HISTORY = "com.ymsgsoft.michaeltien.hummingbird.action.add_place_history";
-
     private static final String FROM_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.FROM_PARAM";
     private static final String TO_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.TO_PARAM";
     private static final String ID_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.ID_PARAM";
     private static final String ROUTE_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.ROUTE_PARAM";
     private static final String TIME_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.TIME_PARAM";
     private static final String PLACE_PARAM = "com.ymsgsoft.michaeltien.hummingbird.extra.PLACE_PARAM";
+    // for broadcast message
+    public static final String ACTION_RECENT_DATA_UPDATED = "com.ymsgsoft.michaeltien.hummingbird.RECENT_DATA_UPDATED";
+
     public DirectionIntentService() {
         super("DirectionIntentService");
     }
@@ -201,5 +204,12 @@ public class DirectionIntentService extends IntentService {
                     .queryTime(query_time).values();
             getContentResolver().insert(RoutesProvider.History.CONTENT_URI, values);
         }
+        updateWidgets(getApplicationContext());
+    }
+    private static void updateWidgets(Context context) {
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_RECENT_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
     }
 }
