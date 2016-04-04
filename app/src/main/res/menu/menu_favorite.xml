@@ -2,11 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_navigate"
+        android:icon="@android:drawable/ic_menu_directions"
+        app:showAsAction="always|collapseActionView"
+        android:orderInCategory="101"
+        android:title="Direction"/>
+    <item
         android:id="@+id/action_refresh"
         android:icon="@android:drawable/ic_menu_revert"
         app:showAsAction="always|collapseActionView"
         android:orderInCategory="101"
-        android:title="Delete"/>
+        android:title="Reload"/>
     <item
         android:id="@+id/action_delete"
         android:icon="@android:drawable/ic_menu_delete"

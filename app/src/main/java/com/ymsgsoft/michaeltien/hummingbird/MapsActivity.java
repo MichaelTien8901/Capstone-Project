@@ -50,6 +50,11 @@ public class MapsActivity extends AppCompatActivity
         NavigationView.OnNavigationItemSelectedListener {
     final String LOG_TAG = MapsActivity.class.getSimpleName();
     public static final String PLACE_PARAM = "place_param";
+    public static final String FROM_PLACEID_PARAM = "from_placeid_param";
+    public static final String FROM_PLACE_TITLE_PARAM = "from_place_title_param";
+    public static final String TO_PACEID_PARAM = "to_placeid_param";
+    public static final String TO_PLACE__TITLE_PARAM = "to_place_param";
+
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
 
     private final int SEARCH_TO_REQUEST_ID = 2;
@@ -80,6 +85,7 @@ public class MapsActivity extends AppCompatActivity
     protected Location mLastLocation;
     protected PlaceObject mPendingPlaceObject;
     protected int REQUEST_LOCATION = 101;
+
     private Boolean locationReady = false, mapReady = false;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
     private Marker mMarker;
@@ -212,14 +218,24 @@ public class MapsActivity extends AppCompatActivity
                 String end_place_id = data.getStringExtra(FavoriteActivity.END_PLACEID_PARAM);
                 String end_name = data.getStringExtra(FavoriteActivity.END_PARAM);
                 long routeId = data.getLongExtra(FavoriteActivity.ROUTE_ID_PARAM, 0);
-                startActivityRouteDetails(start_name, start_place_id, end_name, end_place_id, routeId);
+                String action = data.getStringExtra(FavoriteActivity.ACTION_PARAM);
+                if ( FavoriteActivity.ACTION_LOAD.equals(action)) {
+                    startActivityRouteDetails(start_name, start_place_id, end_name, end_place_id, routeId);
+                } else if ( FavoriteActivity.ACTION_PLANNING.equals(action)) {
+                    mFromObject = new PlaceObject(start_name, start_place_id);
+                    mToObject = new PlaceObject(end_name, end_place_id);
+                    DirectionIntentService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
+                    DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
+                    // go to planning
+                    startActivityPlanning(mFromObject, mToObject);
+                }
                 break;
             case HISTORY_REQUEST_ID:
                 String place_id1 = data.getStringExtra(HistoryActivity.PLACEID_PARAM);
                 String place_name1 = data.getStringExtra(HistoryActivity.PLACE_PARAM);
                 mToObject.title = place_name1;
                 mToObject.placeId = place_id1;
-                mFromObject.title = "Here";
+                mFromObject.title = getString(R.string.default_location_title);
                 mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 // save history, again to update query time
                 DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
@@ -240,7 +256,7 @@ public class MapsActivity extends AppCompatActivity
                 mToObject.title = place_name.toString();
                 mToObject.placeId = place_id;
                 DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
-                mFromObject.title = "Here";
+                mFromObject.title = getString(R.string.default_location_title);
                 mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 startActivityPlanning(mFromObject, mToObject);
             }
@@ -462,7 +478,7 @@ public class MapsActivity extends AppCompatActivity
         }
         if ( mPendingPlaceObject != null) {
             PlaceObject mFromObject = new PlaceObject();
-            mFromObject.title = "Here";
+            mFromObject.title = getString(R.string.default_location_title);
             mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
             // save history, again to update query time
             DirectionIntentService.startActionSavePlace(this, mPendingPlaceObject, System.currentTimeMillis());

@@ -28,7 +28,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
@@ -161,33 +160,6 @@ public class DetailRouteFragment extends Fragment implements
         return view;
     }
 
-//    private void createDetailTitleView(LayoutInflater inflater, View view) {
-//        ((TextView) view.findViewById(R.id.detail_depart_time)).setText(mRouteObject.departTime);
-//        ((TextView) view.findViewById(R.id.detail_duration)).setText(mRouteObject.duration);
-//        String[] transits = mRouteObject.transitNo.split(",");
-//        TextView transitNoView = (TextView) view.findViewById(R.id.detail_transit_no2);
-//        if ( !transits[0].equals("null"))
-//            transitNoView.setText(transits[0]);
-//        else
-//            transitNoView.setText("");
-//        // create rest of bus number
-//        if ( transits.length > 1 ) {
-//            LinearLayout detail_title_container = (LinearLayout) view.findViewById(R.id.list_detail_title);
-//            for (int i = 1; i < transits.length && i < 3; i++) {
-//                View childView = inflater.inflate(R.layout.list_item_transit_no, null);
-//                ImageView image = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
-//                image.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_directions_bus));
-//                TextView textView = (TextView) childView.findViewById(R.id.list_item_transit_no1);
-//                if (!transits[i].equals("null"))
-//                    textView.setText(transits[i]);
-//                else
-//                    textView.setText("");
-//                detail_title_container.addView(childView);
-//            }
-//        }
-//    }
-
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -209,10 +181,10 @@ public class DetailRouteFragment extends Fragment implements
     }
     void drawOverviewPolyline(String polyline) {
         if ( polyline != null ) {
-            LatLng Here = new LatLng( 49.2649, -123.24169 );
-            mMap.addMarker(new MarkerOptions().position(Here).title("You Are Here"));
-            CameraPosition target = CameraPosition.builder().target(Here).zoom(10).build();
-            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
+//            LatLng Here = new LatLng( 49.2649, -123.24169 );
+//            mMap.addMarker(new MarkerOptions().position(Here).title("You Are Here"));
+//            CameraPosition target = CameraPosition.builder().target(Here).zoom(10).build();
+//            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
 
             List<LatLng> points = PolyUtil.decode(polyline);
             PolylineOptions options = new PolylineOptions()
@@ -231,7 +203,8 @@ public class DetailRouteFragment extends Fragment implements
                 public void onCameraChange(CameraPosition cameraPosition) {
                     mMap.setOnCameraChangeListener(null);
                     try {
-                        mMap.animateCamera(cu);
+//                        mMap.animateCamera(cu);
+                        mMap.moveCamera(cu);
                     } catch (IllegalStateException e) {
                     }
                 }
@@ -304,17 +277,6 @@ public class DetailRouteFragment extends Fragment implements
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION);
-        } else {
-//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//            if (mLastLocation != null) {
-//                locationReady = true;
-//                if ( mapReady) {
-//                    showCurrentPosition();
-//                    mapReady = false;
-//                }
-////            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-////            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-//            }
         }
 
     }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.MapApiService;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
 import com.ymsgsoft.michaeltien.hummingbird.data.DbUtils;
+import com.ymsgsoft.michaeltien.hummingbird.data.FavoriteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.HistoryColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
@@ -184,6 +185,7 @@ public class DirectionIntentService extends IntentService {
         String[] mSelectionArgs = {String.valueOf(routeId)};
         getContentResolver().update(RoutesProvider.Routes.CONTENT_URI, values,
                 mSelectionClause, mSelectionArgs);
+        mSelectionClause = FavoriteColumns.ROUTES_ID+ "= ?";
         getContentResolver().delete(RoutesProvider.Favorite.CONTENT_URI, mSelectionClause, mSelectionArgs);
     }
     private void handleActionAddPlaceHistory( PlaceObject place, long query_time) {

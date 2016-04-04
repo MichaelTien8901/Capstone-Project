@@ -2,6 +2,7 @@ package com.ymsgsoft.michaeltien.hummingbird.playservices;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,12 +24,14 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
     protected int mLayout;
     protected Context mContext;
     protected OnFavoriteItemClickListener mListener;
+    private int mSelectedPosition = -1;
     public FavoriteRecyclerViewAdapter(Context context, int layout, Cursor c, OnFavoriteItemClickListener listener) {
         super(c);
         mLayout = layout;
         mContext = context;
         mListener = listener;
     }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -45,8 +48,14 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
         holder.mDateTimeView.setText(time_formatted);
         holder.mTransNoView.setTransitNo(data.transitNo);
         holder.mDuration.setText(data.duration);
+        if ( cursor.getPosition() == mSelectedPosition) {
+            holder.mIdView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+        } else
+            holder.mIdView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.list_background));
     }
-
+    public void resetSelection() {
+        mSelectedPosition = -1;
+    }
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final View mView;
         public final TextView mIdView;
@@ -79,8 +88,21 @@ public class FavoriteRecyclerViewAdapter extends CursorRecyclerAdapter<FavoriteR
         }
         @Override
         public void onClick(View v) {
-            if ( mListener != null)
-                mListener.OnItemClick( mItem, getAdapterPosition());
+            if ( mListener != null) {
+                int position = getAdapterPosition();
+                if ( mSelectedPosition != position) {
+                    int previous_position = mSelectedPosition;
+                    mSelectedPosition = position;
+                    if ( previous_position != -1) {
+                        notifyItemChanged(previous_position);
+                    }
+                    mListener.OnItemClick(mItem, position);
+                } else {
+                    mSelectedPosition = -1;
+                    mListener.OnItemClick(null, position);
+                }
+                notifyItemChanged(position);
+            }
         }
     }
     public class FavoriteObject {

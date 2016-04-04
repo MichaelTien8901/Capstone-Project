@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -96,12 +95,9 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
 
     @OnClick(R.id.fab_navigate)
     public void navigate(View view) {
-        Snackbar.make(view, "Navigate", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
         Intent intent = new Intent(DetailRouteActivity.this, NavigateActivity.class);
         intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY, mRouteObject);
         startActivity(intent);
-
     }
     @OnClick(R.id.fab_add)
     public void addFavoriteClick(View view) {
@@ -113,7 +109,7 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
                 suggest_name = mToObject.title;
             DialogFragment newFragment = new FavoriteDialog();
             Bundle bundle = new Bundle();
-            bundle.putString("SUGGEST_NAME", suggest_name);
+            bundle.putString(FavoriteDialog.SUGGEST_NAME, suggest_name);
             newFragment.setArguments(bundle);
             newFragment.show(getFragmentManager(), "TagFavoriteDialog");
         } else {

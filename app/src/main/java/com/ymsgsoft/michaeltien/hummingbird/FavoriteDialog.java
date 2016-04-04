@@ -15,6 +15,7 @@ import android.widget.TextView;
  * Created by Michael Tien on 2016/3/28.
  */
  public class FavoriteDialog extends DialogFragment {
+    public static final String SUGGEST_NAME="SUGGEST_NAME";
     public interface FavoriteDialogListener {
         void onDialogPositiveClick(DialogFragment dialog, String saveName);
     }
@@ -37,7 +38,7 @@ import android.widget.TextView;
     protected EditText mText;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String id_name = getArguments().getString("SUGGEST_NAME", "");
+        String id_name = getArguments().getString(SUGGEST_NAME, "");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();

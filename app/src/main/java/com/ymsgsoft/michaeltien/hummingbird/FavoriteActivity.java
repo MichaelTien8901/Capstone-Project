@@ -28,8 +28,12 @@ public class FavoriteActivity extends AppCompatActivity
     public static final String START_PARAM = "start_param";
     public static final String END_PARAM = "end_param";
     public static final String ROUTE_ID_PARAM = "route_id_param";
+    public static final String ACTION_PARAM = "action_param";
+    public static final String ACTION_LOAD = "action_load";
+    public static final String ACTION_PLANNING = "action_planning";
     private final int FAVORITE_LOADER = 200;
     protected FavoriteRecyclerViewAdapter mAdapter;
+    FavoriteRecyclerViewAdapter.FavoriteObject mData;
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mAdapter.swapCursor(data);
@@ -77,7 +81,9 @@ public class FavoriteActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_favorite, menu);
         return true;
     }
-
+    private void showNoSelectionWarning() {
+        Toast.makeText(this, R.string.favorite_no_selected_item, Toast.LENGTH_SHORT).show();
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -88,11 +94,22 @@ public class FavoriteActivity extends AppCompatActivity
             if (getSupportFragmentManager().getBackStackEntryCount() > 0)
                 getSupportFragmentManager().popBackStack();
             return true;
+        } else if (id == R.id.action_navigate) {
+            if (mData != null)
+                startLoadFavoriteRouteAction(mData, ACTION_LOAD);
+            else showNoSelectionWarning();
+            return true;
         } else if (id == R.id.action_delete) {
-            Toast.makeText(this, "delete", Toast.LENGTH_SHORT).show();
+            if ( mData != null) {
+                DirectionIntentService.startActionRemoveFavorite(this, mData.routeId );
+                mData = null;
+                mAdapter.resetSelection();
+            } else showNoSelectionWarning();
             return true;
         } else if ( id == R.id.action_refresh) {
-            Toast.makeText(this, "refresh", Toast.LENGTH_SHORT).show();
+            if ( mData != null ){
+                startLoadFavoriteRouteAction(mData, ACTION_PLANNING);
+            } else showNoSelectionWarning();
             return true;
         } else if ( id == R.id.action_share) {
             Toast.makeText(this, "share", Toast.LENGTH_SHORT).show();
@@ -120,9 +137,10 @@ public class FavoriteActivity extends AppCompatActivity
 //            }
 
     }
-    @Override
-    public void OnItemClick(FavoriteRecyclerViewAdapter.FavoriteObject data, int position) {
+
+    void startLoadFavoriteRouteAction(FavoriteRecyclerViewAdapter.FavoriteObject data, String action ) {
         Intent resultData = new Intent();
+        resultData.putExtra(ACTION_PARAM, action); // load details or planning
         resultData.putExtra(START_PLACEID_PARAM, data.start_place_id);
         resultData.putExtra(END_PLACEID_PARAM, data.end_place_id);
         resultData.putExtra(START_PARAM, data.start_name);
@@ -130,6 +148,12 @@ public class FavoriteActivity extends AppCompatActivity
         resultData.putExtra(ROUTE_ID_PARAM, data.routeId);
         setResult(RESULT_OK,resultData);
         finish();
+
+    }
+    @Override
+    public void OnItemClick(FavoriteRecyclerViewAdapter.FavoriteObject data, int position) {
+        mData = data;
+//        startLoadFavoriteRouteAction( mData );
     }
 
     @Override

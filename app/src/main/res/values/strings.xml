@@ -47,4 +47,6 @@
 
     <string name="widget_title">Hummingbird</string>
     <string name="empty_recent_list">No Recent Places</string>
+    <string name="default_location_title">Here</string>
+    <string name="favorite_no_selected_item">No selected item!</string>
 </resources>
