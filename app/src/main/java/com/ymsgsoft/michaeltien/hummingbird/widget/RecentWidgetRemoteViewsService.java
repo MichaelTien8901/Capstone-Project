@@ -16,9 +16,6 @@ import com.ymsgsoft.michaeltien.hummingbird.R;
 import com.ymsgsoft.michaeltien.hummingbird.data.HistoryColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 
 
 /**
@@ -82,10 +79,10 @@ public class RecentWidgetRemoteViewsService extends RemoteViewsService {
                 String place_id = data.getString(data.getColumnIndex(HistoryColumns.PLACE_ID));
                 PlaceObject placeObject = new PlaceObject(place_name, place_id);
                 views.setTextViewText(R.id.widget_list_item_place, place_name);
-                Long query_time = data.getLong(data.getColumnIndex(HistoryColumns.QUERY_TIME));
-                DateFormat formatter = new SimpleDateFormat("MMM/dd/yyyy HH:mm");
-                String time_formatted = formatter.format(query_time);
-                views.setTextViewText(R.id.widget_list_item_time, time_formatted);
+//                Long query_time = data.getLong(data.getColumnIndex(HistoryColumns.QUERY_TIME));
+//                DateFormat formatter = new SimpleDateFormat("MMM/dd/yyyy HH:mm");
+//                String time_formatted = formatter.format(query_time);
+//                views.setTextViewText(R.id.widget_list_item_time, time_formatted);
 
                 String description = place_name;
 

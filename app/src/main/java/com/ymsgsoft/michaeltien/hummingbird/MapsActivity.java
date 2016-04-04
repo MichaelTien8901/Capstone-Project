@@ -78,6 +78,7 @@ public class MapsActivity extends AppCompatActivity
      */
     protected LocationRequest mLocationRequest;
     protected Location mLastLocation;
+    protected PlaceObject mPendingPlaceObject;
     protected int REQUEST_LOCATION = 101;
     private Boolean locationReady = false, mapReady = false;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
@@ -120,6 +121,9 @@ public class MapsActivity extends AppCompatActivity
         }
         if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
+        } else {
+            Intent intent = getIntent();
+            mPendingPlaceObject =intent.getParcelableExtra(PLACE_PARAM);
         }
         AdView mAdView = (AdView) findViewById(R.id.adView);
 //        AdRequest adRequest = new AdRequest.Builder().build();
@@ -455,6 +459,16 @@ public class MapsActivity extends AppCompatActivity
         if (mapReady) {
             showCurrentPosition();
 //            mapReady = false;
+        }
+        if ( mPendingPlaceObject != null) {
+            PlaceObject mFromObject = new PlaceObject();
+            mFromObject.title = "Here";
+            mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            // save history, again to update query time
+            DirectionIntentService.startActionSavePlace(this, mPendingPlaceObject, System.currentTimeMillis());
+            // go to planning
+            startActivityPlanning(mFromObject, mPendingPlaceObject);
+            mPendingPlaceObject = null;
         }
     }
     @OnClick(R.id.fab_direction)

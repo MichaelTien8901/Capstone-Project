@@ -8,35 +8,42 @@
     android:background="@color/list_background"
     >
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:background="@color/list_background"
         >
-        <TextView
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingStart="8dp"
-            android:id = "@+id/widget_list_item_place"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:background="@color/list_background"
-            android:textColor="#ffffff"
-            android:gravity="left"
-            android:maxLines="1"
-            android:text="UBC TO BCIT"/>
-        <!--android:textSize="16sp"-->
+            android:src="@drawable/ic_history_24dp"
+            android:tint="#ffffff"
+            />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="8dp"
             android:paddingStart="8dp"
-            android:id = "@+id/widget_list_item_time"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:background="@color/list_background"
+            android:id = "@+id/widget_list_item_place"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#ffffff"
             android:gravity="left"
-            android:text="9:30 pm"/>
+            android:maxLines="1"
+            android:text="UBC TO BCIT"/>
+        <!--android:textSize="16sp"-->
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:paddingLeft="8dp"-->
+            <!--android:paddingStart="8dp"-->
+            <!--android:id = "@+id/widget_list_item_time"-->
+            <!--android:textSize="12sp"-->
+            <!--android:background="#ffffff"-->
+            <!--android:textColor="#7eaf92"-->
+            <!--android:gravity="left"-->
+            <!--android:text="9:30 pm"/>-->
     </LinearLayout>
 </FrameLayout>
 
