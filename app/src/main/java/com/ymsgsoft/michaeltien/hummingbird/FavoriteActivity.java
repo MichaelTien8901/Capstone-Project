@@ -5,6 +5,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ymsgsoft.michaeltien.hummingbird.data.FavoriteColumns;
+import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.FavoriteRecyclerViewAdapter;
 
@@ -84,6 +86,9 @@ public class FavoriteActivity extends AppCompatActivity
     private void showNoSelectionWarning() {
         Toast.makeText(this, R.string.favorite_no_selected_item, Toast.LENGTH_SHORT).show();
     }
+    private void startShareIntent(FavoriteRecyclerViewAdapter.FavoriteObject data) {
+        new ShareRouteTask().execute(data);
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -112,7 +117,9 @@ public class FavoriteActivity extends AppCompatActivity
             } else showNoSelectionWarning();
             return true;
         } else if ( id == R.id.action_share) {
-            Toast.makeText(this, "share", Toast.LENGTH_SHORT).show();
+            if ( mData != null) {
+                startShareIntent(mData);
+            } else showNoSelectionWarning();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -165,4 +172,44 @@ public class FavoriteActivity extends AppCompatActivity
         }
 //        super.onBackPressed();
     }
+    private class ShareRouteTask extends AsyncTask<FavoriteRecyclerViewAdapter.FavoriteObject, Void, String> {
+        @Override
+        protected void onPostExecute(String result) {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, result);
+            startActivity(shareIntent);
+        }
+
+        @Override
+        protected String doInBackground(FavoriteRecyclerViewAdapter.FavoriteObject... params) {
+            String LF = System.getProperty("line.separator");
+            StringBuilder builder = new StringBuilder();
+            builder.append(params[0].start_name)
+                    .append(" to " )
+                    .append(params[0].end_name)
+                    .append(LF);
+            Cursor cursor = getContentResolver().query(
+                    RoutesProvider.Routes.CONTENT_URI,
+                    null,
+                    RouteColumns.ID + " =?",
+                    new String[]{String.valueOf(params[0].routeId)},
+                    null );
+            if ( cursor != null ) {
+                if ( cursor.moveToFirst()) {
+                    builder.append("departure: ")
+                        .append(cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DEPART_TIME)))
+                        .append(LF);
+
+                    builder.append("duration: ")
+                        .append(cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION)))
+                        .append(LF);
+                }
+                cursor.close();
+            }
+            return builder.toString();
+        }
+    }
+
 }
