@@ -17,7 +17,7 @@
             android:id="@+id/item_detail_step_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="left|start"
             />
         <!--android:background="@color/list_background"-->
         <TextView
@@ -26,7 +26,7 @@
             android:id = "@+id/item_detail_travel_mode"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:gravity="left"
+            android:gravity="left|start"
             android:layout_gravity="top"
             android:text="99"/>
         <TextView
@@ -46,7 +46,7 @@
         android:id = "@+id/item_detail_instruction"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:gravity="left"
+        android:gravity="left|start"
         android:layout_gravity="top"
         android:text="instruction"/>
 

@@ -33,13 +33,15 @@ public final class  MapApiService {
             @Query("destination") String destination,
             @Query("key") String key
                 );
+        @GET("/maps/api/directions/json?mode=transit&alternatives=true")
         Call<TransitRoutes> getDirectionsWithLanguage(
                 @Query("origin") String origin,
                 @Query("destination") String destination,
                 @Query("key") String key,
                 @Query("language") String language );
+        @GET("/maps/api/directions/json?mode=transit&alternatives=true")
         Call<TransitRoutes> getDirectionsWithDepartureTime(
-                        @Query("origin") String origin,
+                @Query("origin") String origin,
                 @Query("destination") String destination,
                 @Query("key") String key,
                 @Query("departure_time") String departure_time

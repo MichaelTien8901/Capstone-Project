@@ -51,7 +51,9 @@
             android:id="@+id/from_container"
             android:layout_marginTop="8dp"
             android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
             android:layout_marginRight="40dp"
+            android:layout_marginEnd="40dp"
             >
             <TextView
                 android:layout_width="wrap_content"
@@ -82,7 +84,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/to_container"
             android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
             android:layout_marginRight="40dp"
+            android:layout_marginEnd="40dp"
             android:layout_marginTop="8dp"
             android:background="@color/colorPrimaryDark"
             android:orientation="horizontal">
@@ -127,13 +131,6 @@
     </android.support.design.widget.AppBarLayout>
     <include layout="@layout/content_planning" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/test_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"

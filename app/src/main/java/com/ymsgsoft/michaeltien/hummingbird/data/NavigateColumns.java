@@ -15,7 +15,6 @@ import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
  */
 public interface NavigateColumns {
     @DataType(INTEGER) @PrimaryKey @AutoIncrement String ID = "_id";
-
     @DataType(INTEGER) String DISTANCE = "distance"; // meter
     @DataType(TEXT) String DISTANCE_TEXT = "distance_text"; // meter
     @DataType(INTEGER) String DURATION = "duration"; // seconds
@@ -32,4 +31,5 @@ public interface NavigateColumns {
         String ROUTES_ID = "route_id";
     @DataType(INTEGER) String LEVEL = "level";
     @DataType(INTEGER) String COUNT = "count";
+
 }

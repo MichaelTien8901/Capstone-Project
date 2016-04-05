@@ -57,11 +57,12 @@ public class DirectionIntentService extends IntentService {
      *
      * @see IntentService
      */
-    public static void startActionQueryDirection(Context context, String from, String to) {
+    public static void startActionQueryDirection(Context context, String from, String to, long query_time) {
         Intent intent = new Intent(context, DirectionIntentService.class);
         intent.setAction(ACTION_QUERY_DIRECTION);
         intent.putExtra(FROM_PARAM, from);
         intent.putExtra(TO_PARAM, to);
+        intent.putExtra(TIME_PARAM, query_time);
         context.startService(intent);
     }
     public static void startActionSaveFavorite(Context context, PlaceObject from, PlaceObject to,
@@ -107,8 +108,9 @@ public class DirectionIntentService extends IntentService {
                         mSelectionClause, mSelectionArgs);
                 final String param1 = intent.getStringExtra(FROM_PARAM);
                 final String param2 = intent.getStringExtra(TO_PARAM);
+                final long query_time = intent.getLongExtra(TIME_PARAM, 0);
                 try {
-                    handleActionQueryDirection(param1, param2);
+                    handleActionQueryDirection(param1, param2, query_time);
                 } catch (IOException e) {
                 }
             } else if ( ACTION_ADD_FAVORITE_ROUTE.equals(action)) {
@@ -129,7 +131,7 @@ public class DirectionIntentService extends IntentService {
         }
     }
 
-    private void handleActionQueryDirection(String from, String to) throws IOException {
+    private void handleActionQueryDirection(String from, String to, long query_time) throws IOException {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MapApiService.API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -148,7 +150,7 @@ public class DirectionIntentService extends IntentService {
 //                lang = lang + "-" + Locale.getDefault().getCountry();
 //        }
 //        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key, lang);
-        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key);
+        Call<MapApiService.TransitRoutes> call = directionApi.getDirectionsWithDepartureTime(origin, destination, key, String.valueOf(query_time));
         MapApiService.TransitRoutes transitRoutes = call.execute().body();
         // load into contextProvider
         if ( "OK".equals(transitRoutes.status)) {

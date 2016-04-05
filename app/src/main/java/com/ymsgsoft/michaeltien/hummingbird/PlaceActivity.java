@@ -2,7 +2,7 @@ package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,7 +18,7 @@ import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Places;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.PlaceAutocompleteAdapter;
 
-public class PlaceActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     final static String TAG = PlaceActivity.class.getSimpleName();
     public static final String PLACE_ID = "place_id";
     public static final String PLACE_TEXT = "place_text";
@@ -76,15 +76,6 @@ public class PlaceActivity extends FragmentActivity implements GoogleApiClient.O
 //        setContentView(R.layout.activity_place);
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
-//
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
     private TextView.OnEditorActionListener mAutoCompleteEditorActionLister
@@ -183,13 +174,4 @@ public class PlaceActivity extends FragmentActivity implements GoogleApiClient.O
         setResult(RESULT_OK, resultData);
         finish();
     }
-
-//    private static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
-//                                              CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
-//        Log.e(TAG, res.getString(R.string.place_details, name, id, address, phoneNumber,
-//                websiteUri));
-//        return Html.fromHtml(res.getString(R.string.place_details, name, id, address, phoneNumber,
-//                websiteUri));
-//    }
-//
 }

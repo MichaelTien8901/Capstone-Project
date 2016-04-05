@@ -19,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:background="@color/list_background"
         android:textColor="#ffffff"
-        android:gravity="left"
+        android:gravity="left|start"
         android:maxLines="1"
         android:text="UBC TO BCIT"/>
     <!--android:textSize="16sp"-->
@@ -31,7 +31,7 @@
     android:id = "@+id/history_list_item_time"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:textColor="#000000"
-    android:gravity="left"
+    android:gravity="left|start"
     android:text="9:30 pm"/>
 </LinearLayout>
 </android.support.v7.widget.CardView>

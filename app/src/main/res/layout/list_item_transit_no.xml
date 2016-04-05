@@ -6,14 +6,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/list_item_transit_right"
-        android:gravity="left"
+        android:gravity="left|start"
         android:tint="#ffffff"
         android:src="@drawable/ic_chevron_right" />
     <ImageView
         android:id="@+id/list_item_transit_icon1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="left"
+        android:gravity="left|start"
         android:tint="#ffffff"
         />
     <TextView
@@ -23,7 +23,7 @@
         android:textColor="#f7fbff"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:gravity="left"
+        android:gravity="left|start"
         android:layout_gravity="top"
         android:text="99"/>
     <!--android:background="@color/list_background"-->

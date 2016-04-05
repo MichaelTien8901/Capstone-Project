@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
@@ -37,10 +35,11 @@ public class PlanningActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
     final String LOG_TAG = PlaceActivity.class.getSimpleName();
 
-    private SimpleDateFormat mFormatter = new SimpleDateFormat("MMMM dd yyyy hh:mm aa");
+//    private SimpleDateFormat mFormatter = new SimpleDateFormat("MMMM dd yyyy hh:mm aa");
     public static final int DIRECTION_LOADER = 0;
     public static final String PLAN_FROM_ID = "SAVE_FROM_ID";
     public static final String PLAN_TO_ID = "SAVE_TO_ID";
+    public static final String PLAN_TIME_ID = "SAVE_TIME_ID";
     final String PLAN_LIST_VISIBLE_ID = "PLAN_LIST_VISIBLE_ID";
     private final int SEARCH_FROM_REQUEST_ID = 1;
     private final int SEARCH_TO_REQUEST_ID = 2;
@@ -52,6 +51,7 @@ public class PlanningActivity extends AppCompatActivity implements
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
     protected RouteAdapter mRouteAdapter;
+    protected long mQueryTime;
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if ( mFromObject != null) {
@@ -61,26 +61,54 @@ public class PlanningActivity extends AppCompatActivity implements
             outState.putParcelable(PLAN_TO_ID, mToObject);
         }
         outState.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE);
+        outState.putLong(PLAN_TIME_ID, mQueryTime);
         super.onSaveInstanceState(outState);
     }
     private void updateSearchText(){
         mFromTextView.setText(mFromObject.title);
         mToTextView.setText(mToObject.title);
     }
-    private void tryQueryRoutes() {
+    private void tryQueryRoutes(long query_time) {
         if ( mFromObject.placeId.isEmpty() || mToObject.placeId.isEmpty()) return;
         String origin = mFromObject.placeId;
         String destination = mToObject.placeId;
-        DirectionIntentService.startActionQueryDirection(this, origin, destination);
+        DirectionIntentService.startActionQueryDirection(this, origin, destination, query_time);
         getSupportLoaderManager().restartLoader(DIRECTION_LOADER, null, this);
     }
 
+    private void tryQueryRoutesNow() {
+        tryQueryRoutes(System.currentTimeMillis() / 1000);
+    }
+    private boolean isSameYear( long date1, long date2) {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(new Date( date1));
+        c2.setTime(new Date( date2));
+        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR);
+    }
+    private void showDepartureTime(long query_time) {
+        mQueryTime = query_time;
+        long now = System.currentTimeMillis();
+        // check if today, one day is 60 * 60 * 24 = 86400 seconds
+        String time_string;
+        String format_string;
+        if ((query_time / 86400000) == (now / 86400000)) { // same date, only show time
+            format_string = getString(R.string.time_format_simple);
+        } else if ( isSameYear(now, query_time)) {
+            format_string = getString(R.string.time_format_with_date);
+        } else{
+            format_string = getString(R.string.time_format_with_year);
+        }
+        time_string = new SimpleDateFormat(format_string).format(query_time);
+        mDepartView.setText(getString(R.string.depart_view_title) + time_string);
+    }
     protected SlideDateTimeListener mListener = new SlideDateTimeListener() {
         @Override
         public void onDateTimeSet(Date date)
         {
-            Toast.makeText(PlanningActivity.this,
-                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
+            long seconds = date.getTime() / 1000;
+            showDepartureTime(date.getTime());
+            tryQueryRoutes(seconds);
         }
         // Optional cancel listener
 //        @Override
@@ -122,13 +150,16 @@ public class PlanningActivity extends AppCompatActivity implements
             mToObject = savedInstanceState.getParcelable(PLAN_TO_ID);
             if (savedInstanceState.getBoolean(PLAN_LIST_VISIBLE_ID))
                 getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
+            mQueryTime = savedInstanceState.getLong(PLAN_TIME_ID);
+            showDepartureTime(mQueryTime);
         } else {
             Intent intent = getIntent();
             mFromObject = intent.getParcelableExtra(PLAN_FROM_ID);
             if ( mFromObject != null) {
                 mToObject = intent.getParcelableExtra(PLAN_TO_ID);
                 if (mToObject != null) {
-                    tryQueryRoutes();
+                    tryQueryRoutesNow();
+                    showDepartureTime(System.currentTimeMillis());
                 }
             } else {
                 // from back or up
@@ -157,18 +188,11 @@ public class PlanningActivity extends AppCompatActivity implements
         mDepartView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // test query
-                tryQueryRoutes();
+//                // test query
+//                tryQueryRoutes();
+                showDateTimeDialog();
             }
         });
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.test_fab);
-        if ( fab != null)
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showDateTimeDialog();
-                }
-            });
     }
     private void showDateTimeDialog() {
         new SlideDateTimePicker.Builder(getSupportFragmentManager())
@@ -194,9 +218,9 @@ public class PlanningActivity extends AppCompatActivity implements
                     mFromObject.title = place_name.toString();
                     mFromObject.placeId = place_id;
                     DirectionIntentService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
-
                     updateSearchText();
-                    tryQueryRoutes();
+                    tryQueryRoutesNow();
+                    showDepartureTime(System.currentTimeMillis());
                 }
 
                 break;
@@ -209,7 +233,8 @@ public class PlanningActivity extends AppCompatActivity implements
                     mToObject.placeId = place_id;
                     DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                     updateSearchText();
-                    tryQueryRoutes();
+                    tryQueryRoutesNow();
+                    showDepartureTime(System.currentTimeMillis());
                 }
                 break;
         }
@@ -223,8 +248,6 @@ public class PlanningActivity extends AppCompatActivity implements
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
         // set filter for current
-//        Uri base_url = Uri.parse("content://"+RoutesProvider.AUTHORITY);
-//        base_url.buildUpon().appendPath(RouteProvider.)
         return new CursorLoader(this,
                 RoutesProvider.Routes.CONTENT_URI,
                 null, RouteColumns.IS_ARCHIVE + "=?", new String[]{"0"},null);
@@ -270,7 +293,7 @@ public class PlanningActivity extends AppCompatActivity implements
     public void searchFromPlace() {
         Intent intent = new Intent(PlanningActivity.this, PlaceActivity.class);
         String searchText = mFromObject.title;
-        if (!searchText.equals("Here")) {
+        if (!searchText.equals(getString(R.string.init_search_here))) {
             intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
         }
         startActivityForResult(intent, SEARCH_FROM_REQUEST_ID);

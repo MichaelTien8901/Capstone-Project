@@ -14,7 +14,7 @@
             android:id="@+id/list_item_transit_icon2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="left|start"
             android:tint="#ffffff"
             android:src="@drawable/ic_directions_bus"
             />
@@ -25,7 +25,7 @@
             android:textColor="#f7fbff"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:gravity="left"
+            android:gravity="left|start"
             android:layout_gravity="top"
             android:text="99"/>
     </LinearLayout>

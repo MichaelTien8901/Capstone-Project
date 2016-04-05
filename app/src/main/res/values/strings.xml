@@ -7,9 +7,7 @@
     <string name="autocomplete_hint">Enter place name or address</string>
     <string name="selected_place">Last Selected Place:</string>
     <string name="clear_text">Clear Text</string>
-    <!-- getString(String, Object...) does not support HTML tags directly, they need to be encoded first.
-    Original string: <b>%1$s</b><br/><i>Place Id: %2$s</i><br/>Address: %3$s<br/>Phone: %4$s<br/>Website: %5$s-->
-    <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
+
     <string name="title_activity_planning">Plan</string>
     <string name="plan_from_title"> From </string>
     <string name="plan_to_title"> To </string>
@@ -22,7 +20,6 @@
     <string name="init_depart_time">Depart Now</string>
     <string name="title_activity_detail_route">Details</string>
     <string name="title_activity_navigate">Navigation</string>
-    <string name="title_activity_test">TestActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -39,14 +36,16 @@
     <string name="dialog_confirm_home_positive">Yes</string>
     <string name="dialog_confirm_home_negative">Cancel</string>
 
-    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
     <string name="title_activity_favorite">Favorites</string>
     <string name="title_activity_History">Recent</string>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
 
     <string name="widget_title">Hummingbird</string>
     <string name="empty_recent_list">No Recent Places</string>
     <string name="default_location_title">Here</string>
     <string name="favorite_no_selected_item">No selected item!</string>
+    <string name="time_format_simple" translatable="false">hh:mm aa</string>
+    <string name="time_format_with_date" translatable="false">MMM dd hh:mm aa</string>
+    <string name="time_format_with_year" translatable="false">MMM dd yyyy hh:mm aa</string>
+    <string name="depart_view_title">"Depart "</string>
 </resources>
