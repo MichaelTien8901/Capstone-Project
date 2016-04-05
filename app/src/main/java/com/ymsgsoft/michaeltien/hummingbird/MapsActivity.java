@@ -47,13 +47,10 @@ public class MapsActivity extends AppCompatActivity
         ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener,
+//        DrawerLayout.DrawerListener, // fix kitkat not seeing menu problem
         NavigationView.OnNavigationItemSelectedListener {
     final String LOG_TAG = MapsActivity.class.getSimpleName();
     public static final String PLACE_PARAM = "place_param";
-    public static final String FROM_PLACEID_PARAM = "from_placeid_param";
-    public static final String FROM_PLACE_TITLE_PARAM = "from_place_title_param";
-    public static final String TO_PACEID_PARAM = "to_placeid_param";
-    public static final String TO_PLACE__TITLE_PARAM = "to_place_param";
 
     private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
 
@@ -103,14 +100,14 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.map_toolbar);
         setSupportActionBar(toolbar);
 //        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.setDrawerListener(toggle);
         toggle.syncState();
-
+//        mDrawer.setDrawerListener(this);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -487,10 +484,32 @@ public class MapsActivity extends AppCompatActivity
             mPendingPlaceObject = null;
         }
     }
+
+
     @OnClick(R.id.fab_direction)
     public void directionPressed() {
         Intent intent = new Intent(this, PlaceActivity.class);
         startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
 
     }
+    // fix problem for kitkat not see menu
+//    @Override
+//    public void onDrawerSlide(View drawerView, float slideOffset) {
+//        mDrawer.bringChildToFront(drawerView);
+//        mDrawer.requestLayout();
+//    }
+//
+//    @Override
+//    public void onDrawerStateChanged(int newState) {
+//    }
+//
+//    @Override
+//    public void onDrawerClosed(View drawerView) {
+//
+//    }
+//
+//    @Override
+//    public void onDrawerOpened(View drawerView) {
+//
+//    }
 }
