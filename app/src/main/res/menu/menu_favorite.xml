@@ -24,6 +24,6 @@
         android:icon="@android:drawable/ic_menu_share"
         app:showAsAction="always|collapseActionView"
         android:orderInCategory="101"
-        android:title="Delete"/>
+        android:title="Share"/>
 
 </menu>

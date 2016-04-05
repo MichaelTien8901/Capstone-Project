@@ -19,7 +19,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -317,8 +316,8 @@ public class NavigateActivity extends AppCompatActivity implements
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
 //        updateUI();
-        Toast.makeText(this, location.toString(),
-                Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, location.toString(),
+//                Toast.LENGTH_SHORT).show();
         if ( mFragment instanceof Callback) {
             ((Callback) mFragment).locationUpdate(location);
         }

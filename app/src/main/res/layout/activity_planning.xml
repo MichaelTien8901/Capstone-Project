@@ -76,7 +76,6 @@
                 android:text="Here"
                 android:textSize="20sp"
                 android:maxLines="1"
-                android:contentDescription="@string/from_location_description"
                 android:layout_toRightOf="@id/title_from"
                 android:layout_toEndOf="@id/title_from"
                 />
@@ -113,7 +112,6 @@
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@color/text_reverse"
                 android:text="UBC. This is a very long line address for UBC to display"
-                android:contentDescription="@string/to_location_description"
                 android:maxLines="1"
                 android:layout_toRightOf="@id/title_to"
                 android:layout_toEndOf="@id/title_to"

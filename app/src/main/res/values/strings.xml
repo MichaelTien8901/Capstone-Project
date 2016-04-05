@@ -61,8 +61,8 @@
     <string name="map_view_description">switch to map view</string>
     <string name="search_button_description">start search</string>
     <string name="powered_by_google_description">powered by google</string>
-    <string name="from_location_description">enter from location</string>
-    <string name="to_location_description">enter to location</string>
+    <!--<string name="from_location_description">enter from location</string>-->
+    <!--<string name="to_location_description">enter to location</string>-->
     <string name="start_navigate_search_description">start navigate to a location</string>
     <string name="favorite_toolbar_desciption">favorite list</string>
     <string name="activity_history_description">recent locations</string>
