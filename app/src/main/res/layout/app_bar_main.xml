@@ -39,6 +39,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:tint="#ffffff"
+        android:contentDescription="@string/start_navigate_search_description"
         app:srcCompat="@drawable/ic_map_directions" />
 
 </android.support.design.widget.CoordinatorLayout>

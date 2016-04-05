@@ -23,8 +23,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/widget_title"
-            android:text="@string/widget_title"
+            android:contentDescription="@string/widget_recent_title_description"
+            android:text="@string/widget_recent_title"
             android:textStyle="italic"
             android:textColor="#ffffff"
             android:textSize="12sp"
@@ -47,6 +47,7 @@
         android:fontFamily="sans-serif-condensed"
         android:textAppearance="?android:textAppearanceMedium"
         android:background="@color/colorPrimary"
+        android:contentDescription="@string/empty_recent_list"
         android:text="@string/empty_recent_list"/>
 
 </LinearLayout>

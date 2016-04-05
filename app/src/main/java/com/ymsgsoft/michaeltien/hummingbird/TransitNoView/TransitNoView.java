@@ -45,7 +45,6 @@ public class TransitNoView extends LinearLayout {
         }
         LayoutInflater mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mInflater.inflate(layout, this, true);
-
         mTransitNoView = (TextView) findViewById(R.id.detail_transit_no2);
         mTransitNoView.setTextColor(mTextColor);
         ImageView image = (ImageView) findViewById(R.id.list_item_transit_icon2);
@@ -82,6 +81,20 @@ public class TransitNoView extends LinearLayout {
                 }
             }
         }
+        setTransitContentDescription(transits);
+    }
+    private void setTransitContentDescription(String[] transits) {
+        StringBuilder builder = new StringBuilder();
+        for (String leg : transits) {
+            if ( "walk".equals(leg)) {
+                builder.append(getContext().getString(R.string.walk_description));
+            } else if ( "null".equals(leg)) {
+                builder.append(getContext().getString(R.string.train_desciption));
+            } else {
+                builder.append(getContext().getString(R.string.bus_description)).append(leg);
+            }
+        }
+        setContentDescription(builder.toString());
     }
     private void refreshView() {
         String[] transits = mTransitNumbers.split(",");
@@ -114,7 +127,7 @@ public class TransitNoView extends LinearLayout {
         if ( transits.length > 1 ) {
             for (int i = 1; i < transits.length && i < mMaxIcons; i++) {
                 View childView = mInflater.inflate(R.layout.list_item_transit_no, null);
-                ((ImageView) childView.findViewById(R.id.list_item_transit_right)).setColorFilter(mTintColor);
+                ((ImageView) childView.findViewById(R.id.list_item_transit_next)).setColorFilter(mTintColor);
                 ImageView image1 = (ImageView) childView.findViewById(R.id.list_item_transit_icon1);
                 image1.setImageDrawable(getResources().getDrawable(mIconSrc));
                 image1.setColorFilter(mTintColor);
@@ -127,6 +140,7 @@ public class TransitNoView extends LinearLayout {
                 mDetail_title_container.addView(childView);
             }
         }
+        setTransitContentDescription(transits);
     }
     public void setTransitNo(String transitNos) {
         mTransitNumbers = transitNos;

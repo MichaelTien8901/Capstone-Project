@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:paddingLeft="40dp"
             android:paddingStart="40dp"
-            android:layout_gravity="left|top"
+            android:layout_gravity="left|top|start"
             android:gravity="top"
             />
         <!--android:background="@color/list_background"-->

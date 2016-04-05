@@ -113,6 +113,7 @@
             android:paddingTop="@dimen/list_side_margin"
             android:background="@color/list_background"
             app:layoutManager="LinearLayoutManager"
+            android:contentDescription="@string/route_detail_description"
             tools:context="com.ymsgsoft.michaeltien.hummingbird.DetailRouteFragment"
             tools:listitem="@layout/list_item_detail_route" />
     </LinearLayout>

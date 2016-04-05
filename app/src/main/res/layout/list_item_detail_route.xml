@@ -35,8 +35,8 @@
             android:id = "@+id/item_detail_duration"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:gravity="right"
-            android:layout_gravity="right"
+            android:gravity="right|end"
+            android:layout_gravity="right|end"
             android:text="1 hr 20 min"/>
     </LinearLayout>
     <TextView

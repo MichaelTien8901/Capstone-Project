@@ -59,6 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/plan_from_title"
+                android:contentDescription="@string/plan_from_title"
                 android:id="@+id/title_from"
                 android:textColor="@color/colorGrey"
                 android:paddingLeft="16dp"
@@ -75,7 +76,9 @@
                 android:text="Here"
                 android:textSize="20sp"
                 android:maxLines="1"
+                android:contentDescription="@string/from_location_description"
                 android:layout_toRightOf="@id/title_from"
+                android:layout_toEndOf="@id/title_from"
                 />
             <!--android:layout_centerHorizontal="true"-->
         </RelativeLayout>
@@ -94,6 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/plan_to_title"
+                android:contentDescription="@string/plan_to_title"
                 android:id="@+id/title_to"
                 android:textColor="@color/colorGrey"
                 android:paddingLeft="16dp"
@@ -109,8 +113,10 @@
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@color/text_reverse"
                 android:text="UBC. This is a very long line address for UBC to display"
+                android:contentDescription="@string/to_location_description"
                 android:maxLines="1"
                 android:layout_toRightOf="@id/title_to"
+                android:layout_toEndOf="@id/title_to"
                 android:textSize="20sp" />
         </RelativeLayout>
         <!--<TextView-->

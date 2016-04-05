@@ -13,6 +13,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
+        android:contentDescription="@string/favorite_dialog_name_description"
         android:hint="favorite name" />
     <!--android:inputType="textEmailAddress"-->
 </LinearLayout>

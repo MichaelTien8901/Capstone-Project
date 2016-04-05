@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:contentDescription="@string/activity_history_description"
     tools:context="com.ymsgsoft.michaeltien.hummingbird.FavoriteActivity">
 
     <android.support.design.widget.AppBarLayout

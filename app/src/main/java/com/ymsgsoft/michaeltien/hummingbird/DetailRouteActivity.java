@@ -75,6 +75,7 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
         }
         if ( mRouteObject.isFavorite) {
             mAddRemoveBtn.setImageResource(R.drawable.ic_remove);
+            mAddRemoveBtn.setContentDescription(getString(R.string.remove_favorite_description));
         }
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARG_ROUTE_KEY, mRouteObject);
@@ -88,7 +89,9 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
         if ( mRouteObject != null && mRouteObject.transitNo != null) {
 //            createDetailTitleView(getLayoutInflater());
             mDepartTime.setText(mRouteObject.departTime);
+            mDepartTime.setContentDescription(getString(R.string.departure_time) + mRouteObject.departTime);
             mDuration.setText(mRouteObject.duration);
+            mDuration.setContentDescription(getString(R.string.duration) + mRouteObject.duration );
             mTransitNoView.setTransitNo(mRouteObject.transitNo);
         }
     }
@@ -126,6 +129,7 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
         DirectionIntentService.startActionRemoveFavorite(this, mRouteObject.routeId );
         mRouteObject.isFavorite = false;
         mAddRemoveBtn.setImageResource(R.drawable.ic_add);
+        mAddRemoveBtn.setContentDescription(getString(R.string.add_favorite_description));
     }
     @OnClick(R.id.action_up)
     public void backPressed() {
@@ -156,6 +160,7 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
                 mRouteObject.deparTimeValue == 0 ? System.currentTimeMillis() / 1000: mRouteObject.deparTimeValue );
         mRouteObject.isFavorite = true;
         mAddRemoveBtn.setImageResource(R.drawable.ic_remove);
+        mAddRemoveBtn.setContentDescription(getString(R.string.remove_favorite_description));
     }
 
     public static class ConfirmRemoveDialog extends DialogFragment {

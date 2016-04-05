@@ -51,6 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_gravity="right|end"
         android:paddingRight="16dp"
+        android:paddingEnd="16dp"
         android:layout_height="?actionBarSize"
         android:background="?selectableItemBackgroundBorderless"
         android:tint="#ffffff"
@@ -65,6 +66,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin4"
         android:layout_marginEnd="@dimen/fab_margin"
+        android:contentDescription="@string/navigate_next_description"
         app:srcCompat="@drawable/navigate_forward_button" />
         <!--app:srcCompat="@drawable/ic_arrow_forward" -->
     <!--android:tint="@color/fab_selector"-->
@@ -74,6 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:contentDescription="@string/navigate_previous_description"
         android:layout_marginBottom="@dimen/fab_margin3"
         android:layout_marginEnd="@dimen/fab_margin"
         app:srcCompat="@drawable/navigate_backward_button" />
@@ -84,18 +87,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:contentDescription="@string/sync_my_location_description"
         android:layout_marginBottom="@dimen/fab_margin2"
         android:layout_marginEnd="@dimen/fab_margin"
         android:tint="#ffffff"
         app:srcCompat="@drawable/ic_my_location" />
 
-<android.support.design.widget.FloatingActionButton
-    android:id="@+id/fab_streetview"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom|end"
-    android:layout_margin="@dimen/fab_margin"
-    android:tint="#ffffff"
-    app:srcCompat="@drawable/ic_streetview_black" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_streetview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="@string/street_view_description"
+        android:tint="#ffffff"
+        app:srcCompat="@drawable/ic_streetview_black" />
 
 </android.support.design.widget.CoordinatorLayout>

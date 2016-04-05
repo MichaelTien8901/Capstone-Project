@@ -39,6 +39,7 @@
             <!--android:text="Here"-->
             <!--android:textSize="20sp"-->
             <!--android:layout_toRightOf="@id/title_from"-->
+            <!--android:layout_toEndOf="@id/title_from"-->
             <!--/>-->
         <!--&lt;!&ndash;android:layout_centerHorizontal="true"&ndash;&gt;-->
     <!--</RelativeLayout>-->
@@ -71,6 +72,7 @@
             <!--android:textColor="@color/text_reverse"-->
             <!--android:text="UBC"-->
             <!--android:layout_toRightOf="@id/title_to"-->
+            <!--android:layout_toEndOf="@id/title_to"-->
             <!--android:textSize="20sp" />-->
     <!--</RelativeLayout>-->
     <!--<TextView-->

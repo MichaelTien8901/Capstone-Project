@@ -192,9 +192,11 @@ public class NavigationFragment extends Fragment implements
             if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty())
                 if ( mStepObject.level == 0) {
                     mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
+                    mInstructionView.setContentDescription(mStepObject.instruction);
                     mInstructionView.setVisibility(View.VISIBLE);
                     mDetailedInstructionView.setVisibility(View.INVISIBLE);
                     if ( mStepObject.travel_mode.equals("WALKING")) {
+                        mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_walk_description));
                         mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_walk));
                         mStepTransitNo.setText("");
                         mStepTransitNo.setVisibility(View.INVISIBLE);
@@ -203,12 +205,15 @@ public class NavigationFragment extends Fragment implements
                         if ( mStepObject.transit_no != null && !mStepObject.transit_no.isEmpty()) {
                             mStepTransitNo.setText(mStepObject.transit_no);
                             mStepTransitNo.setVisibility(View.VISIBLE);
+                            mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_bus_desciption));
                         } else {
                             mStepTransitNo.setVisibility(View.INVISIBLE);
+                            mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_train_description));
                         }
                     }
                 } else {
                     mDetailedInstructionView.setText(Html.fromHtml(mStepObject.instruction));
+                    mDetailedInstructionView.setContentDescription(mStepObject.instruction);
                     mDetailedInstructionView.setVisibility(View.VISIBLE);
                 }
         } else {

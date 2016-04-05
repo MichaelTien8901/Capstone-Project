@@ -5,10 +5,10 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/list_item_transit_right"
+        android:id="@+id/list_item_transit_next"
         android:gravity="left|start"
         android:tint="#ffffff"
-        android:src="@drawable/ic_chevron_right" />
+        android:src="@drawable/ic_transit_next" />
     <ImageView
         android:id="@+id/list_item_transit_icon1"
         android:layout_width="wrap_content"

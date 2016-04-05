@@ -23,7 +23,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="product_name_title">Humming Bird Navigation</string>
+    <string name="product_name_title">Hummingbird Navigation</string>
     <string name="up">Up</string>
     <string name="home">home</string>
     <string name="nav_favorite_title">Favorites</string>
@@ -40,7 +40,8 @@
     <string name="title_activity_favorite">Favorites</string>
     <string name="title_activity_History">Recent</string>
 
-    <string name="widget_title">Hummingbird</string>
+    <string name="widget_recent_title">Hummingbird</string>
+    <string name="widget_recent_title_description">recent locations</string>
     <string name="empty_recent_list">No Recent Places</string>
     <string name="default_location_title">Here</string>
     <string name="favorite_no_selected_item">No selected item!</string>
@@ -48,4 +49,29 @@
     <string name="time_format_with_date" translatable="false">MMM dd hh:mm aa</string>
     <string name="time_format_with_year" translatable="false">MMM dd yyyy hh:mm aa</string>
     <string name="depart_view_title">"Depart "</string>
+    <string name="departure_time">"Departure Time "</string>
+    <string name="duration">"Duration "</string>
+    <string name="navigate_description">Navigate</string>
+    <string name="add_favorite_description">add to favorite list</string>
+    <string name="remove_favorite_description">remove from favorite list</string>
+    <string name="navigate_next_description">navigate next</string>
+    <string name="navigate_previous_description">navigate previous</string>
+    <string name="sync_my_location_description">synchronize my location</string>
+    <string name="street_view_description">switch to street view</string>
+    <string name="map_view_description">switch to map view</string>
+    <string name="search_button_description">start search</string>
+    <string name="powered_by_google_description">powered by google</string>
+    <string name="from_location_description">enter from location</string>
+    <string name="to_location_description">enter to location</string>
+    <string name="start_navigate_search_description">start navigate to a location</string>
+    <string name="favorite_toolbar_desciption">favorite list</string>
+    <string name="activity_history_description">recent locations</string>
+    <string name="favorite_dialog_name_description">enter name for favorite</string>
+    <string name="route_detail_description">route details</string>
+    <string name="travel_icon_walk_description">walking</string>
+    <string name="travel_icon_train_description">take train</string>
+    <string name="travel_icon_bus_desciption">take bus</string>
+    <string name="walk_description">"walk "</string>
+    <string name="train_desciption">"take train "</string>
+    <string name="bus_description">"take bus "</string>
 </resources>

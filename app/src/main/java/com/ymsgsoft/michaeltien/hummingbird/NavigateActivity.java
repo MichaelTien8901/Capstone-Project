@@ -121,11 +121,13 @@ public class NavigateActivity extends AppCompatActivity implements
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment_navigation_container, mFragment, NAVIGATION_TAG)
                     .commit();
+            mStreetviewButton.setContentDescription(getString(R.string.street_view_description));
         } else {
             mFragment = getFragmentManager().findFragmentByTag(NAVIGATION_TAG);
             mRouteObject = savedInstanceState.getParcelable(DetailRouteActivity.ARG_ROUTE_KEY);
             if ( mFragment instanceof StreetViewFragment) {
                 mStreetviewButton.setImageResource(R.drawable.ic_map_black);
+                mStreetviewButton.setContentDescription(getString(R.string.map_view_description));
             }
         }
         // Update values using data stored in the Bundle.
@@ -447,10 +449,12 @@ public class NavigateActivity extends AppCompatActivity implements
         if ( mFragment instanceof NavigationFragment) {
             newFragment = new StreetViewFragment();
             mStreetviewButton.setImageResource(R.drawable.ic_map_black);
+            mStreetviewButton.setContentDescription(getString(R.string.map_view_description));
         }
         else {
             newFragment = new NavigationFragment();
             mStreetviewButton.setImageResource(R.drawable.ic_streetview_black);
+            mStreetviewButton.setContentDescription(getString(R.string.street_view_description));
         }
         newFragment.setArguments(arguments);
         getFragmentManager().beginTransaction()
