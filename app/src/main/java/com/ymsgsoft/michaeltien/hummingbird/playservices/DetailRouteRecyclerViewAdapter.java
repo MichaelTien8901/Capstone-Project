@@ -69,7 +69,7 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
         public final TextView mTravelMode;
         public final TextView mDurationView;
         public final ImageView mIcon;
-        public long mStepId;
+//        public long mStepId;
         public StepData mItem;
         public ViewHolder(View itemView) {
             super(itemView);

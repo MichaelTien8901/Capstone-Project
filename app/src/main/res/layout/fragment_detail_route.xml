@@ -106,15 +106,14 @@
             android:layout_marginStart="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
-            android:paddingLeft="@dimen/list_side_margin"
-            android:paddingStart="@dimen/list_side_margin"
-            android:paddingRight="@dimen/list_side_margin"
-            android:paddingEnd="@dimen/list_side_margin"
             android:paddingTop="@dimen/list_side_margin"
-            android:background="@color/list_background"
             app:layoutManager="LinearLayoutManager"
             android:contentDescription="@string/route_detail_description"
             tools:context="com.ymsgsoft.michaeltien.hummingbird.DetailRouteFragment"
             tools:listitem="@layout/list_item_detail_route" />
+        <!--android:paddingLeft="@dimen/list_side_margin"-->
+        <!--android:paddingStart="@dimen/list_side_margin"-->
+        <!--android:paddingRight="@dimen/list_side_margin"-->
+        <!--android:paddingEnd="@dimen/list_side_margin"-->
     </LinearLayout>
 </LinearLayout>
