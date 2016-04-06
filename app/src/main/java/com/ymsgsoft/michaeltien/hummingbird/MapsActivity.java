@@ -1,11 +1,13 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.Manifest;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -164,7 +166,12 @@ public class MapsActivity extends AppCompatActivity
             intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY,routeObject);
             intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
             intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
-            startActivity(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
+                ).toBundle();
+                startActivity(intent, bundle);
+            } else
+                startActivity(intent);
         }
 
         @Override
@@ -200,8 +207,12 @@ public class MapsActivity extends AppCompatActivity
         Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
         intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
         intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
-        startActivity(intent);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
+            ).toBundle();
+            startActivity(intent, bundle);
+        } else
+            startActivity(intent);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -389,11 +400,21 @@ public class MapsActivity extends AppCompatActivity
         int id = item.getItemId();
         if ( id == R.id.nav_history) {
             Intent intent = new Intent(this, HistoryActivity.class);
-            startActivityForResult(intent, HISTORY_REQUEST_ID);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
+                ).toBundle();
+                startActivityForResult(intent, HISTORY_REQUEST_ID, bundle);
+            } else
+                startActivityForResult(intent, HISTORY_REQUEST_ID);
         } else if (id == R.id.nav_manage) {
         } else if (id == R.id.nav_favorites) {
             Intent intent = new Intent(this, FavoriteActivity.class);
-            startActivityForResult(intent, FAVORITE_REQUEST_ID);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
+                ).toBundle();
+                startActivityForResult(intent, FAVORITE_REQUEST_ID, bundle);
+            } else
+                startActivityForResult(intent, FAVORITE_REQUEST_ID);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -489,6 +510,11 @@ public class MapsActivity extends AppCompatActivity
     @OnClick(R.id.fab_direction)
     public void directionPressed() {
         Intent intent = new Intent(this, PlaceActivity.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
+            ).toBundle();
+            startActivityForResult(intent, SEARCH_TO_REQUEST_ID, bundle);
+        } else
         startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
 
     }

@@ -1,6 +1,7 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -100,6 +101,11 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
     public void navigate(View view) {
         Intent intent = new Intent(DetailRouteActivity.this, NavigateActivity.class);
         intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY, mRouteObject);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(DetailRouteActivity.this
+            ).toBundle();
+            startActivity(intent, bundle);
+        } else
         startActivity(intent);
     }
     @OnClick(R.id.fab_add)
@@ -143,6 +149,11 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
     public void homePressed() {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(DetailRouteActivity.this
+            ).toBundle();
+            startActivity(intent, bundle);
+        } else
         startActivity(intent);
     }
     //  FavoriteDialog.FavoriteDialogListener

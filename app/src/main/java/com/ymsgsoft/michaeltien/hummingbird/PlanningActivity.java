@@ -1,6 +1,7 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
@@ -142,7 +143,12 @@ public class PlanningActivity extends AppCompatActivity implements
                 intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY,selected.mData);
                 intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
                 intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
-                startActivity(intent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(PlanningActivity.this
+                    ).toBundle();
+                    startActivity(intent, bundle);
+                } else
+                    startActivity(intent);
             }
         });
         if ( savedInstanceState != null) {
@@ -296,7 +302,12 @@ public class PlanningActivity extends AppCompatActivity implements
         if (!searchText.equals(getString(R.string.init_search_here))) {
             intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
         }
-        startActivityForResult(intent, SEARCH_FROM_REQUEST_ID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(PlanningActivity.this
+            ).toBundle();
+            startActivityForResult(intent, SEARCH_FROM_REQUEST_ID, bundle);
+        } else
+            startActivityForResult(intent, SEARCH_FROM_REQUEST_ID);
     }
     @OnClick(R.id.to_container)
     public void searchToPlace() {
@@ -305,6 +316,11 @@ public class PlanningActivity extends AppCompatActivity implements
         if (!searchText.equals("")) {
             intent.putExtra(PlaceActivity.PLACE_TEXT, searchText);
         }
-        startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(PlanningActivity.this
+            ).toBundle();
+            startActivityForResult(intent, SEARCH_TO_REQUEST_ID, bundle);
+        } else
+            startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
     }
 }

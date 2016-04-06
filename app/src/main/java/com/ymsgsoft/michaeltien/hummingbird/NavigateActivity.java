@@ -60,8 +60,8 @@ public class NavigateActivity extends AppCompatActivity implements
 
     // Keys for storing activity state in the Bundle.
 //    protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
+//    protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
     protected final static String LOCATION_KEY = "location-key";
-    protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
     protected final static String NAVIGATION_POS_KEY = "navigation_pos_key";
 
     /**
@@ -430,6 +430,7 @@ public class NavigateActivity extends AppCompatActivity implements
     public void homePressed() {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        // no need for transition here
         startActivity(intent);
     }
     @OnClick(R.id.fab_navigation_mode)
