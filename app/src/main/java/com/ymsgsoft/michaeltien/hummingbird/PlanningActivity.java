@@ -144,8 +144,10 @@ public class PlanningActivity extends AppCompatActivity implements
                 intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
                 intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(PlanningActivity.this
-                    ).toBundle();
+                    // shared element transition
+                    Bundle bundle = ActivityOptions
+                            .makeSceneTransitionAnimation(PlanningActivity.this, view, "route_summary")
+                            .toBundle();
                     startActivity(intent, bundle);
                 } else
                     startActivity(intent);
