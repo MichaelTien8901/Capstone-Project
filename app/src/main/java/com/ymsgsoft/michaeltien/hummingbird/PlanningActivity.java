@@ -146,7 +146,8 @@ public class PlanningActivity extends AppCompatActivity implements
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     // shared element transition
                     Bundle bundle = ActivityOptions
-                            .makeSceneTransitionAnimation(PlanningActivity.this, view, "route_summary")
+                            .makeSceneTransitionAnimation(PlanningActivity.this, view,
+                                    getString(R.string.route_summary_transition))
                             .toBundle();
                     startActivity(intent, bundle);
                 } else

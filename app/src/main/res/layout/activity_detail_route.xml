@@ -50,7 +50,7 @@
                 android:layout_marginEnd="40dp"
                 android:layout_marginBottom="1dp"
                 android:layout_marginTop="1dp"
-                android:transitionName="route_summary"
+                android:transitionName="@string/route_summary_transition"
                 android:background="@android:color/transparent"
                 xmlns:android="http://schemas.android.com/apk/res/android">
             <LinearLayout

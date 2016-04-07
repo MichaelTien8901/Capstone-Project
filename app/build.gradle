@@ -36,8 +36,6 @@ dependencies {
     apt 'net.simonvt.schematic:schematic:0.6.4'
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    //    compile 'com.google.android.gms:play-services:8.4.0'
-//    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.jakewharton:butterknife:7.0.1'
