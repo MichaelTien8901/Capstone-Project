@@ -153,6 +153,12 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
         } else
         startActivity(intent);
     }
+
+    @Override
+    public void onBackPressed() {
+        backPressed();
+    }
+
     //  FavoriteDialog.FavoriteDialogListener
     @Override
     public void onDialogPositiveClick(DialogFragment dialog, String saveName) {
