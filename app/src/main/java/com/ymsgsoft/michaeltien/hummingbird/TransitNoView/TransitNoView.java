@@ -89,7 +89,7 @@ public class TransitNoView extends LinearLayout {
             if ( "walk".equals(leg)) {
                 builder.append(getContext().getString(R.string.walk_description));
             } else if ( "null".equals(leg)) {
-                builder.append(getContext().getString(R.string.train_desciption));
+                builder.append(getContext().getString(R.string.train_description));
             } else {
                 builder.append(getContext().getString(R.string.bus_description)).append(leg);
             }

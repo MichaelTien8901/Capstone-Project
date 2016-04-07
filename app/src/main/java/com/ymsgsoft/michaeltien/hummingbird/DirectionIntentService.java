@@ -4,6 +4,8 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.MapApiService;
 import com.ymsgsoft.michaeltien.hummingbird.DirectionService.Model.Route;
@@ -150,7 +152,18 @@ public class DirectionIntentService extends IntentService {
 //                lang = lang + "-" + Locale.getDefault().getCountry();
 //        }
 //        Call<MapApiService.TransitRoutes> call = directionApi.getDirections(origin, destination, key, lang);
-        Call<MapApiService.TransitRoutes> call = directionApi.getDirectionsWithDepartureTime(origin, destination, key, String.valueOf(query_time));
+        // use distance pref
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        String units = sharedPrefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default_value));
+
+        Call<MapApiService.TransitRoutes> call =
+                directionApi.getDirectionsWithDepartureTimeUnits(
+                        origin,
+                        destination,
+                        key,
+                        String.valueOf(query_time),
+                        units);
         MapApiService.TransitRoutes transitRoutes = call.execute().body();
         // load into contextProvider
         if ( "OK".equals(transitRoutes.status)) {

@@ -399,27 +399,45 @@ public class MapsActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if ( id == R.id.nav_history) {
-            Intent intent = new Intent(this, HistoryActivity.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
-                ).toBundle();
-                startActivityForResult(intent, HISTORY_REQUEST_ID, bundle);
-            } else
-                startActivityForResult(intent, HISTORY_REQUEST_ID);
+            launchHistoryActivity();
         } else if (id == R.id.nav_manage) {
+            launchSettingsActivity();
         } else if (id == R.id.nav_favorites) {
-            Intent intent = new Intent(this, FavoriteActivity.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
-                ).toBundle();
-                startActivityForResult(intent, FAVORITE_REQUEST_ID, bundle);
-            } else
-                startActivityForResult(intent, FAVORITE_REQUEST_ID);
+            launchFavoriteActivity();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void launchSettingsActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
+            ).toBundle();
+            startActivity(intent, bundle);
+        } else
+            startActivity(intent);
+    }
+
+    private void launchHistoryActivity() {
+        Intent intent = new Intent(this, HistoryActivity.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
+            ).toBundle();
+            startActivityForResult(intent, HISTORY_REQUEST_ID, bundle);
+        } else
+            startActivityForResult(intent, HISTORY_REQUEST_ID);
+    }
+
+    private void launchFavoriteActivity() {
+        Intent intent = new Intent(this, FavoriteActivity.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
+            ).toBundle();
+            startActivityForResult(intent, FAVORITE_REQUEST_ID, bundle);
+        } else
+            startActivityForResult(intent, FAVORITE_REQUEST_ID);
     }
 
     /**

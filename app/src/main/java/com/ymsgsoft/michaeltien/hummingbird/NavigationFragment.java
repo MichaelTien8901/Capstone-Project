@@ -205,7 +205,7 @@ public class NavigationFragment extends Fragment implements
                         if ( mStepObject.transit_no != null && !mStepObject.transit_no.isEmpty()) {
                             mStepTransitNo.setText(mStepObject.transit_no);
                             mStepTransitNo.setVisibility(View.VISIBLE);
-                            mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_bus_desciption));
+                            mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_bus_description));
                         } else {
                             mStepTransitNo.setVisibility(View.INVISIBLE);
                             mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_train_description));

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ymsgsoft.michaeltien.hummingbird" >
+    package="com.ymsgsoft.michaeltien.hummingbird">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -106,7 +106,7 @@
         </activity>
         <activity
             android:name=".HistoryActivity"
-            android:label="@string/title_activity_History"
+            android:label="@string/title_activity_history"
             android:parentActivityName=".MapsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -117,19 +117,28 @@
         <receiver android:name=".widget.RecentAppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                 <action android:name="com.ymsgsoft.michaeltien.hummingbird.RECENT_DATA_UPDATED" />
+                <action android:name="com.ymsgsoft.michaeltien.hummingbird.RECENT_DATA_UPDATED" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/recent_app_widget_info" />
         </receiver>
-         <service
-         android:name=".widget.RecentWidgetRemoteViewsService"
-         android:enabled="true"
-         android:exported="false"
-         android:permission="android.permission.BIND_REMOTEVIEWS" />
-         android:enabled="true"
+
+        <service
+            android:name=".widget.RecentWidgetRemoteViewsService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        android:enabled="true"
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MapsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ymsgsoft.michaeltien.hummingbird.MapsActivity" />
+        </activity>
     </application>
 
 </manifest>
