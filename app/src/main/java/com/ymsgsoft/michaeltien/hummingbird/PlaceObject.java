@@ -3,6 +3,8 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.Gson;
+
 /**
  * Created by Michael Tien on 2016/2/17.
  */
@@ -41,4 +43,14 @@ public class PlaceObject implements Parcelable {
             return new PlaceObject[size];
         }
     };
+    // add to serialize
+    public String serialize() {
+        // Serialize this class into a JSON string using GSON
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+    static public PlaceObject create(String serializedData) {
+        Gson gson = new Gson();
+        return gson.fromJson(serializedData, PlaceObject.class);
+    }
 }

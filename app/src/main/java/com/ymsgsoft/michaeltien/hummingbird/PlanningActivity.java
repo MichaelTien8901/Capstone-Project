@@ -3,9 +3,11 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -20,6 +22,7 @@ import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
 import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.RouteAdapter;
@@ -38,10 +41,10 @@ public class PlanningActivity extends AppCompatActivity implements
 
 //    private SimpleDateFormat mFormatter = new SimpleDateFormat("MMMM dd yyyy hh:mm aa");
     public static final int DIRECTION_LOADER = 0;
-    public static final String PLAN_FROM_ID = "SAVE_FROM_ID";
-    public static final String PLAN_TO_ID = "SAVE_TO_ID";
-    public static final String PLAN_TIME_ID = "SAVE_TIME_ID";
-    final String PLAN_LIST_VISIBLE_ID = "PLAN_LIST_VISIBLE_ID";
+    public static final String PLAN_FROM_ID = "com.ymsgsoft.michaeltien.hummingbird.SAVE_FROM_ID";
+    public static final String PLAN_TO_ID = "com.ymsgsoft.michaeltien.hummingbird.SAVE_TO_ID";
+    public static final String PLAN_TIME_ID = "com.ymsgsoft.michaeltien.hummingbird.SAVE_TIME_ID";
+    final String PLAN_LIST_VISIBLE_ID = "com.ymsgsoft.michaeltien.hummingbird.PLAN_LIST_VISIBLE_ID";
     private final int SEARCH_FROM_REQUEST_ID = 1;
     private final int SEARCH_TO_REQUEST_ID = 2;
     @Bind(R.id.fromTextView) TextView mFromTextView;
@@ -57,12 +60,19 @@ public class PlanningActivity extends AppCompatActivity implements
     public void onSaveInstanceState(Bundle outState) {
         if ( mFromObject != null) {
             outState.putParcelable(PLAN_FROM_ID, mFromObject);
+            PrefUtils.savePlaceParcelableToPref(this, PlanningActivity.PLAN_FROM_ID, mFromObject);
         }
         if ( mToObject != null) {
             outState.putParcelable(PLAN_TO_ID, mToObject);
+            PrefUtils.savePlaceParcelableToPref(this, PlanningActivity.PLAN_TO_ID, mToObject);
         }
         outState.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE);
         outState.putLong(PLAN_TIME_ID, mQueryTime);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE );
+        editor.putLong(PLAN_TIME_ID, mQueryTime);
+        editor.commit();
         super.onSaveInstanceState(outState);
     }
     private void updateSearchText(){
@@ -173,6 +183,14 @@ public class PlanningActivity extends AppCompatActivity implements
             } else {
                 // from back or up
                 getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
+                // restore values
+                mFromObject = PrefUtils.restorePlaceParcelableFromPref(this, PlanningActivity.PLAN_FROM_ID);
+                mToObject = PrefUtils.restorePlaceParcelableFromPref(this, PlanningActivity.PLAN_TO_ID);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                mQueryTime = preferences.getLong(PLAN_TIME_ID, 0);
+                showDepartureTime(mQueryTime);
+                if ( preferences.getBoolean(PLAN_LIST_VISIBLE_ID, false))
+                    getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
             }
         }
         if ( mFromObject == null) {
