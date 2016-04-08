@@ -169,6 +169,7 @@ public class MapsActivity extends AppCompatActivity
     protected void buildLocationSettingsRequest() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
+        builder.setAlwaysShow(true); // without never button
         mLocationSettingsRequest = builder.build();
     }
     /**
