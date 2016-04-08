@@ -3,6 +3,7 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.Manifest;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -25,9 +26,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -49,14 +56,16 @@ public class MapsActivity extends AppCompatActivity
         ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        ResultCallback<LocationSettingsResult> {
     final String LOG_TAG = MapsActivity.class.getSimpleName();
     public static final String PLACE_PARAM = "place_param";
     private static final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
-
+    protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
     private final int SEARCH_TO_REQUEST_ID = 2;
     private final int FAVORITE_REQUEST_ID = 3;
     private final int HISTORY_REQUEST_ID = 4;
+    private final int REQUEST_CHECK_SETTINGS = 5;
 //    public final int PLACE_PICKER_REQUEST = 102;
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
@@ -84,6 +93,12 @@ public class MapsActivity extends AppCompatActivity
     protected int REQUEST_LOCATION = 101;
 
     private Boolean locationReady = false, mapReady = false;
+    /**
+     * Stores the types of location services the client is interested in using. Used for checking
+     * settings to determine if the device has optimal location settings.
+     */
+    protected LocationSettingsRequest mLocationSettingsRequest;
+    protected Boolean mRequestingLocationUpdates;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
     private Marker mMarker;
 
@@ -123,6 +138,11 @@ public class MapsActivity extends AppCompatActivity
         }
         if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
+            if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
+                mRequestingLocationUpdates = savedInstanceState.getBoolean(
+                        KEY_REQUESTING_LOCATION_UPDATES);
+            }
+
         } else {
             Intent intent = getIntent();
             mPendingPlaceObject =intent.getParcelableExtra(PLACE_PARAM);
@@ -136,9 +156,62 @@ public class MapsActivity extends AppCompatActivity
                     .build();
             mAdView.loadAd(adRequest);
         }
+        mRequestingLocationUpdates = false;
         buildGoogleApiClient();
+        createLocationRequest();
+        buildLocationSettingsRequest();
+    }
+    /**
+     * Uses a {@link com.google.android.gms.location.LocationSettingsRequest.Builder} to build
+     * a {@link com.google.android.gms.location.LocationSettingsRequest} that is used for checking
+     * if a device has the needed location settings.
+     */
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+    /**
+     * Check if the device's location settings are adequate for the app's needs using the
+     * {@link com.google.android.gms.location.SettingsApi#checkLocationSettings(GoogleApiClient,
+     * LocationSettingsRequest)} method, with the results provided through a {@code PendingResult}.
+     */
+    protected void checkLocationSettings() {
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(this);
     }
 
+    @Override
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                Log.i(LOG_TAG, "All location settings are satisfied.");
+                startLocationUpdates();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
+                        "upgrade location settings ");
+
+                try {
+                    // Show the dialog by calling startResolutionForResult(), and check the result
+                    // in onActivityResult().
+                    status.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    Log.i(LOG_TAG, "PendingIntent unable to execute request.");
+                }
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                        "not created.");
+                break;
+        }
+
+    }
     private void startActivityRouteDetails(String startName, String startPlaceId, String endName, String endPlaceId, long routeId){
         new LoadRouteTask().execute(
                 String.valueOf(routeId),
@@ -147,6 +220,8 @@ public class MapsActivity extends AppCompatActivity
                 endName,
                 endPlaceId);
     }
+
+
     private class LoadRouteTask extends AsyncTask<String, Void, RouteParcelable> {
         PlaceObject mFromObject, mToObject;
         @Override
@@ -209,6 +284,11 @@ public class MapsActivity extends AppCompatActivity
             PlaceObject mToObject = new PlaceObject();
             PlaceObject mFromObject = new PlaceObject();
             switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                Log.i(LOG_TAG, "User agreed to make required location settings changes.");
+                startLocationUpdates();
+
+                break;
             case FAVORITE_REQUEST_ID:
                 String start_place_id = data.getStringExtra(FavoriteActivity.START_PLACEID_PARAM);
                 String start_name = data.getStringExtra(FavoriteActivity.START_PARAM);
@@ -257,6 +337,13 @@ public class MapsActivity extends AppCompatActivity
                 mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 startActivityPlanning(mFromObject, mToObject);
             }
+        } else {
+            switch (requestCode) {
+                case REQUEST_CHECK_SETTINGS:
+                    Log.i(LOG_TAG, "User chose not to make required location settings changes.");
+                    // TODO: 2016/4/7  Disable location service actions
+                    break;
+            }
         }
     }
 
@@ -274,7 +361,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+            mMap = googleMap;
         mMap.getUiSettings().setMapToolbarEnabled(false);
         if (locationReady) {
             showCurrentPosition();
@@ -301,7 +388,8 @@ public class MapsActivity extends AppCompatActivity
                 }
             }
         }
-        startLocationUpdates();
+//        startLocationUpdates();
+        checkLocationSettings();
     }
 
     protected void showCurrentPosition() {
@@ -323,10 +411,11 @@ public class MapsActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
         if (mLastLocation != null) {
-            outState.putParcelable(LAST_LOCATION_KEY, mLastLocation);
+            savedInstanceState.putParcelable(LAST_LOCATION_KEY, mLastLocation);
         }
+        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
     }
 
     @Override
@@ -439,7 +528,6 @@ public class MapsActivity extends AppCompatActivity
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-        createLocationRequest();
     }
     /**
      * Requests location updates from the FusedLocationApi.
@@ -455,7 +543,14 @@ public class MapsActivity extends AppCompatActivity
                     REQUEST_LOCATION);
         } else {
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, this);
+                    mGoogleApiClient, mLocationRequest, this)
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            mRequestingLocationUpdates = true;
+                            setButtonsEnabledState();
+                }
+            });
         }
     }
     /**
@@ -468,7 +563,17 @@ public class MapsActivity extends AppCompatActivity
 
         // The final argument to {@code requestLocationUpdates()} is a LocationListener
         // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this)
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        mRequestingLocationUpdates = false;
+                        setButtonsEnabledState();
+                    }
+                });
+    }
+    private void setButtonsEnabledState() {
+        // Todo setButtonEnabledState
     }
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -490,6 +595,13 @@ public class MapsActivity extends AppCompatActivity
         super.onPause();
         if (mGoogleApiClient.isConnected()) {
             stopLocationUpdates();
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+            startLocationUpdates();
         }
     }
     @Override
