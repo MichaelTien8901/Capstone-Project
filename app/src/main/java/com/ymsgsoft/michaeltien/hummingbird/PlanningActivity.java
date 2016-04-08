@@ -70,7 +70,7 @@ public class PlanningActivity extends AppCompatActivity implements
         outState.putLong(PLAN_TIME_ID, mQueryTime);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE );
+//        editor.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE );
         editor.putLong(PLAN_TIME_ID, mQueryTime);
         editor.commit();
         super.onSaveInstanceState(outState);
@@ -189,8 +189,8 @@ public class PlanningActivity extends AppCompatActivity implements
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 mQueryTime = preferences.getLong(PLAN_TIME_ID, 0);
                 showDepartureTime(mQueryTime);
-                if ( preferences.getBoolean(PLAN_LIST_VISIBLE_ID, false))
-                    getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
+//                if ( preferences.getBoolean(PLAN_LIST_VISIBLE_ID, false))
+//                    getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
             }
         }
         if ( mFromObject == null) {
