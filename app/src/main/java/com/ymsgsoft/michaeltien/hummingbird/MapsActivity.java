@@ -49,17 +49,15 @@ public class MapsActivity extends AppCompatActivity
         ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener,
-//        DrawerLayout.DrawerListener, // fix kitkat not seeing menu problem
         NavigationView.OnNavigationItemSelectedListener {
     final String LOG_TAG = MapsActivity.class.getSimpleName();
     public static final String PLACE_PARAM = "place_param";
-
-    private final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
+    private static final String LAST_LOCATION_KEY = "LAST_LOCATION_KEY";
 
     private final int SEARCH_TO_REQUEST_ID = 2;
-    public final int FAVORITE_REQUEST_ID = 3;
-    public final int HISTORY_REQUEST_ID = 4;
-    public final int PLACE_PICKER_REQUEST = 102;
+    private final int FAVORITE_REQUEST_ID = 3;
+    private final int HISTORY_REQUEST_ID = 4;
+//    public final int PLACE_PICKER_REQUEST = 102;
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
@@ -104,7 +102,6 @@ public class MapsActivity extends AppCompatActivity
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.map_toolbar);
         setSupportActionBar(toolbar);
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.setDrawerListener(toggle);
@@ -131,25 +128,17 @@ public class MapsActivity extends AppCompatActivity
             mPendingPlaceObject =intent.getParcelableExtra(PLACE_PARAM);
         }
         AdView mAdView = (AdView) findViewById(R.id.adView);
-//        AdRequest adRequest = new AdRequest.Builder().build();
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
-//                .setLocation(currentLocation)
-                .build();
-        mAdView.loadAd(adRequest);
+        if ( mAdView != null) {
+            AdRequest adRequest = new AdRequest.Builder()
+                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+                    .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
+                            //                .setLocation(currentLocation)
+                    .build();
+            mAdView.loadAd(adRequest);
+        }
         buildGoogleApiClient();
     }
-//    private void performSearch() {
-//        Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
-//        PlaceObject mFromObject = new PlaceObject();
-//        mFromObject.title = "Here";
-//        if ( mLastLocation == null) return;
-//        //mFromObject.placeId = String.format("lat=%f,lng=%f",mLastLocation.getLatitude(),mLastLocation.getLongitude());
-//        mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
-//        intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
-//        startActivity(intent);
-//    }
+
     private void startActivityRouteDetails(String startName, String startPlaceId, String endName, String endPlaceId, long routeId){
         new LoadRouteTask().execute(
                 String.valueOf(routeId),
@@ -239,12 +228,12 @@ public class MapsActivity extends AppCompatActivity
                 }
                 break;
             case HISTORY_REQUEST_ID:
-                String place_id1 = data.getStringExtra(HistoryActivity.PLACEID_PARAM);
-                String place_name1 = data.getStringExtra(HistoryActivity.PLACE_PARAM);
-                mToObject.title = place_name1;
-                mToObject.placeId = place_id1;
-                mFromObject.title = getString(R.string.default_location_title);
-                mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                mToObject = new PlaceObject(
+                        data.getStringExtra(HistoryActivity.PLACE_PARAM),
+                        data.getStringExtra(HistoryActivity.PLACEID_PARAM));
+                mFromObject = new PlaceObject(
+                        getString(R.string.default_location_title),
+                        String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude()));
                 // save history, again to update query time
                 DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                 // go to planning
@@ -318,9 +307,9 @@ public class MapsActivity extends AppCompatActivity
     protected void showCurrentPosition() {
         LatLng here = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         if ( mMarker == null) {
-            mMarker = mMap.addMarker(new MarkerOptions().position(here).title("You Are Here"));
+            mMarker = mMap.addMarker(new MarkerOptions().position(here).title(getString(R.string.you_are_here_title)));
             mMarker.setIcon(Utils.getBitmapDescriptor(this, R.drawable.ic_person_pin_black));
-            mMarker.setAnchor((float)0.5, (float) (23.0/24.0));
+            mMarker.setAnchor((float) 0.5, (float) (23.0/24.0));
         } else {
             mMarker.setPosition(here);
         }
@@ -330,7 +319,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+       Log.d(LOG_TAG, "onConnectedFailed: " + connectionResult.toString());
     }
 
     @Override
@@ -348,9 +337,8 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -368,7 +356,7 @@ public class MapsActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+//        int id = item.getItemId();
         //noinspection SimplifiableIfStatement
 //        if ( id == R.id.action_search) {
 ////            performSearch();
@@ -406,8 +394,8 @@ public class MapsActivity extends AppCompatActivity
             launchFavoriteActivity();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
     private void launchSettingsActivity() {

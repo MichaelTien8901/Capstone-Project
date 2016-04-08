@@ -105,5 +105,6 @@
     <string name="menu_settings_title">Settings</string>
     <string name="menu_history_title">History</string>
     <string name="menu_favorite_title">Favorites</string>
+    <string name="you_are_here_title">You Are Here</string>
 
 </resources>
