@@ -39,9 +39,6 @@ import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 
-import java.text.DateFormat;
-import java.util.Date;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -51,7 +48,8 @@ public class NavigateActivity extends AppCompatActivity implements
         OnConnectionFailedListener,
         LocationListener,
         LoaderManager.LoaderCallbacks<Cursor>,
-        ResultCallback<LocationSettingsResult> {
+        ResultCallback<LocationSettingsResult>,
+        OnNavigationFragmentListener {
     static final String LOG_TAG = NavigateActivity.class.getSimpleName();
     static final String NAVIGATION_TAG = "com.ymsgsoft.michaeltien.hummingbird.navigation_fragment";
     static final int REQUEST_LOCATION = 103;
@@ -76,6 +74,7 @@ public class NavigateActivity extends AppCompatActivity implements
 //    protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
     protected final static String LOCATION_KEY = "location-key";
     protected final static String NAVIGATION_POS_KEY = "navigation_pos_key";
+    public final static String SAVE_POSITION_SYNC_KEY = "save_position_sync_key";
 
     /**
         * Provides the entry point to Google Play services.
@@ -89,13 +88,14 @@ public class NavigateActivity extends AppCompatActivity implements
      * Represents a geographical location.
      */
     protected Location mCurrentLocation;
-    protected String mLastUpdateTime;
     protected LocationSettingsRequest mLocationSettingsRequest;
     protected boolean mRequestingLocationUpdates;
     protected RouteParcelable mRouteObject;
     protected Fragment mFragment;
     protected Cursor mCursor;
     protected int mCursorPosition;
+    protected boolean mPositionSync = true;
+
     @Bind(R.id.fab_navigation_forward)
     FloatingActionButton mForwardButton;
     @Bind(R.id.fab_navigation_backward)
@@ -112,6 +112,7 @@ public class NavigateActivity extends AppCompatActivity implements
             outState.putParcelable(DetailRouteActivity.ARG_ROUTE_KEY, mRouteObject);
         if ( mCursor != null)
             outState.putInt(NAVIGATION_POS_KEY, mCursor.getPosition());
+        outState.putBoolean(SAVE_POSITION_SYNC_KEY, mPositionSync);
     }
 
     @Override
@@ -142,6 +143,7 @@ public class NavigateActivity extends AppCompatActivity implements
                 mStreetviewButton.setImageResource(R.drawable.ic_map_black);
                 mStreetviewButton.setContentDescription(getString(R.string.map_view_description));
             }
+            mPositionSync = savedInstanceState.getBoolean(SAVE_POSITION_SYNC_KEY);
         }
         // Update values using data stored in the Bundle.
         updateValuesFromBundle(savedInstanceState);
@@ -180,12 +182,6 @@ public class NavigateActivity extends AppCompatActivity implements
                 // is not null.
                 mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
             }
-
-//            // Update the value of mLastUpdateTime from the Bundle and update the UI.
-//            if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
-//                mLastUpdateTime = savedInstanceState.getString(LAST_UPDATED_TIME_STRING_KEY);
-//            }
-//            updateUI();
         }
     }
 
@@ -333,8 +329,6 @@ public class NavigateActivity extends AppCompatActivity implements
                         REQUEST_LOCATION);
             } else {
                 mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-//            updateUI();
             }
         }
 
@@ -365,8 +359,6 @@ public class NavigateActivity extends AppCompatActivity implements
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-//        updateUI();
 //        Toast.makeText(this, location.toString(),
 //                Toast.LENGTH_SHORT).show();
         if ( mFragment instanceof Callback) {
@@ -401,10 +393,10 @@ public class NavigateActivity extends AppCompatActivity implements
             mCursor.close();
         mCursor = data;
         if ( mCursor == null) return;
-        // start navigation geofencing
+        // start navigation
         mCursor.moveToPosition(mCursorPosition);
         adjustPosition(mCursor);
-        completeStepUpdate();
+        completeStepUpdate(false);
     }
     void adjustPosition(Cursor cursor) {
         StepParcelable navStep = StepParcelable.readStepParcelable(cursor);
@@ -412,24 +404,24 @@ public class NavigateActivity extends AppCompatActivity implements
             cursor.moveToNext();
         }
     }
-    void fastUpdateCursorStep(Cursor cursor) {
+    void fastUpdateCursorStep(Cursor cursor, boolean manual_update) {
         StepParcelable navStep = StepParcelable.readStepParcelable(cursor);
-        ((Callback) mFragment).stepUpdate(navStep);
+        ((Callback) mFragment).stepUpdate(navStep, manual_update);
         if ( navStep.level == 0 && navStep.count != 0){
             cursor.moveToNext();
             navStep = StepParcelable.readStepParcelable(cursor);
-            ((Callback) mFragment).stepUpdate(navStep);
+            ((Callback) mFragment).stepUpdate(navStep, manual_update);
         }
         mForwardButton.setEnabled(!mCursor.isLast());
         mBackwardButton.setEnabled(!mCursor.isFirst());
     }
 
-    private void navigationForward(){
+    private void navigationForward(boolean manual_update){
         if ( mCursor != null && mCursor.moveToNext()) {
-                fastUpdateCursorStep(mCursor);
+                fastUpdateCursorStep(mCursor, manual_update);
         }
     }
-    private void navigationBackward(){
+    private void navigationBackward(boolean manual_update){
         if ( mCursor != null && mCursor.moveToPrevious()) {
             StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
             if ( navStep.level == 0 ) {
@@ -437,10 +429,10 @@ public class NavigateActivity extends AppCompatActivity implements
                     mCursor.moveToPrevious();
                 }
             }
-            completeStepUpdate();
+            completeStepUpdate(manual_update);
         }
     }
-    void completeStepUpdate() {
+    void completeStepUpdate(boolean manual_update) {
         boolean isBackEnabled;
         StepParcelable navStep = StepParcelable.readStepParcelable(mCursor);
         if ( navStep.level != 0) {
@@ -449,21 +441,21 @@ public class NavigateActivity extends AppCompatActivity implements
             StepParcelable navStep0 = StepParcelable.readStepParcelable(mCursor);
             isBackEnabled = !(mCursor.isFirst() && navStep.level == 1);
             mCursor.move(offset);
-            ((Callback) mFragment).stepUpdate(navStep0);
+            ((Callback) mFragment).stepUpdate(navStep0, manual_update);
         } else {
             isBackEnabled = !mCursor.isFirst();
         }
-        ((Callback) mFragment).stepUpdate(navStep);
+        ((Callback) mFragment).stepUpdate(navStep, manual_update);
         mForwardButton.setEnabled(!mCursor.isLast());
         mBackwardButton.setEnabled(isBackEnabled);
     }
     @OnClick(R.id.fab_navigation_forward)
     public void forwardPressed(){
-        navigationForward();
+        navigationForward(true);
     }
     @OnClick(R.id.fab_navigation_backward)
     public void backwardPressed(){
-        navigationBackward();
+        navigationBackward(true);
     }
     @OnClick(R.id.action_up)
     public void backPressed() {
@@ -486,22 +478,23 @@ public class NavigateActivity extends AppCompatActivity implements
     }
     @OnClick(R.id.fab_navigation_mode)
     public void modePressed() {
+        if (!Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates))
+            return;
         ((Callback) mFragment).fabMyLocationPressed();
     }
     @OnClick(R.id.fab_streetview)
     public void streetViewPressed() {
+        if (!Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates))
+            return;
         mRouteObject = getIntent().getParcelableExtra(DetailRouteActivity.ARG_ROUTE_KEY);
         mCursorPosition = 0;
         Bundle arguments = new Bundle();
         arguments.putParcelable(DetailRouteActivity.ARG_ROUTE_KEY,mRouteObject);
+        arguments.putBoolean(SAVE_POSITION_SYNC_KEY, mPositionSync);
 
         // replace fragment
         Fragment newFragment;
         if ( mFragment instanceof NavigationFragment) {
-            if (!Utils.isOnline(this)) {
-                Utils.NetworkDialogFragment.newInstance(R.string.network_error_title, R.string.network_error_message).show(getFragmentManager(), "Network Dialog");
-                return;
-            }
             newFragment = new StreetViewFragment();
             mStreetviewButton.setImageResource(R.drawable.ic_map_black);
             mStreetviewButton.setContentDescription(getString(R.string.map_view_description));
@@ -516,7 +509,7 @@ public class NavigateActivity extends AppCompatActivity implements
                 .replace(R.id.fragment_navigation_container, newFragment, NAVIGATION_TAG)
                 .commit();
         mFragment = newFragment;
-        completeStepUpdate();
+        completeStepUpdate(false);
     }
 
     @Override
@@ -548,9 +541,14 @@ public class NavigateActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void onLocationSyncChange(boolean syncFlag) {
+        mPositionSync = syncFlag;
+    }
+
     public interface Callback {
         void locationUpdate(Location location);
-        void stepUpdate(StepParcelable step);
+        void stepUpdate(StepParcelable step, boolean manual_update);
         void fabMyLocationPressed();
     }
     public static class ConfirmHomeDialog extends DialogFragment {

@@ -1,5 +1,6 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.location.Location;
 import android.os.Bundle;
@@ -32,23 +33,53 @@ public class StreetViewFragment extends Fragment
 {
     protected StreetViewPanorama mStreetView;
     private boolean isMapReady = false;
+    private Location mCurrentLocation;
+    private boolean mPositionSync = true;
     @Bind(R.id.navigate_instruction)
     TextView mInstructionView;
     @Bind(R.id.navigate_detail_instruction) TextView mDetailedInstructionView;
     @Bind(R.id.navigate_step_transit_no) TextView mStepTransitNo;
     @Bind(R.id.navigate_step_icon) ImageView mStepIconView;
     private List<StepParcelable> mPendingStepList;
+    private boolean mStepListManualUpdate;
     protected RouteParcelable mRouteObject;
     protected StepParcelable mStepObject;
     StreetViewPanoramaCamera mCamera;
+    private com.ymsgsoft.michaeltien.hummingbird.OnNavigationFragmentListener mListener;
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(NavigateActivity.SAVE_POSITION_SYNC_KEY, mPositionSync);
+    }
+
+    @Override
+    public void onAttach(Activity context) {
+        super.onAttach(context);
+        if (context instanceof OnNavigationFragmentListener) {
+            mListener = (OnNavigationFragmentListener) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mRouteObject = getArguments().getParcelable(DetailRouteActivity.ARG_ROUTE_KEY);
-        }
+        if ( savedInstanceState != null) {
+            mPositionSync = savedInstanceState.getBoolean(NavigateActivity.SAVE_POSITION_SYNC_KEY, mPositionSync);
+        } else {
+            if (getArguments() != null) {
+                if ( getArguments().containsKey(DetailRouteActivity.ARG_ROUTE_KEY))
+                    mRouteObject = getArguments().getParcelable(DetailRouteActivity.ARG_ROUTE_KEY);
+                if ( getArguments().containsKey(NavigateActivity.SAVE_POSITION_SYNC_KEY))
+                    mPositionSync = getArguments().getBoolean(NavigateActivity.SAVE_POSITION_SYNC_KEY);
 
+            }
+        }
     }
 
     public StreetViewFragment() {
@@ -69,12 +100,22 @@ public class StreetViewFragment extends Fragment
 
     @Override
     public void fabMyLocationPressed() {
+        mPositionSync = true;
+        if ( mListener != null)
+            mListener.onLocationSyncChange(mPositionSync);
 
+        if ( mCurrentLocation != null)
+            moveCameraToCurrentLocation();
     }
 
     @Override
-    public void stepUpdate(StepParcelable step) {
+    public void stepUpdate(StepParcelable step, boolean manual_update) {
         mStepObject = step;
+        if ( manual_update) {
+            mPositionSync = false;
+            if ( mListener != null)
+                mListener.onLocationSyncChange(mPositionSync);
+        }
         if ( isMapReady ) {
             // draw polyline
 //            if ( mStepObject.polyline != null && !mStepObject.polyline.isEmpty())
@@ -108,7 +149,8 @@ public class StreetViewFragment extends Fragment
                     mDetailedInstructionView.setText(Html.fromHtml(mStepObject.instruction));
                     mDetailedInstructionView.setVisibility(View.VISIBLE);
                 }
-            if ( mStepObject.level != 0 || (mStepObject.level == 0 && mStepObject.count != 0)) {
+//            if ( mStepObject.level != 0 || (mStepObject.level == 0 && mStepObject.count != 0)) {
+            if ( mStepObject.level != 0 || (mStepObject.level == 0 && mStepObject.count == 0)) {
                 // set position of streetview
                 // camera to the bearing of direction
                 Location start_location = new Location("");
@@ -126,22 +168,36 @@ public class StreetViewFragment extends Fragment
 //                mStreetView.animateTo(camera, 1000); // less than 500 might get wrong bearing
             }
         } else {
-            if ( mPendingStepList == null)
+            if ( mPendingStepList == null) {
                 mPendingStepList = new ArrayList<>();
+                mStepListManualUpdate = false;
+            }
             mPendingStepList.add(step);
+            if ( manual_update) mStepListManualUpdate = true;
         }
     }
-
-    @Override
-    public void locationUpdate(Location location) {
-        if ( !isMapReady ) return;
+    private void moveCameraToCurrentLocation() {
         StreetViewPanoramaCamera.Builder builder = new StreetViewPanoramaCamera.Builder();
-        if ( location.hasBearing()) {
-            builder.bearing(location.getBearing());
+        if ( mCurrentLocation.hasBearing()) {
+            builder.bearing(mCurrentLocation.getBearing());
         } else
             builder.bearing(mStreetView.getPanoramaCamera().bearing);
         mCamera = builder.build();
-        mStreetView.setPosition(new LatLng(location.getLatitude(), location.getLongitude()), 50);
+        mStreetView.setPosition(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 50);
+    }
+    @Override
+    public void locationUpdate(Location location) {
+        mCurrentLocation = location;
+        if ( !isMapReady ) return;
+        if ( !mPositionSync) return;
+        moveCameraToCurrentLocation();
+//        StreetViewPanoramaCamera.Builder builder = new StreetViewPanoramaCamera.Builder();
+//        if ( location.hasBearing()) {
+//            builder.bearing(location.getBearing());
+//        } else
+//            builder.bearing(mStreetView.getPanoramaCamera().bearing);
+//        mCamera = builder.build();
+//        mStreetView.setPosition(new LatLng(location.getLatitude(), location.getLongitude()), 50);
     }
 
     @Override
@@ -159,10 +215,11 @@ public class StreetViewFragment extends Fragment
         });
         if ( mPendingStepList != null) {
             for( StepParcelable step: mPendingStepList) {
-                stepUpdate(step);
+                stepUpdate(step, mStepListManualUpdate);
             }
             mPendingStepList.clear();
             mPendingStepList = null;
+            mStepListManualUpdate = false;
         }
     }
 }

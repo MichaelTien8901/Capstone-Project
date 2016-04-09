@@ -1,12 +1,12 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
+import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,8 +46,8 @@ import butterknife.ButterKnife;
 // */
 public class NavigationFragment extends Fragment implements
         OnMapReadyCallback,
-        NavigateActivity.Callback
-{
+        NavigateActivity.Callback {
+    static final String LOG_TAG = NavigationFragment.class.getSimpleName();
     protected GoogleMap mMap;
     private boolean isMapReady = false;
     protected Marker mMarker;
@@ -68,17 +68,31 @@ public class NavigationFragment extends Fragment implements
     @Bind(R.id.navigate_step_transit_no) TextView mStepTransitNo;
     @Bind(R.id.navigate_step_icon) ImageView mStepIconView;
 
-    private OnFragmentInteractionListener mListener;
+    private OnNavigationFragmentListener mListener;
     private List<StepParcelable> mPendingStepList;
+    private boolean mStepListManualUpdate;
     public NavigationFragment() {
         // Required empty public constructor
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(NavigateActivity.SAVE_POSITION_SYNC_KEY, mPositionSync);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mRouteObject = getArguments().getParcelable(DetailRouteActivity.ARG_ROUTE_KEY);
+        if ( savedInstanceState != null) {
+            mPositionSync = savedInstanceState.getBoolean( NavigateActivity.SAVE_POSITION_SYNC_KEY, mPositionSync);
+        } else {
+            if (getArguments() != null) {
+                if ( getArguments().containsKey(DetailRouteActivity.ARG_ROUTE_KEY))
+                    mRouteObject = getArguments().getParcelable(DetailRouteActivity.ARG_ROUTE_KEY);
+                if (getArguments().containsKey(NavigateActivity.SAVE_POSITION_SYNC_KEY))
+                    mPositionSync = getArguments().getBoolean(NavigateActivity.SAVE_POSITION_SYNC_KEY);
+            }
         }
     }
 
@@ -96,20 +110,21 @@ public class NavigationFragment extends Fragment implements
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed() {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onLocationSyncChange(true);
         }
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+    public void onAttach(Activity activity) {
+        Log.d(LOG_TAG, "onAttach");
+        super.onAttach(activity);
+        if (activity instanceof OnNavigationFragmentListener) {
+            mListener = (OnNavigationFragmentListener) activity;
         } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(activity.toString()
+                    + " must implement OnNavigationFragmentListener");
         }
     }
 
@@ -124,12 +139,15 @@ public class NavigationFragment extends Fragment implements
         if ( !mPositionSync) {
             mPositionSync = true;
             mNavigationMode = 0;
+            if ( mListener != null)
+                mListener.onLocationSyncChange(mPositionSync);
         } else {
             if ( mNavigationMode ++ == 1)
                 mNavigationMode = 0;
         }
 //        mCurrentCameraZoom = ZOOM_LEVEL;
-        updateUI();
+        if ( mCurrentLocation != null)
+            updateUI(true);
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -148,16 +166,20 @@ public class NavigationFragment extends Fragment implements
                             cameraPosition.target.longitude, result);
                     if (result[0] > DISTANCE_TOLERENCE) {
                         mPositionSync = false;
+                        if (mListener != null) {
+                            mListener.onLocationSyncChange(mPositionSync);
+                        }
                     }
                 }
             }
         });
         if ( mPendingStepList != null) {
             for( StepParcelable step: mPendingStepList) {
-                stepUpdate(step);
+                stepUpdate(step, mStepListManualUpdate);
             }
             mPendingStepList.clear();
             mPendingStepList = null;
+            mStepListManualUpdate = false;
         }
     }
     private void drawDestination(LatLng center) {
@@ -176,8 +198,13 @@ public class NavigationFragment extends Fragment implements
         }
     }
     @Override
-    public void stepUpdate(StepParcelable step) {
+    public void stepUpdate(StepParcelable step, boolean manual_update) {
         mStepObject = step;
+        if ( manual_update) {
+            mPositionSync = false;
+            if ( mListener != null)
+                mListener.onLocationSyncChange(mPositionSync);
+        }
         if ( isMapReady ) {
             // draw polyline
             if ( mStepObject.polyline != null && !mStepObject.polyline.isEmpty())
@@ -217,10 +244,13 @@ public class NavigationFragment extends Fragment implements
                     mDetailedInstructionView.setVisibility(View.VISIBLE);
                 }
         } else {
-            if ( mPendingStepList == null)
+            if ( mPendingStepList == null) {
                 mPendingStepList = new ArrayList<>();
-//                mPendingStepList = new ArrayList<StepParcelable>();
+                mStepListManualUpdate = false;
+            }
             mPendingStepList.add(step);
+            if ( manual_update)
+                mStepListManualUpdate = true;
         }
     }
     private void drawPolyline( String polyline, long level, boolean isMoveCamera, boolean isHightLightColor) {
@@ -265,7 +295,9 @@ public class NavigationFragment extends Fragment implements
             int padding = 40; // offset from edges of the map in pixels
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
             try {
-                mMap.animateCamera(cu);
+                if ( mCurrentLocation == null)
+                    mMap.moveCamera(cu);
+                else mMap.animateCamera(cu);
             } catch (IllegalStateException e) {
                 // layout not initialized
             }
@@ -275,13 +307,14 @@ public class NavigationFragment extends Fragment implements
     @Override
     public void locationUpdate(Location location) {
         // check current marker
+        boolean first = mCurrentLocation == null;
         mCurrentLocation = location;
         if ( !isMapReady) return;
-        updateUI();
+        updateUI(first);
 
     }
 
-    private void updateUI() {
+    private void updateUI(boolean isFirst) {
         LatLng position = new LatLng( mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         float zoom;
         if ( mMarker == null) {
@@ -296,34 +329,31 @@ public class NavigationFragment extends Fragment implements
                 zoom = mCurrentCameraZoom;
             } else zoom = ZOOM_LEVEL;
         }
-
-//        if ( mPositionSync || !CheckMarkerVisibility(mMarker)) {
-//            CameraPosition.Builder builder = new CameraPosition.Builder();
-//            builder.target(position);
-//            if ( mPositionSync ) {
-//                switch (mNavigationMode) {
-//                    case 1:
-//                        if (mCurrentLocation.hasBearing())
-//                            builder.bearing(mCurrentLocation.getBearing());
-//                        break;
-//                    case 0:
-//                        builder.bearing(0);
-//                        break;
-//                }
-//            }
-//            CameraPosition target = builder.zoom(zoom).build();
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-//            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target));
-//        }
+        // move camera if necessary
+        if ( mPositionSync ) { // || !CheckMarkerVisibility(mMarker)) {
+            CameraPosition.Builder builder = new CameraPosition.Builder();
+            builder.target(position);
+            if ( mPositionSync ) {
+                switch (mNavigationMode) {
+                    case 1:
+                        if (mCurrentLocation.hasBearing())
+                            builder.bearing(mCurrentLocation.getBearing());
+                        break;
+                    case 0:
+                        builder.bearing(0);
+                        break;
+                }
+            }
+            CameraPosition target = builder.zoom(zoom).build();
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target));
+        }
     }
 
-    private boolean CheckMarkerVisibility(Marker myPosition)
-    {
-        //This is the current user-viewable region of the map
-        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-        return (bounds.contains(myPosition.getPosition()));
-    }
-     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
+//    private boolean CheckMarkerVisibility(Marker myPosition)
+//    {
+//        //This is the current user-viewable region of the map
+//        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+//        return (bounds.contains(myPosition.getPosition()));
+//    }
 }

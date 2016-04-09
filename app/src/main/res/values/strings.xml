@@ -112,7 +112,7 @@
     <string name="network_error_message">Internet connection not available.</string>
     <string name="dialog_network_positive">@android:string/yes</string>
     <string name="location_service_error_title">Location Service</string>
-    <string name="location_service_error_message">Location Service not available</string>
+    <string name="location_service_error_message">Location Service not available.</string>
     <string name="pref_key_location_request_flag">pref_key_location_request_flag</string>
 
 </resources>
