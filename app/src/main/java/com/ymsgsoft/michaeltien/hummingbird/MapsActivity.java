@@ -222,7 +222,7 @@ public class MapsActivity extends AppCompatActivity
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
-                setButtonsEnabledState();
+//                setButtonsEnabledState();
                 break;
         }
 
@@ -373,7 +373,7 @@ public class MapsActivity extends AppCompatActivity
             switch (requestCode) {
                 case REQUEST_CHECK_SETTINGS:
                     Log.i(LOG_TAG, "User chose not to make required location settings changes.");
-                    setButtonsEnabledState();
+//                    setButtonsEnabledState();
                     break;
             }
         }
@@ -583,7 +583,7 @@ public class MapsActivity extends AppCompatActivity
                         @Override
                         public void onResult(Status status) {
                             mRequestingLocationUpdates = true;
-                            setButtonsEnabledState();
+//                            setButtonsEnabledState();
                             PrefUtils.resetLocationRequestFlag(MapsActivity.this, getString(R.string.pref_key_location_request_flag));
                         }
                     });
@@ -605,13 +605,9 @@ public class MapsActivity extends AppCompatActivity
                     @Override
                     public void onResult(Status status) {
 //                        mRequestingLocationUpdates = false;
-                        setButtonsEnabledState();
+//                        setButtonsEnabledState();
                     }
                 });
-    }
-
-    private void setButtonsEnabledState() {
-        // Todo setButtonEnabledState
     }
 
     protected void createLocationRequest() {

@@ -108,14 +108,7 @@ public class NavigationFragment extends Fragment implements
         mapFragment.getMapAsync(this);
         return rootView;
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed() {
-        if (mListener != null) {
-            mListener.onLocationSyncChange(true);
-        }
-    }
-
+    
     @Override
     public void onAttach(Activity activity) {
         Log.d(LOG_TAG, "onAttach");

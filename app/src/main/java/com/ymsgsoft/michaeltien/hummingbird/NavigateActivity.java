@@ -536,7 +536,6 @@ public class NavigateActivity extends AppCompatActivity implements
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
-//                setButtonsEnabledState(); TODO
                 break;
         }
     }
