@@ -325,8 +325,8 @@ public class MapsActivity extends AppCompatActivity
                         }
                         mFromObject = new PlaceObject(start_name, start_place_id);
                         mToObject = new PlaceObject(end_name, end_place_id);
-                        DirectionIntentService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
-                        DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
+                        DirectionService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
+                        DirectionService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                         // go to planning
                         startActivityPlanning(mFromObject, mToObject);
                     }
@@ -347,7 +347,7 @@ public class MapsActivity extends AppCompatActivity
                             getString(R.string.default_location_title),
                             String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude()));
                     // save history, again to update query time
-                    DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
+                    DirectionService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                     // go to planning
                     startActivityPlanning(mFromObject, mToObject);
                     break;
@@ -364,7 +364,7 @@ public class MapsActivity extends AppCompatActivity
                     CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
                     mToObject.title = place_name.toString();
                     mToObject.placeId = place_id;
-                    DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
+                    DirectionService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                     mFromObject.title = getString(R.string.default_location_title);
                     mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     startActivityPlanning(mFromObject, mToObject);
@@ -661,7 +661,7 @@ public class MapsActivity extends AppCompatActivity
             mFromObject.title = getString(R.string.default_location_title);
             mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
             // save history, again to update query time
-            DirectionIntentService.startActionSavePlace(this, mPendingPlaceObject, System.currentTimeMillis());
+            DirectionService.startActionSavePlace(this, mPendingPlaceObject, System.currentTimeMillis());
             // go to planning
             startActivityPlanning(mFromObject, mPendingPlaceObject);
             mPendingPlaceObject = null;

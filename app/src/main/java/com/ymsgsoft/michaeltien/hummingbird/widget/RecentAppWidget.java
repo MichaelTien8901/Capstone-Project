@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
-import com.ymsgsoft.michaeltien.hummingbird.DirectionIntentService;
+import com.ymsgsoft.michaeltien.hummingbird.DirectionService;
 import com.ymsgsoft.michaeltien.hummingbird.MapsActivity;
 import com.ymsgsoft.michaeltien.hummingbird.R;
 
@@ -81,7 +81,7 @@ public class RecentAppWidget extends AppWidgetProvider {
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
-        if (DirectionIntentService.ACTION_RECENT_DATA_UPDATED.equals(intent.getAction())) {
+        if (DirectionService.ACTION_RECENT_DATA_UPDATED.equals(intent.getAction())) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass()));

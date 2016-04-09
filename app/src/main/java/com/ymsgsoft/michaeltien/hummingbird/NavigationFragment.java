@@ -108,7 +108,7 @@ public class NavigationFragment extends Fragment implements
         mapFragment.getMapAsync(this);
         return rootView;
     }
-    
+
     @Override
     public void onAttach(Activity activity) {
         Log.d(LOG_TAG, "onAttach");

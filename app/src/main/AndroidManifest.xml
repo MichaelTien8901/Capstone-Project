@@ -64,7 +64,7 @@
         </activity>
 
         <service
-            android:name=".DirectionIntentService"
+            android:name=".DirectionService"
             android:exported="false" />
 
         <activity

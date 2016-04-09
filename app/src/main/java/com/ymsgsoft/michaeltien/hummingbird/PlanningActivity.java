@@ -2,6 +2,7 @@ package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -37,7 +39,7 @@ import butterknife.OnClick;
 
 public class PlanningActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
-    final String LOG_TAG = PlaceActivity.class.getSimpleName();
+    final String LOG_TAG = PlanningActivity.class.getSimpleName();
 
 //    private SimpleDateFormat mFormatter = new SimpleDateFormat("MMMM dd yyyy hh:mm aa");
     public static final int DIRECTION_LOADER = 0;
@@ -52,6 +54,7 @@ public class PlanningActivity extends AppCompatActivity implements
     @Bind(R.id.departTextView) TextView mDepartView;
     @Bind(R.id.routeListView) ListView mRouteListView;
     @Bind(R.id.fragment_planning_id) LinearLayout mListLayout;
+    @Bind(R.id.empty_view) TextView mEmptyView;
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
     protected RouteAdapter mRouteAdapter;
@@ -66,7 +69,7 @@ public class PlanningActivity extends AppCompatActivity implements
             outState.putParcelable(PLAN_TO_ID, mToObject);
             PrefUtils.savePlaceParcelableToPref(this, PlanningActivity.PLAN_TO_ID, mToObject);
         }
-        outState.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE);
+//        outState.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE);
         outState.putLong(PLAN_TIME_ID, mQueryTime);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
@@ -83,7 +86,9 @@ public class PlanningActivity extends AppCompatActivity implements
         if ( mFromObject.placeId.isEmpty() || mToObject.placeId.isEmpty()) return;
         String origin = mFromObject.placeId;
         String destination = mToObject.placeId;
-        DirectionIntentService.startActionQueryDirection(this, origin, destination, query_time);
+        clearDirectionStatus(this);
+        mListLayout.setVisibility(View.INVISIBLE);
+        DirectionService.startActionQueryDirection(this, origin, destination, query_time);
         getSupportLoaderManager().restartLoader(DIRECTION_LOADER, null, this);
     }
 
@@ -141,7 +146,6 @@ public class PlanningActivity extends AppCompatActivity implements
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRouteAdapter = new RouteAdapter( this, null, 0 );
         mRouteListView.setAdapter(mRouteAdapter);
-//        getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
         mRouteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -167,8 +171,8 @@ public class PlanningActivity extends AppCompatActivity implements
         if ( savedInstanceState != null) {
             mFromObject = savedInstanceState.getParcelable(PLAN_FROM_ID);
             mToObject = savedInstanceState.getParcelable(PLAN_TO_ID);
-            if (savedInstanceState.getBoolean(PLAN_LIST_VISIBLE_ID))
-                getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
+//            if (savedInstanceState.getBoolean(PLAN_LIST_VISIBLE_ID))
+//              getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
             mQueryTime = savedInstanceState.getLong(PLAN_TIME_ID);
             showDepartureTime(mQueryTime);
         } else {
@@ -220,6 +224,7 @@ public class PlanningActivity extends AppCompatActivity implements
                 showDateTimeDialog();
             }
         });
+        getSupportLoaderManager().initLoader(DIRECTION_LOADER, null, this);
     }
     private void showDateTimeDialog() {
         new SlideDateTimePicker.Builder(getSupportFragmentManager())
@@ -244,7 +249,7 @@ public class PlanningActivity extends AppCompatActivity implements
                     CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
                     mFromObject.title = place_name.toString();
                     mFromObject.placeId = place_id;
-                    DirectionIntentService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
+                    DirectionService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
                     updateSearchText();
                     tryQueryRoutesNow();
                     showDepartureTime(System.currentTimeMillis());
@@ -258,7 +263,7 @@ public class PlanningActivity extends AppCompatActivity implements
                     CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
                     mToObject.title = place_name.toString();
                     mToObject.placeId = place_id;
-                    DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
+                    DirectionService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                     updateSearchText();
                     tryQueryRoutesNow();
                     showDepartureTime(System.currentTimeMillis());
@@ -282,10 +287,11 @@ public class PlanningActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        updateEmptyView();
         mRouteAdapter.swapCursor(cursor);
-        if ( cursor != null && cursor.getCount() != 0) {
-            mListLayout.setVisibility(View.VISIBLE);
-        }
+//        if ( cursor != null && cursor.getCount() != 0) {
+//            mListLayout.setVisibility(View.VISIBLE);
+//        }
     }
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
@@ -343,5 +349,56 @@ public class PlanningActivity extends AppCompatActivity implements
             startActivityForResult(intent, SEARCH_TO_REQUEST_ID, bundle);
         } else
             startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
+    }
+    static private void clearDirectionStatus(Context c) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.putInt(c.getString(R.string.pref_direction_status_key), DirectionService.DIRECTION_STATUS_UNKNOWN);
+        spe.commit();
+    }
+    @SuppressWarnings("ResourceType")
+    static public @DirectionService.DirectionStatus
+    int getDirectionStatus(Context c){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+        return sp.getInt(c.getString(R.string.pref_direction_status_key), DirectionService.DIRECTION_STATUS_UNKNOWN);
+    }
+    public void updateEmptyView() {
+        Log.d(LOG_TAG, "updateEmptyView: ");
+        @DirectionService.DirectionStatus int status = getDirectionStatus(this);
+        int message;
+        switch (status) {
+            case DirectionService.DIRECTION_STATUS_NO_ROUTE_FOUND:
+                Log.d(LOG_TAG, "DIRECTION_STATUS_NO_ROUTE_FOUND");
+                message = R.string.empty_route_no_route;
+                break;
+            case DirectionService.DIRECTION_STATUS_SERVER_DOWN:
+                message = R.string.empty_route_no_server_down;
+                break;
+            case DirectionService.DIRECTION_STATUS_SERVER_INVALID:
+                message = R.string.empty_route_no_server_down;
+                break;
+            case DirectionService.DIRECTION_STATUS_NO_NETWORK:
+                message = R.string.empty_route_network_error;
+                break;
+            case DirectionService.DIRECTION_STATUS_UNKNOWN:
+                Log.d(LOG_TAG, "DIRECTION_STATUS_UNKNOWN");
+                message = R.string.empty_route_unknown;
+                break;
+            default:
+                if ( !Utils.isOnline(this)) {
+                    Log.d(LOG_TAG, "not online");
+                    message = R.string.empty_route_network_error;
+                    break;
+                } else {
+                    Log.d(LOG_TAG, "not empty view");
+                    mEmptyView.setVisibility(View.INVISIBLE);
+                    mListLayout.setVisibility(View.VISIBLE);
+                    return;
+                }
+        } // switch
+        Log.d(LOG_TAG, "show empty view");
+        mEmptyView.setText(message);
+        mEmptyView.setVisibility(View.VISIBLE);
+        mListLayout.setVisibility(View.INVISIBLE);
     }
 }

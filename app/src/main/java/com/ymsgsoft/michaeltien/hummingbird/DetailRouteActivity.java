@@ -128,7 +128,7 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
         }
     }
     public void removeFavorite() {
-        DirectionIntentService.startActionRemoveFavorite(this, mRouteObject.routeId );
+        DirectionService.startActionRemoveFavorite(this, mRouteObject.routeId);
         mRouteObject.isFavorite = false;
         mConfigChanged = true;
         mAddRemoveBtn.setImageResource(R.drawable.ic_add);
@@ -166,12 +166,12 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
     }
 
     private void addFavorite(String saveName) {
-        DirectionIntentService.startActionSaveFavorite(this,
+        DirectionService.startActionSaveFavorite(this,
                 mFromObject,
                 mToObject,
                 saveName,
                 mRouteObject,
-                mRouteObject.deparTimeValue == 0 ? System.currentTimeMillis() / 1000: mRouteObject.deparTimeValue );
+                mRouteObject.deparTimeValue == 0 ? System.currentTimeMillis() / 1000 : mRouteObject.deparTimeValue);
         mRouteObject.isFavorite = true;
         mConfigChanged = true;
         mAddRemoveBtn.setImageResource(R.drawable.ic_remove);

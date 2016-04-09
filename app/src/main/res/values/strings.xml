@@ -89,6 +89,7 @@
     <string name="pref_units_default_value" translatable="false">@string/pref_units_label_metric</string>
     <string name="pref_units_summary">@string/pref_units_default_value</string>
 
+    <string name="pref_direction_status_key" translatable="false">direct_status_key</string>
     <!-- Strings related to Settings -->
 
     <!--<string name="pref_title_add_friends_to_messages">Add friends to messages</string>-->
@@ -114,5 +115,9 @@
     <string name="location_service_error_title">Location Service</string>
     <string name="location_service_error_message">Location Service not available.</string>
     <string name="pref_key_location_request_flag">pref_key_location_request_flag</string>
-
+    <string name="empty_route_no_route">No route found.</string>
+    <string name="empty_route_network_error">Network Error.</string>
+    <string name="empty_route_no_server_down">Server Down.</string>
+    <string name="empty_route_no_server_invalid">Server Invalid.</string>
+    <string name="empty_route_unknown"></string>
 </resources>

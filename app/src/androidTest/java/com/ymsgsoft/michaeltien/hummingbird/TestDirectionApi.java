@@ -3,7 +3,7 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import com.ymsgsoft.michaeltien.hummingbird.DirectionService.MapApiService;
+import com.ymsgsoft.michaeltien.hummingbird.Service.MapApiService;
 
 import java.io.IOException;
 

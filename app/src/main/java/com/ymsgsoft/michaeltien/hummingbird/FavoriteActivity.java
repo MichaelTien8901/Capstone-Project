@@ -106,7 +106,7 @@ public class FavoriteActivity extends AppCompatActivity
             return true;
         } else if (id == R.id.action_delete) {
             if ( mData != null) {
-                DirectionIntentService.startActionRemoveFavorite(this, mData.routeId );
+                DirectionService.startActionRemoveFavorite(this, mData.routeId);
                 mData = null;
                 mAdapter.resetSelection();
             } else showNoSelectionWarning();
