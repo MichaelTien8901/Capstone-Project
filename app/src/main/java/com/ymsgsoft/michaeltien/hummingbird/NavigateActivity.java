@@ -484,7 +484,7 @@ public class NavigateActivity extends AppCompatActivity implements
     }
     @OnClick(R.id.fab_streetview)
     public void streetViewPressed() {
-        if (!Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates))
+        if (!Utils.checkNetworkAvailable(this))
             return;
         mRouteObject = getIntent().getParcelableExtra(DetailRouteActivity.ARG_ROUTE_KEY);
         mCursorPosition = 0;
