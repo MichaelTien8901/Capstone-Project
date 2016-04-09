@@ -150,13 +150,13 @@ public class MapsActivity extends AppCompatActivity
             }
         } else {
             PrefUtils.resetLocationRequestFlag(this, getString(R.string.pref_key_location_request_flag));
-            if (!Utils.isOnline(this)) {
+            if (!Utils.checkNetworkAvailable(this)) {
                     Log.d(LOG_TAG, "onCreate: service not available!");
-                    Utils.NetworkDialogFragment.newInstance(
-                            R.string.network_error_title,
-                            R.string.network_error_message )
-                        .show(getFragmentManager(), "NetworkDialog");
-                } else {
+//                    Utils.NetworkDialogFragment.newInstance(
+//                            R.string.network_error_title,
+//                            R.string.network_error_message )
+//                        .show(getFragmentManager(), "NetworkDialog");
+            } else {
                 Intent intent = getIntent();
                 mPendingPlaceObject = intent.getParcelableExtra(PLACE_PARAM);
             }
@@ -318,9 +318,9 @@ public class MapsActivity extends AppCompatActivity
                     if (FavoriteActivity.ACTION_LOAD.equals(action)) {
                         startActivityRouteDetails(start_name, start_place_id, end_name, end_place_id, routeId);
                     } else if (FavoriteActivity.ACTION_PLANNING.equals(action)) {
-                        if ( !checkServicesAvailable()) {
+                        if ( !Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates)) {
+//                        if ( !Utils.checkNetworkAvailable(this)) {
                             Log.d(LOG_TAG, "onActivityResult: service not available!");
-//                            new Utils.NetworkDialog().show(getFragmentManager(), "NetworkDialog");
                             return;
                         }
                         mFromObject = new PlaceObject(start_name, start_place_id);
@@ -332,9 +332,12 @@ public class MapsActivity extends AppCompatActivity
                     }
                     break;
                 case HISTORY_REQUEST_ID:
-                    if ( !checkServicesAvailable()) {
+                    if ( mLastLocation == null) {
+                        mRequestingLocationUpdates = false; // enable error
+                    }
+                    if ( !Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates)) {
+//                    if ( !Utils.checkNetworkAvailable(this)) {
                         Log.d(LOG_TAG, "onActivityResult: service not available!");
-//                        new Utils.NetworkDialog().show(getFragmentManager(), "NetworkDialog");
                         return;
                     }
                     mToObject = new PlaceObject(
@@ -444,14 +447,14 @@ public class MapsActivity extends AppCompatActivity
         if (mLastLocation != null) {
             savedInstanceState.putParcelable(LAST_LOCATION_KEY, mLastLocation);
         }
-//        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
+        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
-//            mRequestingLocationUpdates = savedInstanceState.getBoolean(KEY_REQUESTING_LOCATION_UPDATES);
+            mRequestingLocationUpdates = savedInstanceState.getBoolean(KEY_REQUESTING_LOCATION_UPDATES);
         }
     }
 
@@ -601,7 +604,7 @@ public class MapsActivity extends AppCompatActivity
                 .setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
-                        mRequestingLocationUpdates = false;
+//                        mRequestingLocationUpdates = false;
                         setButtonsEnabledState();
                     }
                 });
@@ -652,7 +655,7 @@ public class MapsActivity extends AppCompatActivity
 //            mapReady = false;
         }
         if (mPendingPlaceObject != null) {
-            if ( !checkServicesAvailable()) { // is it too early to check googleapiclient connected?
+            if ( !Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates)) { // is it too early to check googleapiclient connected?
                 mPendingPlaceObject = null;
                 Log.d(LOG_TAG, "onLocationChanged: service not available!");
 //                new Utils.NetworkDialog().show(getFragmentManager(), "NetworkDialog");
@@ -671,7 +674,7 @@ public class MapsActivity extends AppCompatActivity
 
     @OnClick(R.id.fab_direction)
     public void directionPressed() {
-        if ( !checkServicesAvailable()) {
+        if ( !Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates)) {
             Log.d(LOG_TAG, "directonPressed: service not available!");
             return;
         }
@@ -683,22 +686,22 @@ public class MapsActivity extends AppCompatActivity
         } else
             startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
     }
-    private boolean isServiceAvailable() {
-        return mGoogleApiClient.isConnected() && Utils.isOnline(this) && mRequestingLocationUpdates;
-    }
-    private boolean checkServicesAvailable() {
-        if ( isServiceAvailable()) return true;
-        Utils.NetworkDialogFragment dialog;
-        if ( !(mGoogleApiClient.isConnected() && Utils.isOnline(this)))
-            dialog = Utils.NetworkDialogFragment.newInstance(
-                    R.string.network_error_title,
-                    R.string.network_error_message);
-        else
-            dialog = Utils.NetworkDialogFragment.newInstance(
-                    R.string.location_service_error_title,
-                    R.string.location_service_error_message);
-
-        dialog.show(getFragmentManager(), "NetworkDialog");
-        return false;
-    }
+//    private boolean isServiceAvailable() {
+//        return mGoogleApiClient.isConnected() && Utils.isOnline(this) && mRequestingLocationUpdates;
+//    }
+//    private boolean checkServicesAvailable() {
+//        if ( isServiceAvailable()) return true;
+//        Utils.NetworkDialogFragment dialog;
+//        if ( !(mGoogleApiClient.isConnected() && Utils.isOnline(this)))
+//            dialog = Utils.NetworkDialogFragment.newInstance(
+//                    R.string.network_error_title,
+//                    R.string.network_error_message);
+//        else
+//            dialog = Utils.NetworkDialogFragment.newInstance(
+//                    R.string.location_service_error_title,
+//                    R.string.location_service_error_message);
+//
+//        dialog.show(getFragmentManager(), "NetworkDialog");
+//        return false;
+//    }
 }

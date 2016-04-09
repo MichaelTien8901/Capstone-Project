@@ -1,5 +1,6 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
@@ -81,4 +83,35 @@ public class Utils {
             return builder.create();
         }
     }
+    static private boolean isServiceAvailable(Context context,
+                      GoogleApiClient mGoogleApiClient,
+                      boolean mRequestingLocationUpdates) {
+        return Utils.isOnline(context) && mRequestingLocationUpdates;
+    }
+    public static boolean checkNetworkAvailable(Activity activity) {
+        if ( Utils.isOnline(activity)) return true;
+        Utils.NetworkDialogFragment.newInstance(
+                    R.string.network_error_title,
+                    R.string.network_error_message)
+                .show(activity.getFragmentManager(), "NetworkDialog");
+        return false;
+    }
+    public static  boolean checkServicesAvailable(Activity activity,
+                                  GoogleApiClient mGoogleApiClient,
+                                  boolean mRequestingLocationUpdates) {
+        if ( isServiceAvailable(activity, mGoogleApiClient, mRequestingLocationUpdates)) return true;
+        Utils.NetworkDialogFragment dialog;
+        if (!Utils.isOnline((activity))) {
+            dialog = Utils.NetworkDialogFragment.newInstance(
+                    R.string.network_error_title,
+                    R.string.network_error_message);
+        } else {
+            dialog = Utils.NetworkDialogFragment.newInstance(
+                    R.string.location_service_error_title,
+                    R.string.location_service_error_message);
+        }
+        dialog.show(activity.getFragmentManager(), "NetworkDialog");
+        return false;
+    }
+
 }
