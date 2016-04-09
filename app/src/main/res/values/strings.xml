@@ -28,13 +28,15 @@
     <string name="home">home</string>
     <string name="nav_favorite_title">Favorites</string>
     <string name="dialog_favorite_positive">Save</string>
-    <string name="dialog_favorite_negative">Cancel</string>
-    <string name="dialog_favorite_title">Save favorite route?</string>
+    <string name="dialog_favorite_negative">@android:string/cancel</string>
+    <string name="dialog_favorite_title">My Favorite Routes</string>
+    <string name="dialog_favorite_message">Save favorite route?</string>
     <string name="dialog_favorite_remove">Remove</string>
-    <string name="dialog_favorite_remove_confirm">Remove from Favorite List?</string>
+    <string name="dialog_favorite_remove_title">My Favorite Routes</string>
+    <string name="dialog_favorite_remove_message">Remove from My Favorite Routes?</string>
     <string name="dialog_confirm_home_title">Stop Navigation?</string>
-    <string name="dialog_confirm_home_positive">Yes</string>
-    <string name="dialog_confirm_home_negative">Cancel</string>
+    <string name="dialog_confirm_home_positive">@android:string/yes</string>
+    <string name="dialog_confirm_home_negative">@android:string/cancel</string>
 
     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
     <string name="title_activity_favorite">Favorites</string>
@@ -106,5 +108,11 @@
     <string name="menu_history_title">History</string>
     <string name="menu_favorite_title">Favorites</string>
     <string name="you_are_here_title">You Are Here</string>
+    <string name="network_error_title">Network Error</string>
+    <string name="network_error_message">Internet connection not available.</string>
+    <string name="dialog_network_positive">@android:string/yes</string>
+    <string name="location_service_error_title">Location Service</string>
+    <string name="location_service_error_message">Location Service not available</string>
+    <string name="pref_key_location_request_flag">pref_key_location_request_flag</string>
 
 </resources>

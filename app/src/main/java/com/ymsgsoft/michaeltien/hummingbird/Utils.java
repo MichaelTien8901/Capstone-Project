@@ -1,11 +1,18 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 
@@ -38,5 +45,40 @@ public class Utils {
         return px;
     }
 
-
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
+    public static class NetworkDialogFragment extends DialogFragment {
+        private static final String TITLE = "title";
+        private static final String MESSAGE = "message";
+        public static NetworkDialogFragment newInstance(int title, int message) {
+            NetworkDialogFragment frag = new NetworkDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt(TITLE, title);
+            args.putInt(MESSAGE, message);
+            frag.setArguments(args);
+            return frag;
+        }
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int title = getArguments().getInt(TITLE);
+            int message = getArguments().getInt(MESSAGE);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                    .setTitle(title)
+                    .setMessage(message)
+//                    .setTitle(R.string.network_error_title)
+//                    .setMessage(R.string.network_error_message)
+                    .setPositiveButton(R.string.dialog_network_positive, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            return builder.create();
+        }
+    }
 }

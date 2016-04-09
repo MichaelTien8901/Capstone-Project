@@ -7,6 +7,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -24,10 +25,17 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.ymsgsoft.michaeltien.hummingbird.data.NavigateColumns;
+import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 
@@ -39,10 +47,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class NavigateActivity extends AppCompatActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener, LocationListener, LoaderManager.LoaderCallbacks<Cursor> {
-    static final String TAG = NavigateActivity.class.getSimpleName();
+        ConnectionCallbacks,
+        OnConnectionFailedListener,
+        LocationListener,
+        LoaderManager.LoaderCallbacks<Cursor>,
+        ResultCallback<LocationSettingsResult> {
+    static final String LOG_TAG = NavigateActivity.class.getSimpleName();
     static final String NAVIGATION_TAG = "com.ymsgsoft.michaeltien.hummingbird.navigation_fragment";
     static final int REQUEST_LOCATION = 103;
+    static final int REQUEST_CHECK_SETTINGS = 104;
     public static final int NAVIGATION_LOADER =10;
 
 //    private GoogleMap mMap;
@@ -77,7 +90,8 @@ public class NavigateActivity extends AppCompatActivity implements
      */
     protected Location mCurrentLocation;
     protected String mLastUpdateTime;
-    protected boolean mRequestingLocationUpdates = true;
+    protected LocationSettingsRequest mLocationSettingsRequest;
+    protected boolean mRequestingLocationUpdates;
     protected RouteParcelable mRouteObject;
     protected Fragment mFragment;
     protected Cursor mCursor;
@@ -134,7 +148,9 @@ public class NavigateActivity extends AppCompatActivity implements
 
         // Kick off the process of building a GoogleApiClient and requesting the LocationServices
         // API.
+        mRequestingLocationUpdates = false;
         buildGoogleApiClient();
+        buildLocationSettingsRequest();
         // start loader
         getSupportLoaderManager().initLoader(NAVIGATION_LOADER, null, NavigateActivity.this);
     }
@@ -145,7 +161,7 @@ public class NavigateActivity extends AppCompatActivity implements
      * @param savedInstanceState The activity state saved in the Bundle.
      */
     private void updateValuesFromBundle(Bundle savedInstanceState) {
-        Log.i(TAG, "Updating values from bundle");
+        Log.i(LOG_TAG, "Updating values from bundle");
         if (savedInstanceState != null) {
             // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
             // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
@@ -178,7 +194,7 @@ public class NavigateActivity extends AppCompatActivity implements
      * LocationServices API.
      */
     protected synchronized void buildGoogleApiClient() {
-        Log.i(TAG, "Building GoogleApiClient");
+        Log.i(LOG_TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -200,10 +216,29 @@ public class NavigateActivity extends AppCompatActivity implements
                     REQUEST_LOCATION);
         } else {
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, this);
+                    mGoogleApiClient, mLocationRequest, this)
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            mRequestingLocationUpdates = true;
+                            PrefUtils.resetLocationRequestFlag(NavigateActivity.this, getString(R.string.pref_key_location_request_flag));
+                        }
+            });
+
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if ( requestCode == REQUEST_CHECK_SETTINGS) {
+            if (resultCode == RESULT_OK) {
+                Log.i(LOG_TAG, "User agreed to make required location settings changes.");
+                startLocationUpdates();
+            } else {
+                Log.i(LOG_TAG, "User chose not to make required location settings changes.");
+            }
+        }
+    }
 
     /**
      * Removes location updates from the FusedLocationApi.
@@ -251,7 +286,7 @@ public class NavigateActivity extends AppCompatActivity implements
     public void onConnectionSuspended(int cause) {
         // The connection to Google Play services was lost for some reason. We call connect() to
         // attempt to re-establish the connection.
-        Log.i(TAG, "Connection suspended");
+        Log.i(LOG_TAG, "Connection suspended");
         mGoogleApiClient.connect();
     }
 
@@ -277,7 +312,7 @@ public class NavigateActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i(TAG, "Connected to GoogleApiClient");
+        Log.i(LOG_TAG, "Connected to GoogleApiClient");
 
         // If the initial location was never previously requested, we use
         // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
@@ -306,9 +341,25 @@ public class NavigateActivity extends AppCompatActivity implements
         // If the user presses the Start Updates button before GoogleApiClient connects, we set
         // mRequestingLocationUpdates to true (see startUpdatesButtonHandler()). Here, we check
         // the value of mRequestingLocationUpdates and if it is true, we start location updates.
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
+//        if (mRequestingLocationUpdates) {
+//            startLocationUpdates();
+//        }
+        checkLocationSettings();
+    }
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        builder.setAlwaysShow(true); // without never button
+        mLocationSettingsRequest = builder.build();
+    }
+
+    protected void checkLocationSettings() {
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(this);
     }
 
     @Override
@@ -325,7 +376,7 @@ public class NavigateActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+        Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
     @Override
@@ -447,6 +498,10 @@ public class NavigateActivity extends AppCompatActivity implements
         // replace fragment
         Fragment newFragment;
         if ( mFragment instanceof NavigationFragment) {
+            if (!Utils.isOnline(this)) {
+                Utils.NetworkDialogFragment.newInstance(R.string.network_error_title, R.string.network_error_message).show(getFragmentManager(), "Network Dialog");
+                return;
+            }
             newFragment = new StreetViewFragment();
             mStreetviewButton.setImageResource(R.drawable.ic_map_black);
             mStreetviewButton.setContentDescription(getString(R.string.map_view_description));
@@ -463,6 +518,36 @@ public class NavigateActivity extends AppCompatActivity implements
         mFragment = newFragment;
         completeStepUpdate();
     }
+
+    @Override
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                Log.i(LOG_TAG, "All location settings are satisfied.");
+                startLocationUpdates();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
+                        "upgrade location settings ");
+                if ( !PrefUtils.isLocationRequestFlag(NavigateActivity.this, getString(R.string.pref_key_location_request_flag)))
+                    try {
+                    // Show the dialog by calling startResolutionForResult(), and check the result
+                    // in onActivityResult().
+                    PrefUtils.setLocationRequestFlag(NavigateActivity.this, getString(R.string.pref_key_location_request_flag));
+                    status.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.i(LOG_TAG, "PendingIntent unable to execute request.");
+                    }
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                        "not created.");
+//                setButtonsEnabledState(); TODO
+                break;
+        }
+    }
+
     public interface Callback {
         void locationUpdate(Location location);
         void stepUpdate(StepParcelable step);
@@ -472,7 +557,7 @@ public class NavigateActivity extends AppCompatActivity implements
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.dialog_confirm_home_title)
+                    .setMessage(R.string.dialog_confirm_home_title)
                     .setPositiveButton(R.string.dialog_confirm_home_positive, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

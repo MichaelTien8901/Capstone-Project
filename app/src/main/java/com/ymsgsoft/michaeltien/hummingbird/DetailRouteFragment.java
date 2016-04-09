@@ -263,7 +263,7 @@ public class DetailRouteFragment extends Fragment implements
     public void onConnectionSuspended(int i) {
         // The connection to Google Play services was lost for some reason. We call connect() to
         // attempt to re-establish the connection.
-        //Log.i(TAG, "Connection suspended");
+        //Log.i(LOG_TAG, "Connection suspended");
         mGoogleApiClient.connect();
 
     }

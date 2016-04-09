@@ -182,7 +182,8 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.dialog_favorite_remove_confirm)
+                    .setTitle(R.string.dialog_favorite_remove_title)
+                    .setMessage(R.string.dialog_favorite_remove_message)
                     .setPositiveButton(R.string.dialog_favorite_remove, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

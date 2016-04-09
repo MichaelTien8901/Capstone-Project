@@ -35,4 +35,20 @@ public class PrefUtils {
         if ( serialData.isEmpty()) return null;
         return PlaceObject.create(serialData);
     }
+    static public void setLocationRequestFlag(Context context, String key) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(key, true );
+        editor.apply();
+    }
+    static public void resetLocationRequestFlag(Context context, String key) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(key, false );
+        editor.apply();
+    }
+    static public boolean isLocationRequestFlag(Context context, String key) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean(key, false);
+    }
 }

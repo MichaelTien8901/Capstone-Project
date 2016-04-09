@@ -119,7 +119,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 //
 //            Toast.makeText(getApplicationContext(), "Clicked: " + primaryText,
 //                    Toast.LENGTH_SHORT).show();
-//            Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
+//            Log.i(LOG_TAG, "Called getPlaceById to get Place details for " + placeId);
         }
     };
     /**
@@ -132,7 +132,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 //        public void onResult(PlaceBuffer places) {
 //            if (!places.getStatus().isSuccess()) {
 //                // Request did not complete successfully
-//                Log.e(TAG, "Place query did not complete. Error: " + places.getStatus().toString());
+//                Log.e(LOG_TAG, "Place query did not complete. Error: " + places.getStatus().toString());
 //                places.release();
 //                return;
 //            }
@@ -153,7 +153,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 //                mPlaceDetailsAttribution.setText(Html.fromHtml(thirdPartyAttribution.toString()));
 //            }
 //
-//            Log.i(TAG, "Place details received: " + place.getName());
+//            Log.i(LOG_TAG, "Place details received: " + place.getName());
 //
 //            places.release();
 //        }

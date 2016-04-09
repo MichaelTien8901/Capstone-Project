@@ -43,6 +43,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
 import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 
@@ -98,15 +99,16 @@ public class MapsActivity extends AppCompatActivity
      * settings to determine if the device has optimal location settings.
      */
     protected LocationSettingsRequest mLocationSettingsRequest;
-    protected Boolean mRequestingLocationUpdates;
-    @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
+    protected boolean mRequestingLocationUpdates;
+    @Bind(R.id.drawer_layout)
+    DrawerLayout mDrawer;
     private Marker mMarker;
 
     @Override
     public void onConnectionSuspended(int i) {
         // The connection to Google Play services was lost for some reason. We call connect() to
         // attempt to re-establish the connection.
-        //Log.i(TAG, "Connection suspended");
+        //Log.i(LOG_TAG, "Connection suspended");
         mGoogleApiClient.connect();
     }
 
@@ -136,19 +138,31 @@ public class MapsActivity extends AppCompatActivity
                     .addApi(LocationServices.API)
                     .build();
         }
+        mRequestingLocationUpdates = false;
+        buildGoogleApiClient();
+        createLocationRequest();
+        buildLocationSettingsRequest();
         if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
             if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
                         KEY_REQUESTING_LOCATION_UPDATES);
             }
-
         } else {
-            Intent intent = getIntent();
-            mPendingPlaceObject =intent.getParcelableExtra(PLACE_PARAM);
+            PrefUtils.resetLocationRequestFlag(this, getString(R.string.pref_key_location_request_flag));
+            if (!Utils.isOnline(this)) {
+                    Log.d(LOG_TAG, "onCreate: service not available!");
+                    Utils.NetworkDialogFragment.newInstance(
+                            R.string.network_error_title,
+                            R.string.network_error_message )
+                        .show(getFragmentManager(), "NetworkDialog");
+                } else {
+                Intent intent = getIntent();
+                mPendingPlaceObject = intent.getParcelableExtra(PLACE_PARAM);
+            }
         }
         AdView mAdView = (AdView) findViewById(R.id.adView);
-        if ( mAdView != null) {
+        if (mAdView != null) {
             AdRequest adRequest = new AdRequest.Builder()
                     .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
                     .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
@@ -156,11 +170,8 @@ public class MapsActivity extends AppCompatActivity
                     .build();
             mAdView.loadAd(adRequest);
         }
-        mRequestingLocationUpdates = false;
-        buildGoogleApiClient();
-        createLocationRequest();
-        buildLocationSettingsRequest();
     }
+
     /**
      * Uses a {@link com.google.android.gms.location.LocationSettingsRequest.Builder} to build
      * a {@link com.google.android.gms.location.LocationSettingsRequest} that is used for checking
@@ -172,6 +183,7 @@ public class MapsActivity extends AppCompatActivity
         builder.setAlwaysShow(true); // without never button
         mLocationSettingsRequest = builder.build();
     }
+
     /**
      * Check if the device's location settings are adequate for the app's needs using the
      * {@link com.google.android.gms.location.SettingsApi#checkLocationSettings(GoogleApiClient,
@@ -197,23 +209,26 @@ public class MapsActivity extends AppCompatActivity
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 Log.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
                         "upgrade location settings ");
-
-                try {
-                    // Show the dialog by calling startResolutionForResult(), and check the result
-                    // in onActivityResult().
-                    status.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
-                } catch (IntentSender.SendIntentException e) {
-                    Log.i(LOG_TAG, "PendingIntent unable to execute request.");
-                }
+                if ( !PrefUtils.isLocationRequestFlag(MapsActivity.this, getString(R.string.pref_key_location_request_flag)))
+                    try {
+                        // Show the dialog by calling startResolutionForResult(), and check the result
+                        // in onActivityResult().
+                        PrefUtils.setLocationRequestFlag(MapsActivity.this, getString(R.string.pref_key_location_request_flag));
+                        status.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.i(LOG_TAG, "PendingIntent unable to execute request.");
+                    }
                 break;
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
+                setButtonsEnabledState();
                 break;
         }
 
     }
-    private void startActivityRouteDetails(String startName, String startPlaceId, String endName, String endPlaceId, long routeId){
+
+    private void startActivityRouteDetails(String startName, String startPlaceId, String endName, String endPlaceId, long routeId) {
         new LoadRouteTask().execute(
                 String.valueOf(routeId),
                 startName,
@@ -225,10 +240,11 @@ public class MapsActivity extends AppCompatActivity
 
     private class LoadRouteTask extends AsyncTask<String, Void, RouteParcelable> {
         PlaceObject mFromObject, mToObject;
+
         @Override
         protected void onPostExecute(RouteParcelable routeObject) {
             Intent intent = new Intent(MapsActivity.this, DetailRouteActivity.class);
-            intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY,routeObject);
+            intent.putExtra(DetailRouteActivity.ARG_ROUTE_KEY, routeObject);
             intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
             intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -249,9 +265,9 @@ public class MapsActivity extends AppCompatActivity
                     null,
                     RouteColumns.ID + " =?",
                     new String[]{params[0]},
-                    null );
-            if ( cursor != null ) {
-                if ( cursor.moveToFirst()) {
+                    null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
                     mData = new RouteParcelable();
                     mData.routeId = cursor.getInt(cursor.getColumnIndex(RouteColumns.ID));
                     mData.overviewPolyline = cursor.getString(cursor.getColumnIndex(RouteColumns.OVERVIEW_POLYLINES));
@@ -268,7 +284,8 @@ public class MapsActivity extends AppCompatActivity
             return null;
         }
     }
-    void startActivityPlanning( PlaceObject mFromObject, PlaceObject mToObject) {
+
+    void startActivityPlanning(PlaceObject mFromObject, PlaceObject mToObject) {
         Intent intent = new Intent(MapsActivity.this, PlanningActivity.class);
         intent.putExtra(PlanningActivity.PLAN_FROM_ID, mFromObject);
         intent.putExtra(PlanningActivity.PLAN_TO_ID, mToObject);
@@ -279,47 +296,58 @@ public class MapsActivity extends AppCompatActivity
         } else
             startActivity(intent);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             PlaceObject mToObject = new PlaceObject();
             PlaceObject mFromObject = new PlaceObject();
             switch (requestCode) {
-            case REQUEST_CHECK_SETTINGS:
-                Log.i(LOG_TAG, "User agreed to make required location settings changes.");
-                startLocationUpdates();
+                case REQUEST_CHECK_SETTINGS:
+                    Log.i(LOG_TAG, "User agreed to make required location settings changes.");
+                    startLocationUpdates();
 
-                break;
-            case FAVORITE_REQUEST_ID:
-                String start_place_id = data.getStringExtra(FavoriteActivity.START_PLACEID_PARAM);
-                String start_name = data.getStringExtra(FavoriteActivity.START_PARAM);
-                String end_place_id = data.getStringExtra(FavoriteActivity.END_PLACEID_PARAM);
-                String end_name = data.getStringExtra(FavoriteActivity.END_PARAM);
-                long routeId = data.getLongExtra(FavoriteActivity.ROUTE_ID_PARAM, 0);
-                String action = data.getStringExtra(FavoriteActivity.ACTION_PARAM);
-                if ( FavoriteActivity.ACTION_LOAD.equals(action)) {
-                    startActivityRouteDetails(start_name, start_place_id, end_name, end_place_id, routeId);
-                } else if ( FavoriteActivity.ACTION_PLANNING.equals(action)) {
-                    mFromObject = new PlaceObject(start_name, start_place_id);
-                    mToObject = new PlaceObject(end_name, end_place_id);
-                    DirectionIntentService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
+                    break;
+                case FAVORITE_REQUEST_ID:
+                    String start_place_id = data.getStringExtra(FavoriteActivity.START_PLACEID_PARAM);
+                    String start_name = data.getStringExtra(FavoriteActivity.START_PARAM);
+                    String end_place_id = data.getStringExtra(FavoriteActivity.END_PLACEID_PARAM);
+                    String end_name = data.getStringExtra(FavoriteActivity.END_PARAM);
+                    long routeId = data.getLongExtra(FavoriteActivity.ROUTE_ID_PARAM, 0);
+                    String action = data.getStringExtra(FavoriteActivity.ACTION_PARAM);
+                    if (FavoriteActivity.ACTION_LOAD.equals(action)) {
+                        startActivityRouteDetails(start_name, start_place_id, end_name, end_place_id, routeId);
+                    } else if (FavoriteActivity.ACTION_PLANNING.equals(action)) {
+                        if ( !checkServicesAvailable()) {
+                            Log.d(LOG_TAG, "onActivityResult: service not available!");
+//                            new Utils.NetworkDialog().show(getFragmentManager(), "NetworkDialog");
+                            return;
+                        }
+                        mFromObject = new PlaceObject(start_name, start_place_id);
+                        mToObject = new PlaceObject(end_name, end_place_id);
+                        DirectionIntentService.startActionSavePlace(this, mFromObject, System.currentTimeMillis());
+                        DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
+                        // go to planning
+                        startActivityPlanning(mFromObject, mToObject);
+                    }
+                    break;
+                case HISTORY_REQUEST_ID:
+                    if ( !checkServicesAvailable()) {
+                        Log.d(LOG_TAG, "onActivityResult: service not available!");
+//                        new Utils.NetworkDialog().show(getFragmentManager(), "NetworkDialog");
+                        return;
+                    }
+                    mToObject = new PlaceObject(
+                            data.getStringExtra(HistoryActivity.PLACE_PARAM),
+                            data.getStringExtra(HistoryActivity.PLACEID_PARAM));
+                    mFromObject = new PlaceObject(
+                            getString(R.string.default_location_title),
+                            String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+                    // save history, again to update query time
                     DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
                     // go to planning
                     startActivityPlanning(mFromObject, mToObject);
-                }
-                break;
-            case HISTORY_REQUEST_ID:
-                mToObject = new PlaceObject(
-                        data.getStringExtra(HistoryActivity.PLACE_PARAM),
-                        data.getStringExtra(HistoryActivity.PLACEID_PARAM));
-                mFromObject = new PlaceObject(
-                        getString(R.string.default_location_title),
-                        String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-                // save history, again to update query time
-                DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
-                // go to planning
-                startActivityPlanning(mFromObject, mToObject);
-                break;
+                    break;
 
 //            case PLACE_PICKER_REQUEST:
 //                if ( resultCode == RESULT_OK) {
@@ -327,22 +355,22 @@ public class MapsActivity extends AppCompatActivity
 //                    String placeId = place.getId();
 //                }
 //                break;
-            case SEARCH_TO_REQUEST_ID:
-                if (mLastLocation == null) return;
-                String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
-                CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
-                mToObject.title = place_name.toString();
-                mToObject.placeId = place_id;
-                DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
-                mFromObject.title = getString(R.string.default_location_title);
-                mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                startActivityPlanning(mFromObject, mToObject);
+                case SEARCH_TO_REQUEST_ID:
+                    if (mLastLocation == null) return;
+                    String place_id = data.getStringExtra(PlaceActivity.PLACE_ID);
+                    CharSequence place_name = data.getCharSequenceExtra(PlaceActivity.PLACE_TEXT);
+                    mToObject.title = place_name.toString();
+                    mToObject.placeId = place_id;
+                    DirectionIntentService.startActionSavePlace(this, mToObject, System.currentTimeMillis());
+                    mFromObject.title = getString(R.string.default_location_title);
+                    mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                    startActivityPlanning(mFromObject, mToObject);
             }
         } else {
             switch (requestCode) {
                 case REQUEST_CHECK_SETTINGS:
                     Log.i(LOG_TAG, "User chose not to make required location settings changes.");
-                    // TODO: 2016/4/7  Disable location service actions
+                    setButtonsEnabledState();
                     break;
             }
         }
@@ -362,7 +390,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-            mMap = googleMap;
+        mMap = googleMap;
         mMap.getUiSettings().setMapToolbarEnabled(false);
         if (locationReady) {
             showCurrentPosition();
@@ -395,10 +423,10 @@ public class MapsActivity extends AppCompatActivity
 
     protected void showCurrentPosition() {
         LatLng here = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        if ( mMarker == null) {
+        if (mMarker == null) {
             mMarker = mMap.addMarker(new MarkerOptions().position(here).title(getString(R.string.you_are_here_title)));
             mMarker.setIcon(Utils.getBitmapDescriptor(this, R.drawable.ic_person_pin_black));
-            mMarker.setAnchor((float) 0.5, (float) (23.0/24.0));
+            mMarker.setAnchor((float) 0.5, (float) (23.0 / 24.0));
         } else {
             mMarker.setPosition(here);
         }
@@ -408,7 +436,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-       Log.d(LOG_TAG, "onConnectedFailed: " + connectionResult.toString());
+        Log.d(LOG_TAG, "onConnectedFailed: " + connectionResult.toString());
     }
 
     @Override
@@ -416,13 +444,15 @@ public class MapsActivity extends AppCompatActivity
         if (mLastLocation != null) {
             savedInstanceState.putParcelable(LAST_LOCATION_KEY, mLastLocation);
         }
-        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
+//        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(LAST_LOCATION_KEY);
+//            mRequestingLocationUpdates = savedInstanceState.getBoolean(KEY_REQUESTING_LOCATION_UPDATES);
+        }
     }
 
     @Override
@@ -471,23 +501,23 @@ public class MapsActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if ( id == R.id.nav_history) {
+        if (id == R.id.nav_history) {
             launchHistoryActivity();
         } else if (id == R.id.nav_manage) {
             launchSettingsActivity();
         } else if (id == R.id.nav_favorites) {
             launchFavoriteActivity();
         }
-
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     private void launchSettingsActivity() {
         Intent intent = new Intent(this, SettingsActivity.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -530,6 +560,7 @@ public class MapsActivity extends AppCompatActivity
                 .addApi(LocationServices.API)
                 .build();
     }
+
     /**
      * Requests location updates from the FusedLocationApi.
      */
@@ -550,10 +581,12 @@ public class MapsActivity extends AppCompatActivity
                         public void onResult(Status status) {
                             mRequestingLocationUpdates = true;
                             setButtonsEnabledState();
-                }
-            });
+                            PrefUtils.resetLocationRequestFlag(MapsActivity.this, getString(R.string.pref_key_location_request_flag));
+                        }
+                    });
         }
     }
+
     /**
      * Removes location updates from the FusedLocationApi.
      */
@@ -573,9 +606,11 @@ public class MapsActivity extends AppCompatActivity
                     }
                 });
     }
+
     private void setButtonsEnabledState() {
         // Todo setButtonEnabledState
     }
+
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
 
@@ -591,6 +626,7 @@ public class MapsActivity extends AppCompatActivity
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -598,6 +634,7 @@ public class MapsActivity extends AppCompatActivity
             stopLocationUpdates();
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -605,6 +642,7 @@ public class MapsActivity extends AppCompatActivity
             startLocationUpdates();
         }
     }
+
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
@@ -613,7 +651,13 @@ public class MapsActivity extends AppCompatActivity
             showCurrentPosition();
 //            mapReady = false;
         }
-        if ( mPendingPlaceObject != null) {
+        if (mPendingPlaceObject != null) {
+            if ( !checkServicesAvailable()) { // is it too early to check googleapiclient connected?
+                mPendingPlaceObject = null;
+                Log.d(LOG_TAG, "onLocationChanged: service not available!");
+//                new Utils.NetworkDialog().show(getFragmentManager(), "NetworkDialog");
+                return;
+            }
             PlaceObject mFromObject = new PlaceObject();
             mFromObject.title = getString(R.string.default_location_title);
             mFromObject.placeId = String.format("%f,%f", mLastLocation.getLatitude(), mLastLocation.getLongitude());
@@ -625,36 +669,36 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
-
     @OnClick(R.id.fab_direction)
     public void directionPressed() {
+        if ( !checkServicesAvailable()) {
+            Log.d(LOG_TAG, "directonPressed: service not available!");
+            return;
+        }
         Intent intent = new Intent(this, PlaceActivity.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MapsActivity.this
             ).toBundle();
             startActivityForResult(intent, SEARCH_TO_REQUEST_ID, bundle);
         } else
-        startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
-
+            startActivityForResult(intent, SEARCH_TO_REQUEST_ID);
     }
-    // fix problem for kitkat not see menu
-//    @Override
-//    public void onDrawerSlide(View drawerView, float slideOffset) {
-//        mDrawer.bringChildToFront(drawerView);
-//        mDrawer.requestLayout();
-//    }
-//
-//    @Override
-//    public void onDrawerStateChanged(int newState) {
-//    }
-//
-//    @Override
-//    public void onDrawerClosed(View drawerView) {
-//
-//    }
-//
-//    @Override
-//    public void onDrawerOpened(View drawerView) {
-//
-//    }
+    private boolean isServiceAvailable() {
+        return mGoogleApiClient.isConnected() && Utils.isOnline(this) && mRequestingLocationUpdates;
+    }
+    private boolean checkServicesAvailable() {
+        if ( isServiceAvailable()) return true;
+        Utils.NetworkDialogFragment dialog;
+        if ( !(mGoogleApiClient.isConnected() && Utils.isOnline(this)))
+            dialog = Utils.NetworkDialogFragment.newInstance(
+                    R.string.network_error_title,
+                    R.string.network_error_message);
+        else
+            dialog = Utils.NetworkDialogFragment.newInstance(
+                    R.string.location_service_error_title,
+                    R.string.location_service_error_message);
+
+        dialog.show(getFragmentManager(), "NetworkDialog");
+        return false;
+    }
 }

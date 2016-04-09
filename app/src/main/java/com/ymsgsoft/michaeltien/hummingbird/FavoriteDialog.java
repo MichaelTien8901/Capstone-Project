@@ -46,6 +46,7 @@ import android.widget.TextView;
         mText = (EditText) view.findViewById(R.id.favor_name);
         mText.setText(id_name, TextView.BufferType.NORMAL);
         builder.setTitle(R.string.dialog_favorite_title)
+                .setMessage(R.string.dialog_favorite_message)
                 .setView(view)
                 .setPositiveButton(R.string.dialog_favorite_positive, new DialogInterface.OnClickListener() {
                     @Override
