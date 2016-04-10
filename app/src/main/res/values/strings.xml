@@ -120,4 +120,8 @@
     <string name="empty_route_no_server_down">Server Down.</string>
     <string name="empty_route_no_server_invalid">Server Invalid.</string>
     <string name="empty_route_unknown"></string>
+    <string name="LINE_SEPARATOR" translatable="false">line.separator</string>
+    <string name="share_name_connector">" to "</string>
+    <string name="share_departure_title">"departure: "</string>
+    <string name="share_duration_title">"duration: "</string>
 </resources>

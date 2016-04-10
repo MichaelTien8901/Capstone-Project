@@ -184,10 +184,10 @@ public class FavoriteActivity extends AppCompatActivity
 
         @Override
         protected String doInBackground(FavoriteRecyclerViewAdapter.FavoriteObject... params) {
-            String LF = System.getProperty("line.separator");
+            String LF = System.getProperty(getString(R.string.LINE_SEPARATOR));
             StringBuilder builder = new StringBuilder();
             builder.append(params[0].start_name)
-                    .append(" to " )
+                    .append(getString(R.string.share_name_connector) )
                     .append(params[0].end_name)
                     .append(LF);
             Cursor cursor = getContentResolver().query(
@@ -198,11 +198,11 @@ public class FavoriteActivity extends AppCompatActivity
                     null );
             if ( cursor != null ) {
                 if ( cursor.moveToFirst()) {
-                    builder.append("departure: ")
+                    builder.append(getString(R.string.share_departure_title))
                         .append(cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DEPART_TIME)))
                         .append(LF);
 
-                    builder.append("duration: ")
+                    builder.append(getString(R.string.share_duration_title))
                         .append(cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION)))
                         .append(LF);
                 }

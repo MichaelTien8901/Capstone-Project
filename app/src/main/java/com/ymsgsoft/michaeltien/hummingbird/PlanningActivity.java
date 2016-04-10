@@ -289,9 +289,6 @@ public class PlanningActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         updateEmptyView();
         mRouteAdapter.swapCursor(cursor);
-//        if ( cursor != null && cursor.getCount() != 0) {
-//            mListLayout.setVisibility(View.VISIBLE);
-//        }
     }
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {

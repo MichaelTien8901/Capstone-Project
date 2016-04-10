@@ -206,12 +206,15 @@ public class DirectionService extends IntentService {
                         } else {
                             setDirectionStatus(getBaseContext(), DIRECTION_STATUS_NO_ROUTE_FOUND);
                             getContentResolver().notifyChange(RoutesProvider.Routes.CONTENT_URI, null);
+                            Log.d(LOG_TAG, "Direction API not route returned");
                         }
                     } else {
+                        Log.d(LOG_TAG, "Direction API not return OK");
                         setDirectionStatus(getBaseContext(), DIRECTION_STATUS_NO_ROUTE_FOUND);
                         getContentResolver().notifyChange(RoutesProvider.Routes.CONTENT_URI, null);
                     }
                 } else {
+                    Log.d(LOG_TAG, "Direction API not return successfully");
                     setDirectionStatus(getBaseContext(), DIRECTION_STATUS_SERVER_INVALID);
                     getContentResolver().notifyChange(RoutesProvider.Routes.CONTENT_URI, null);
                 }
@@ -220,6 +223,7 @@ public class DirectionService extends IntentService {
             @Override
             public void onFailure(Call<MapApiService.TransitRoutes> call, Throwable t) {
                 // server down, like no internet
+                Log.d(LOG_TAG, "Retrofit return failure");
                 setDirectionStatus(getBaseContext(), DIRECTION_STATUS_SERVER_DOWN);
                 getContentResolver().notifyChange(RoutesProvider.Routes.CONTENT_URI, null);
             }

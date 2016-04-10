@@ -191,13 +191,6 @@ public class StreetViewFragment extends Fragment
         if ( !isMapReady ) return;
         if ( !mPositionSync) return;
         moveCameraToCurrentLocation();
-//        StreetViewPanoramaCamera.Builder builder = new StreetViewPanoramaCamera.Builder();
-//        if ( location.hasBearing()) {
-//            builder.bearing(location.getBearing());
-//        } else
-//            builder.bearing(mStreetView.getPanoramaCamera().bearing);
-//        mCamera = builder.build();
-//        mStreetView.setPosition(new LatLng(location.getLatitude(), location.getLongitude()), 50);
     }
 
     @Override
