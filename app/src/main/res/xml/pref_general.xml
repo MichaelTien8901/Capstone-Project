@@ -19,4 +19,13 @@
         android:defaultValue="@string/pref_units_metric"
         android:entryValues="@array/pref_units_values"
         android:entries="@array/pref_units_options" />
+
+    <ListPreference
+        android:key="@string/pref_language_key"
+        android:summary="@string/pref_language_summary"
+        android:title="@string/pref_language_label"
+        android:defaultValue="@string/pref_language_english"
+        android:entryValues="@array/pref_language_values"
+        android:entries="@array/pref_language_options" />
+
 </PreferenceScreen>

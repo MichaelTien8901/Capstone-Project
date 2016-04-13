@@ -9,5 +9,20 @@
         <item>@string/pref_units_metric</item>
         <item>@string/pref_units_imperial</item>
     </string-array>
+    <string-array name="pref_language_options">
+        <item>@string/pref_language_label_english</item>
+        <item>@string/pref_language_label_japanese</item>
+        <item>@string/pref_language_label_chinese_traditional</item>
+        <item>@string/pref_language_label_chinese_simplified</item>
+        <item>@string/pref_language_label_french</item>
+    </string-array>
+
+    <string-array name="pref_language_values">
+        <item>@string/pref_language_english</item>
+        <item>@string/pref_language_label_japanese</item>
+        <item>@string/pref_language_chinese_traditional</item>
+        <item>@string/pref_language_chinese_simplified</item>
+        <item>@string/pref_language_french</item>
+    </string-array>
 
 </resources>

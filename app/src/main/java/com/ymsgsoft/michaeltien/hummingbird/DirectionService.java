@@ -182,14 +182,23 @@ public class DirectionService extends IntentService {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
         String units = sharedPrefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default_value));
+        String language = sharedPrefs.getString(getString(R.string.pref_language_key), getString(R.string.pref_language_default_value));
 
         Call<MapApiService.TransitRoutes> call =
-                directionApi.getDirectionsWithDepartureTimeUnits(
+                directionApi.getDirectionsWithDepartureTimeUnitsLanguage(
                         origin,
                         destination,
                         key,
                         String.valueOf(query_time),
-                        units);
+                        units,
+                        language);
+//        Call<MapApiService.TransitRoutes> call =
+//                directionApi.getDirectionsWithDepartureTimeUnits(
+//                        origin,
+//                        destination,
+//                        key,
+//                        String.valueOf(query_time),
+//                        units);
         call.enqueue(new Callback<MapApiService.TransitRoutes>() {
             @Override
             public void onResponse(Call<MapApiService.TransitRoutes> call, Response<MapApiService.TransitRoutes> response) {

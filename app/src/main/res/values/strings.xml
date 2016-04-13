@@ -90,6 +90,22 @@
     <string name="pref_units_summary">@string/pref_units_default_value</string>
 
     <string name="pref_direction_status_key" translatable="false">direct_status_key</string>
+
+
+    <string name="pref_language_label">Instruction Language</string>
+    <string name="pref_language_label_english">English</string>
+    <string name="pref_language_label_japanese">Japanese</string>
+    <string name="pref_language_label_chinese_traditional">Chinese(Traditional)</string>
+    <string name="pref_language_label_chinese_simplified">Chinese(Simplified)</string>
+    <string name="pref_language_label_french">French</string>
+    <string name="pref_language_key" translatable="false">language</string>
+    <string name="pref_language_english" translatable="false">en</string>
+    <string name="pref_language_japanese" translatable="false">ja</string>
+    <string name="pref_language_chinese_traditional" translatable="false">zh-TW</string>
+    <string name="pref_language_chinese_simplified" translatable="false">zh-CN</string>
+    <string name="pref_language_french" translatable="false">efr</string>
+    <string name="pref_language_default_value" translatable="false">@string/pref_language_english</string>
+    <string name="pref_language_summary">@string/pref_language_label_english</string>
     <!-- Strings related to Settings -->
 
     <!--<string name="pref_title_add_friends_to_messages">Add friends to messages</string>-->

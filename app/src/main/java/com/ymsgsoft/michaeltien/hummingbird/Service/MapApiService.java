@@ -47,5 +47,14 @@ public final class  MapApiService {
                 @Query("departure_time") String departure_time,
                 @Query("units") String units
         );
+        @GET("/maps/api/directions/json?mode=transit&alternatives=true")
+        Call<TransitRoutes> getDirectionsWithDepartureTimeUnitsLanguage(
+                @Query("origin") String origin,
+                @Query("destination") String destination,
+                @Query("key") String key,
+                @Query("departure_time") String departure_time,
+                @Query("units") String units,
+                @Query("language") String language
+        );
     }
 }
