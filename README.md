@@ -35,3 +35,18 @@ in which the user can select a date and a time
 * [Butterknife](http://jakewharton.github.io/butterknife/), Field and method binding for Android views
 * [Google Maps Android API utility library](https://github.com/googlemaps/android-maps-utils),  library contains classes that are 
 useful for a wide range of applications using the Google Maps Android API
+
+##Google Map API key and Google Map Server key
+
+Google map API key and Google map server key are defined in the file **google_maps_api.xml** 
+under the folder **app/src/release/res/values** and **app/src/debug/res/values**. The API key can't be shared in public.  
+Please create the file **google_maps_api.xml** with the following file template.
+
+```
+<resources>
+  <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">[KEY DEFINED HERE]</string>
+  <string name="google_maps_server_key" templateMergeStrategy="preserve" translatable="false">[KEY DEFINED HERE]</string>
+</resources/>
+```
+
+
