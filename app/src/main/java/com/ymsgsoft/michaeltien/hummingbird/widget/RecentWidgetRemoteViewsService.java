@@ -94,6 +94,7 @@ public class RecentWidgetRemoteViewsService extends RemoteViewsService {
 //                Uri uri = DatabaseContract.ScoreEntry.buildScoreWithDateString( data.getString(INDEX_DATE));
 //                fillInIntent.setData(uri); // setup date time
                 fillInIntent.putExtra(MapsActivity.PLACE_PARAM, placeObject);
+                fillInIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
                 return views;
             }
