@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
@@ -55,6 +56,7 @@ public class PlanningActivity extends AppCompatActivity implements
     @Bind(R.id.routeListView) ListView mRouteListView;
     @Bind(R.id.fragment_planning_id) LinearLayout mListLayout;
     @Bind(R.id.empty_view) TextView mEmptyView;
+    @Bind(R.id.marker_progress)  ProgressBar mSpinner;
     protected PlaceObject mFromObject;
     protected PlaceObject mToObject;
     protected RouteAdapter mRouteAdapter;
@@ -87,7 +89,8 @@ public class PlanningActivity extends AppCompatActivity implements
         String origin = mFromObject.placeId;
         String destination = mToObject.placeId;
         clearDirectionStatus(this);
-        mListLayout.setVisibility(View.INVISIBLE);
+//        mListLayout.setVisibility(View.INVISIBLE); //no need to set because updateEmptyView will set it
+        mSpinner.setVisibility(View.VISIBLE);
         DirectionService.startActionQueryDirection(this, origin, destination, query_time);
         getSupportLoaderManager().restartLoader(DIRECTION_LOADER, null, this);
     }
@@ -287,7 +290,9 @@ public class PlanningActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        updateEmptyView();
+        int status = updateEmptyView();
+        if ( status !=  DirectionService.DIRECTION_STATUS_UNKNOWN)
+            mSpinner.setVisibility(View.INVISIBLE);
         mRouteAdapter.swapCursor(cursor);
     }
 //    @Override
@@ -359,7 +364,7 @@ public class PlanningActivity extends AppCompatActivity implements
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         return sp.getInt(c.getString(R.string.pref_direction_status_key), DirectionService.DIRECTION_STATUS_UNKNOWN);
     }
-    public void updateEmptyView() {
+    public int updateEmptyView() {
         Log.d(LOG_TAG, "updateEmptyView: ");
         @DirectionService.DirectionStatus int status = getDirectionStatus(this);
         int message;
@@ -390,12 +395,13 @@ public class PlanningActivity extends AppCompatActivity implements
                     Log.d(LOG_TAG, "not empty view");
                     mEmptyView.setVisibility(View.INVISIBLE);
                     mListLayout.setVisibility(View.VISIBLE);
-                    return;
+                    return status;
                 }
         } // switch
         Log.d(LOG_TAG, "show empty view");
         mEmptyView.setText(message);
         mEmptyView.setVisibility(View.VISIBLE);
         mListLayout.setVisibility(View.INVISIBLE);
+        return status;
     }
 }
