@@ -35,15 +35,27 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
         StepData data = holder.bindData(cursor);
         holder.mInstruction.setText(data.instruction);
         holder.mDurationView.setText(data.durationText);
-        if ( data.travalMode.equals("WALKING")) {
+        if ( data.travelMode.equals("WALKING")) {
             holder.mIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_walk));
             holder.mTravelMode.setText("");
             holder.mTravelMode.setVisibility(View.INVISIBLE);
         }
-        else if (data.travalMode.equals("TRANSIT")) {
+        else if (data.travelMode.equals("TRANSIT")) {
             holder.mIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_directions_bus));
             holder.mTravelMode.setVisibility(View.VISIBLE);
             holder.mTravelMode.setText(data.transitNo);
+            String instruction = data.instruction;
+            if ( data.arrivalStop != null) {
+                instruction += "\n" + data.arrivalStop;
+            }
+            if ( data.numStops != 0 ) {
+                String STOP;
+                STOP = data.numStops == 1 ?
+                        mContext.getResources().getString(R.string.bus_stop):
+                        mContext.getResources().getString(R.string.bus_stops);
+                instruction += "\n" + data.numStops + STOP;
+            }
+            holder.mInstruction.setText(instruction);
         }
     }
 //    @Override
@@ -86,12 +98,15 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
             mItem.instruction = cursor.getString(cursor.getColumnIndex(StepColumns.INSTRUCTION));
             mItem.polylinePoints = cursor.getString(cursor.getColumnIndex(StepColumns.POLYLINE));
             mItem.durationText = cursor.getString(cursor.getColumnIndex(StepColumns.DURATION_TEXT));
-            mItem.travalMode = cursor.getString(cursor.getColumnIndex(StepColumns.TRAVEL_MODE));
+            mItem.travelMode = cursor.getString(cursor.getColumnIndex(StepColumns.TRAVEL_MODE));
             mItem.transitNo = cursor.getString(cursor.getColumnIndex(StepColumns.TRANSIT_NO));
             mItem.startLat = cursor.getDouble(cursor.getColumnIndex(StepColumns.START_LAT));
             mItem.startLng = cursor.getDouble(cursor.getColumnIndex(StepColumns.START_LNG));
             mItem.endLat = cursor.getDouble(cursor.getColumnIndex(StepColumns.END_LAT));
             mItem.endLng = cursor.getDouble(cursor.getColumnIndex(StepColumns.END_LNG));
+            mItem.arrivalStop = cursor.getString(cursor.getColumnIndex(StepColumns.ARRIVAL_STOP));
+            mItem.departureStop = cursor.getString(cursor.getColumnIndex(StepColumns.DEPARTURE_STOP));
+            mItem.numStops = cursor.getLong(cursor.getColumnIndex(StepColumns.NUM_STOPS));
             return mItem;
         }
         @Override

@@ -171,7 +171,7 @@ public class DetailRouteActivity extends AppCompatActivity implements FavoriteDi
                 mToObject,
                 saveName,
                 mRouteObject,
-                mRouteObject.deparTimeValue == 0 ? System.currentTimeMillis() / 1000 : mRouteObject.deparTimeValue);
+                mRouteObject.departTimeValue == 0 ? System.currentTimeMillis() / 1000 : mRouteObject.departTimeValue);
         mRouteObject.isFavorite = true;
         mConfigChanged = true;
         mAddRemoveBtn.setImageResource(R.drawable.ic_remove);

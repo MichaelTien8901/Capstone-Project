@@ -77,7 +77,8 @@
     <string name="walk_description">"walk "</string>
     <string name="train_description">"take train "</string>
     <string name="bus_description">"take bus "</string>
-
+    <string name="bus_stops">" stops"</string>
+    <string name="bus_stop">" stop"</string>
     <string name="direction_preferences">Directions</string>
 
     <string name="pref_units_label">Distance Units</string>

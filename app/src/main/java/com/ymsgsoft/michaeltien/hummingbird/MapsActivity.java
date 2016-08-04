@@ -275,7 +275,7 @@ public class MapsActivity extends AppCompatActivity
                     mData.departTime = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DEPART_TIME));
                     mData.duration = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION));
                     mData.isFavorite = cursor.getInt(cursor.getColumnIndex(RouteColumns.IS_FAVORITE)) == 1;
-                    mData.deparTimeValue = cursor.getLong(cursor.getColumnIndex(RouteColumns.DEPART_TIME_VALUE));
+                    mData.departTimeValue = cursor.getLong(cursor.getColumnIndex(RouteColumns.DEPART_TIME_VALUE));
                     cursor.close();
                     return mData;
                 }

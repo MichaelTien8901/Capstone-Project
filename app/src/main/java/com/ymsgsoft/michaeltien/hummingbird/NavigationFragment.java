@@ -230,6 +230,24 @@ public class NavigationFragment extends Fragment implements
                             mStepTransitNo.setVisibility(View.INVISIBLE);
                             mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_train_description));
                         }
+                        // details
+                        String detailText = null;
+                        if ( mStepObject.departure_stop != null){
+                            detailText = mStepObject.departure_stop;
+                        }
+                        if ( mStepObject.arrival_stop != null) {
+                            detailText += "\n" + mStepObject.arrival_stop;
+                        }
+                        if ( mStepObject.num_stops != 0) {
+                            String STOP = mStepObject.num_stops == 1 ?
+                                    getString(R.string.bus_stop):
+                                    getString(R.string.bus_stops);
+                            detailText += "\n" + mStepObject.num_stops + STOP;
+                        }
+                        if ( detailText != null) {
+                            mDetailedInstructionView.setText(detailText);
+                            mDetailedInstructionView.setVisibility(View.VISIBLE);
+                        }
                     }
                 } else {
                     mDetailedInstructionView.setText(Html.fromHtml(mStepObject.instruction));

@@ -7,8 +7,11 @@ public class StepData {
     public long stepId;
     public String polylinePoints;
     public String instruction;
-    public String travalMode;
+    public String travelMode;
     public double startLat, startLng, endLat, endLng;
     public String transitNo;
     public String durationText;
+    public String arrivalStop;
+    public String departureStop;
+    public long numStops;
 }

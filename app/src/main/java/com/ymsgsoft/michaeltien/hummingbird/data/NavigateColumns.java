@@ -27,6 +27,9 @@ public interface NavigateColumns {
     @DataType(REAL) String END_LAT = "end_lat";
     @DataType(REAL) String END_LNG = "end_lng";
     @DataType(TEXT) String TRANSIT_NO = "transit_no";
+    @DataType(TEXT) String ARRIVAL_STOP = "arrival_stop";
+    @DataType(TEXT) String DEPARTURE_STOP = "departure_stop";
+    @DataType(INTEGER) String NUM_STOPS = "num_stops";
     @DataType(INTEGER)  @References(table = RoutesDbHelper.Tables.ROUTES, column = RouteColumns.ID)
         String ROUTES_ID = "route_id";
     @DataType(INTEGER) String LEVEL = "level";

@@ -179,10 +179,23 @@ public class DbUtils {
         values.put(RouteColumns.DEPART_TIME_VALUE, depart_time_value);
     }
     static void extractStepSummary(Step stepObject, ContentValues values ) {
-        if ( stepObject.transit_details != null && stepObject.transit_details.line != null) {
-            String transitNo = stepObject.transit_details.line.short_name;
-            if ( transitNo != null)
-                values.put(StepColumns.TRANSIT_NO, transitNo);
+        if ( stepObject.transit_details != null) {
+            if (stepObject.transit_details.line != null) {
+                String transitNo = stepObject.transit_details.line.short_name;
+                if (transitNo != null)
+                    values.put(StepColumns.TRANSIT_NO, transitNo);
+            }
+            if (stepObject.transit_details.arrival_stop != null) {
+                String arrival = stepObject.transit_details.arrival_stop.name;
+                if (arrival != null)
+                    values.put(StepColumns.ARRIVAL_STOP, arrival);
+            }
+            if ( stepObject.transit_details.departure_stop != null) {
+                String departure = stepObject.transit_details.departure_stop.name;
+                if ( departure != null)
+                    values.put(StepColumns.DEPARTURE_STOP, departure);
+            }
+            values.put(StepColumns.NUM_STOPS, stepObject.transit_details.num_stops);
         }
     }
 

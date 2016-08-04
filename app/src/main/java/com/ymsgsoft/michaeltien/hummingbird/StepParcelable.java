@@ -19,6 +19,9 @@ public class StepParcelable implements Parcelable {
     public String transit_no;
     public int level;
     public int count;
+    public String arrival_stop;
+    public String departure_stop;
+    public int num_stops;
 
     public StepParcelable() {
     }
@@ -39,6 +42,9 @@ public class StepParcelable implements Parcelable {
         result.transit_no = data.getString(data.getColumnIndex(NavigateColumns.TRANSIT_NO));
         result.level = data.getInt(data.getColumnIndex(NavigateColumns.LEVEL));
         result.count = data.getInt(data.getColumnIndex(NavigateColumns.COUNT));
+        result.arrival_stop = data.getString(data.getColumnIndex(NavigateColumns.ARRIVAL_STOP));
+        result.departure_stop = data.getString(data.getColumnIndex(NavigateColumns.DEPARTURE_STOP));
+        result.num_stops = data.getInt(data.getColumnIndex(NavigateColumns.NUM_STOPS));
         return result;
     }
 
@@ -63,6 +69,9 @@ public class StepParcelable implements Parcelable {
         dest.writeString(this.transit_no);
         dest.writeInt(this.level);
         dest.writeInt(this.count);
+        dest.writeString(this.arrival_stop);
+        dest.writeString(this.departure_stop);
+        dest.writeInt(this.num_stops);
     }
 
     protected StepParcelable(Parcel in) {
@@ -80,6 +89,9 @@ public class StepParcelable implements Parcelable {
         this.transit_no = in.readString();
         this.level = in.readInt();
         this.count = in.readInt();
+        this.arrival_stop = in.readString();
+        this.departure_stop = in.readString();
+        this.num_stops = in.readInt();
     }
 
     public static final Creator<StepParcelable> CREATOR = new Creator<StepParcelable>() {

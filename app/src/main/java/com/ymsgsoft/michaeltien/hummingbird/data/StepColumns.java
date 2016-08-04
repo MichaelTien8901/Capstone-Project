@@ -26,6 +26,9 @@ public interface StepColumns {
     @DataType(REAL) String START_LNG = "start_lng";
     @DataType(REAL) String END_LAT = "end_lat";
     @DataType(REAL) String END_LNG = "end_lng";
+    @DataType(TEXT) String ARRIVAL_STOP = "arrival_stop";
+    @DataType(TEXT) String DEPARTURE_STOP = "departure_stop";
+    @DataType(INTEGER) String NUM_STOPS = "num_stops";
     @DataType(INTEGER)  @References(table = RoutesDbHelper.Tables.LEGS, column = LegColumns.ID) String LEG_ID = "leg_id";
     @DataType(INTEGER) String ROUTE_ID = "route_id";
     @DataType(TEXT) String TRANSIT_NO = "transit_no";

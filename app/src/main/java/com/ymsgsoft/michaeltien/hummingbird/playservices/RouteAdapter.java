@@ -94,7 +94,7 @@ public class RouteAdapter extends CursorAdapter {
             mData.departTime = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DEPART_TIME));
             mData.duration = cursor.getString(cursor.getColumnIndex(RouteColumns.EXT_DURATION));
             mData.isFavorite = cursor.getInt(cursor.getColumnIndex(RouteColumns.IS_FAVORITE)) == 1;
-            mData.deparTimeValue = cursor.getLong(cursor.getColumnIndex(RouteColumns.DEPART_TIME_VALUE));
+            mData.departTimeValue = cursor.getLong(cursor.getColumnIndex(RouteColumns.DEPART_TIME_VALUE));
         }
         public RouteHolder(View view) {
             mTransitView = (TransitNoView) view.findViewById(R.id.transit_no_view);
