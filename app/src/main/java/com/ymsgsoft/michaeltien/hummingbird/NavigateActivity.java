@@ -19,7 +19,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,6 +41,7 @@ import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class NavigateActivity extends AppCompatActivity implements
         ConnectionCallbacks,
@@ -163,7 +163,7 @@ public class NavigateActivity extends AppCompatActivity implements
      * @param savedInstanceState The activity state saved in the Bundle.
      */
     private void updateValuesFromBundle(Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "Updating values from bundle");
+        Timber.i(LOG_TAG, "Updating values from bundle");
         if (savedInstanceState != null) {
             // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
             // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
@@ -190,7 +190,7 @@ public class NavigateActivity extends AppCompatActivity implements
      * LocationServices API.
      */
     protected synchronized void buildGoogleApiClient() {
-        Log.i(LOG_TAG, "Building GoogleApiClient");
+        Timber.i(LOG_TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -228,10 +228,10 @@ public class NavigateActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if ( requestCode == REQUEST_CHECK_SETTINGS) {
             if (resultCode == RESULT_OK) {
-                Log.i(LOG_TAG, "User agreed to make required location settings changes.");
+                Timber.i(LOG_TAG, "User agreed to make required location settings changes.");
                 startLocationUpdates();
             } else {
-                Log.i(LOG_TAG, "User chose not to make required location settings changes.");
+                Timber.i(LOG_TAG, "User chose not to make required location settings changes.");
             }
         }
     }
@@ -282,7 +282,7 @@ public class NavigateActivity extends AppCompatActivity implements
     public void onConnectionSuspended(int cause) {
         // The connection to Google Play services was lost for some reason. We call connect() to
         // attempt to re-establish the connection.
-        Log.i(LOG_TAG, "Connection suspended");
+        Timber.i(LOG_TAG, "Connection suspended");
         mGoogleApiClient.connect();
     }
 
@@ -308,7 +308,7 @@ public class NavigateActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i(LOG_TAG, "Connected to GoogleApiClient");
+        Timber.i(LOG_TAG, "Connected to GoogleApiClient");
 
         // If the initial location was never previously requested, we use
         // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
@@ -368,7 +368,7 @@ public class NavigateActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+        Timber.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
     @Override
@@ -517,11 +517,11 @@ public class NavigateActivity extends AppCompatActivity implements
         final Status status = locationSettingsResult.getStatus();
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
-                Log.i(LOG_TAG, "All location settings are satisfied.");
+                Timber.i(LOG_TAG, "All location settings are satisfied.");
                 startLocationUpdates();
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                Log.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
+                Timber.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
                         "upgrade location settings ");
                 if ( !PrefUtils.isLocationRequestFlag(NavigateActivity.this, getString(R.string.pref_key_location_request_flag)))
                     try {
@@ -530,11 +530,11 @@ public class NavigateActivity extends AppCompatActivity implements
                     PrefUtils.setLocationRequestFlag(NavigateActivity.this, getString(R.string.pref_key_location_request_flag));
                     status.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
                     } catch (IntentSender.SendIntentException e) {
-                        Log.i(LOG_TAG, "PendingIntent unable to execute request.");
+                        Timber.i(LOG_TAG, "PendingIntent unable to execute request.");
                     }
                 break;
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                Timber.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
                 break;
         }

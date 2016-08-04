@@ -13,7 +13,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -37,6 +36,7 @@ import java.util.Date;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class PlanningActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -365,12 +365,12 @@ public class PlanningActivity extends AppCompatActivity implements
         return sp.getInt(c.getString(R.string.pref_direction_status_key), DirectionService.DIRECTION_STATUS_UNKNOWN);
     }
     public int updateEmptyView() {
-        Log.d(LOG_TAG, "updateEmptyView: ");
+        Timber.d(LOG_TAG, "updateEmptyView: ");
         @DirectionService.DirectionStatus int status = getDirectionStatus(this);
         int message;
         switch (status) {
             case DirectionService.DIRECTION_STATUS_NO_ROUTE_FOUND:
-                Log.d(LOG_TAG, "DIRECTION_STATUS_NO_ROUTE_FOUND");
+                Timber.d(LOG_TAG, "DIRECTION_STATUS_NO_ROUTE_FOUND");
                 message = R.string.empty_route_no_route;
                 break;
             case DirectionService.DIRECTION_STATUS_SERVER_DOWN:
@@ -383,22 +383,22 @@ public class PlanningActivity extends AppCompatActivity implements
                 message = R.string.empty_route_network_error;
                 break;
             case DirectionService.DIRECTION_STATUS_UNKNOWN:
-                Log.d(LOG_TAG, "DIRECTION_STATUS_UNKNOWN");
+                Timber.d(LOG_TAG, "DIRECTION_STATUS_UNKNOWN");
                 message = R.string.empty_route_unknown;
                 break;
             default:
                 if ( !Utils.isOnline(this)) {
-                    Log.d(LOG_TAG, "not online");
+                    Timber.d(LOG_TAG, "not online");
                     message = R.string.empty_route_network_error;
                     break;
                 } else {
-                    Log.d(LOG_TAG, "not empty view");
+                    Timber.d(LOG_TAG, "not empty view");
                     mEmptyView.setVisibility(View.INVISIBLE);
                     mListLayout.setVisibility(View.VISIBLE);
                     return status;
                 }
         } // switch
-        Log.d(LOG_TAG, "show empty view");
+        Timber.d(LOG_TAG, "show empty view");
         mEmptyView.setText(message);
         mEmptyView.setVisibility(View.VISIBLE);
         mListLayout.setVisibility(View.INVISIBLE);

@@ -3,7 +3,6 @@ package com.ymsgsoft.michaeltien.hummingbird.data;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import net.simonvt.schematic.annotation.Database;
 import net.simonvt.schematic.annotation.IfNotExists;
@@ -11,6 +10,8 @@ import net.simonvt.schematic.annotation.OnConfigure;
 import net.simonvt.schematic.annotation.OnCreate;
 import net.simonvt.schematic.annotation.OnUpgrade;
 import net.simonvt.schematic.annotation.Table;
+
+import timber.log.Timber;
 
 /**
  * Created by Michael Tien on 2015/12/1.
@@ -40,7 +41,7 @@ public final class RoutesDbHelper {
 
     @OnCreate
     public static void onCreate(Context context, SQLiteDatabase db) {
-        Log.e(TAG, "onCreate");
+        Timber.e(TAG, "onCreate");
         // add trigger
         String trigger1 =
                 "CREATE TRIGGER delete_route_with BEFORE DELETE ON " +
@@ -87,7 +88,7 @@ public final class RoutesDbHelper {
     @OnUpgrade
     public static void onUpgrade(Context context, SQLiteDatabase db, int oldVersion,
                                             int newVersion) {
-        Log.e(TAG, "onUpgrade");
+        Timber.e(TAG, "onUpgrade");
         for (int i = oldVersion; i < newVersion; i++) {
             String migration = MIGRATIONS[i];
             db.beginTransaction();
@@ -95,7 +96,7 @@ public final class RoutesDbHelper {
                 db.execSQL(migration);
                 db.setTransactionSuccessful();
             } catch (Exception e) {
-                Log.e(TAG, String.format(
+                Timber.e(TAG, String.format(
                         "Failed to upgrade database with script: %s", migration), e);
                 break;
             }

@@ -26,11 +26,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
-import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import timber.log.Timber;
 
 /**
  * Helper for building selection clauses for {@link SQLiteDatabase}. Each
@@ -151,7 +153,7 @@ public class SelectionBuilder {
                         String orderBy, String limit) {
         assertTable();
         if (columns != null) mapColumns(columns);
-        if (LOGV) Log.v(TAG, "query(columns=" + Arrays.toString(columns) + ") " + this);
+        if (LOGV) Timber.v("query(columns= %s) %s", Arrays.toString(columns), this);
         return db.query(table, columns, getSelection(), getSelectionArgs(), groupBy, having, orderBy,
                 limit);
     }
@@ -159,14 +161,14 @@ public class SelectionBuilder {
     /** Execute update using the current internal state as {@code WHERE} clause. */
     public int update(SQLiteDatabase db, ContentValues values) {
         assertTable();
-        if (LOGV) Log.v(TAG, "update() " + this);
+        if (LOGV) Timber.v("update() %s", this.toString());
         return db.update(table, values, getSelection(), getSelectionArgs());
     }
 
     /** Execute delete using the current internal state as {@code WHERE} clause. */
     public int delete(SQLiteDatabase db) {
         assertTable();
-        if (LOGV) Log.v(TAG, "delete() " + this);
+        if (LOGV) Timber.v("delete() %s", this.toString());
         return db.delete(table, getSelection(), getSelectionArgs());
     }
 }

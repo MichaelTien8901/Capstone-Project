@@ -3,7 +3,6 @@ package com.ymsgsoft.michaeltien.hummingbird;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,6 +16,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Places;
 import com.ymsgsoft.michaeltien.hummingbird.playservices.PlaceAutocompleteAdapter;
+
+import timber.log.Timber;
 
 public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     final static String TAG = PlaceActivity.class.getSimpleName();
@@ -103,7 +104,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
             final String placeId = "place_id:" + item.getPlaceId();
             final CharSequence primaryText = item.getPrimaryText(null);
 
-            Log.i(TAG, "Autocomplete item selected: " + primaryText);
+            Timber.i(TAG, "Autocomplete item selected: " + primaryText);
             Intent resultData = new Intent();
             resultData.putExtra(PLACE_ID, placeId);
             resultData.putExtra(PLACE_TEXT, primaryText);
@@ -161,7 +162,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
+        Timber.e(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
                 + connectionResult.getErrorCode());
 
     }

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
-import android.util.Log;
 
 import com.ymsgsoft.michaeltien.hummingbird.Service.MapApiService;
 import com.ymsgsoft.michaeltien.hummingbird.Service.Model.Route;
@@ -29,6 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 //import retrofit.Call;
 //import retrofit.GsonConverterFactory;
@@ -202,7 +202,7 @@ public class DirectionService extends IntentService {
         call.enqueue(new Callback<MapApiService.TransitRoutes>() {
             @Override
             public void onResponse(Call<MapApiService.TransitRoutes> call, Response<MapApiService.TransitRoutes> response) {
-                Log.d(LOG_TAG, "handleActionQueryDirection onResponse ");
+                Timber.d(LOG_TAG, "handleActionQueryDirection onResponse ");
                 if ( response.isSuccess()) {
                     // load into contextProvider
                     MapApiService.TransitRoutes transitRoutes = response.body();
@@ -215,15 +215,15 @@ public class DirectionService extends IntentService {
                         } else {
                             setDirectionStatus(getBaseContext(), DIRECTION_STATUS_NO_ROUTE_FOUND);
                             getContentResolver().notifyChange(RoutesProvider.Routes.CONTENT_URI, null);
-                            Log.d(LOG_TAG, "Direction API not route returned");
+                            Timber.d(LOG_TAG, "Direction API not route returned");
                         }
                     } else {
-                        Log.d(LOG_TAG, "Direction API not return OK");
+                        Timber.d(LOG_TAG, "Direction API not return OK");
                         setDirectionStatus(getBaseContext(), DIRECTION_STATUS_NO_ROUTE_FOUND);
                         getContentResolver().notifyChange(RoutesProvider.Routes.CONTENT_URI, null);
                     }
                 } else {
-                    Log.d(LOG_TAG, "Direction API not return successfully");
+                    Timber.d(LOG_TAG, "Direction API not return successfully");
                     setDirectionStatus(getBaseContext(), DIRECTION_STATUS_SERVER_INVALID);
                     getContentResolver().notifyChange(RoutesProvider.Routes.CONTENT_URI, null);
                 }
@@ -232,7 +232,7 @@ public class DirectionService extends IntentService {
             @Override
             public void onFailure(Call<MapApiService.TransitRoutes> call, Throwable t) {
                 // server down, like no internet
-                Log.d(LOG_TAG, "Retrofit return failure");
+                Timber.d(LOG_TAG, "Retrofit return failure");
                 setDirectionStatus(getBaseContext(), DIRECTION_STATUS_SERVER_DOWN);
                 getContentResolver().notifyChange(RoutesProvider.Routes.CONTENT_URI, null);
             }

@@ -1,13 +1,13 @@
 package com.github.jjobes.slidedatetimepicker;
 
-import java.lang.reflect.Field;
-
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.NumberPicker;
 
+import java.lang.reflect.Field;
+
+import timber.log.Timber;
 /**
  * A subclass of {@link android.widget.DatePicker} that uses
  * reflection to allow for customization of the default blue
@@ -61,19 +61,19 @@ public class CustomDatePicker extends DatePicker
         }
         catch (ClassNotFoundException e)
         {
-            Log.e(TAG, "ClassNotFoundException in CustomDatePicker", e);
+            Timber.e(TAG, "ClassNotFoundException in CustomDatePicker", e);
         }
         catch (NoSuchFieldException e)
         {
-            Log.e(TAG, "NoSuchFieldException in CustomDatePicker", e);
+            Timber.e(TAG, "NoSuchFieldException in CustomDatePicker", e);
         }
         catch (IllegalAccessException e)
         {
-            Log.e(TAG, "IllegalAccessException in CustomDatePicker", e);
+            Timber.e(TAG, "IllegalAccessException in CustomDatePicker", e);
         }
         catch (IllegalArgumentException e)
         {
-            Log.e(TAG, "IllegalArgumentException in CustomDatePicker", e);
+            Timber.e(TAG, "IllegalArgumentException in CustomDatePicker", e);
         }
     }
 }

@@ -17,7 +17,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.gms.ads.AdRequest;
@@ -50,6 +49,7 @@ import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -151,7 +151,7 @@ public class MapsActivity extends AppCompatActivity
         } else {
             PrefUtils.resetLocationRequestFlag(this, getString(R.string.pref_key_location_request_flag));
             if (!Utils.checkNetworkAvailable(this)) {
-                    Log.d(LOG_TAG, "onCreate: service not available!");
+                Timber.d(LOG_TAG, "onCreate: service not available!");
 //                    Utils.NetworkDialogFragment.newInstance(
 //                            R.string.network_error_title,
 //                            R.string.network_error_message )
@@ -203,11 +203,11 @@ public class MapsActivity extends AppCompatActivity
         final Status status = locationSettingsResult.getStatus();
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
-                Log.i(LOG_TAG, "All location settings are satisfied.");
+                Timber.i(LOG_TAG, "All location settings are satisfied.");
                 startLocationUpdates();
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                Log.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
+                Timber.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
                         "upgrade location settings ");
                 if ( !PrefUtils.isLocationRequestFlag(MapsActivity.this, getString(R.string.pref_key_location_request_flag)))
                     try {
@@ -216,11 +216,11 @@ public class MapsActivity extends AppCompatActivity
                         PrefUtils.setLocationRequestFlag(MapsActivity.this, getString(R.string.pref_key_location_request_flag));
                         status.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
                     } catch (IntentSender.SendIntentException e) {
-                        Log.i(LOG_TAG, "PendingIntent unable to execute request.");
+                        Timber.i(LOG_TAG, "PendingIntent unable to execute request.");
                     }
                 break;
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                Timber.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
 //                setButtonsEnabledState();
                 break;
@@ -304,7 +304,7 @@ public class MapsActivity extends AppCompatActivity
             PlaceObject mFromObject = new PlaceObject();
             switch (requestCode) {
                 case REQUEST_CHECK_SETTINGS:
-                    Log.i(LOG_TAG, "User agreed to make required location settings changes.");
+                    Timber.i(LOG_TAG, "User agreed to make required location settings changes.");
                     startLocationUpdates();
 
                     break;
@@ -320,7 +320,7 @@ public class MapsActivity extends AppCompatActivity
                     } else if (FavoriteActivity.ACTION_PLANNING.equals(action)) {
                         if ( !Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates)) {
 //                        if ( !Utils.checkNetworkAvailable(this)) {
-                            Log.d(LOG_TAG, "onActivityResult: service not available!");
+                            Timber.d(LOG_TAG, "onActivityResult: service not available!");
                             return;
                         }
                         mFromObject = new PlaceObject(start_name, start_place_id);
@@ -337,7 +337,7 @@ public class MapsActivity extends AppCompatActivity
                     }
                     if ( !Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates)) {
 //                    if ( !Utils.checkNetworkAvailable(this)) {
-                        Log.d(LOG_TAG, "onActivityResult: service not available!");
+                        Timber.d(LOG_TAG, "onActivityResult: service not available!");
                         return;
                     }
                     mToObject = new PlaceObject(
@@ -372,7 +372,7 @@ public class MapsActivity extends AppCompatActivity
         } else {
             switch (requestCode) {
                 case REQUEST_CHECK_SETTINGS:
-                    Log.i(LOG_TAG, "User chose not to make required location settings changes.");
+                    Timber.i(LOG_TAG, "User chose not to make required location settings changes.");
 //                    setButtonsEnabledState();
                     break;
             }
@@ -439,7 +439,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(LOG_TAG, "onConnectedFailed: " + connectionResult.toString());
+        Timber.d(LOG_TAG, "onConnectedFailed: " + connectionResult.toString());
     }
 
     @Override
@@ -556,7 +556,7 @@ public class MapsActivity extends AppCompatActivity
      * LocationServices API.
      */
     protected synchronized void buildGoogleApiClient() {
-        Log.i(LOG_TAG, "Building GoogleApiClient");
+        Timber.i(LOG_TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -653,7 +653,7 @@ public class MapsActivity extends AppCompatActivity
         if (mPendingPlaceObject != null) {
             if ( !Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates)) { // is it too early to check googleapiclient connected?
                 mPendingPlaceObject = null;
-                Log.d(LOG_TAG, "onLocationChanged: service not available!");
+                Timber.d(LOG_TAG, "onLocationChanged: service not available!");
 //                new Utils.NetworkDialog().show(getFragmentManager(), "NetworkDialog");
                 return;
             }
@@ -671,7 +671,7 @@ public class MapsActivity extends AppCompatActivity
     @OnClick(R.id.fab_direction)
     public void directionPressed() {
         if ( !Utils.checkServicesAvailable(this, mGoogleApiClient, mRequestingLocationUpdates)) {
-            Log.d(LOG_TAG, "directonPressed: service not available!");
+            Timber.d(LOG_TAG, "directonPressed: service not available!");
             return;
         }
         Intent intent = new Intent(this, PlaceActivity.class);

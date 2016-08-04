@@ -1,7 +1,6 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.test.AndroidTestCase;
-import android.util.Log;
 
 import com.ymsgsoft.michaeltien.hummingbird.Service.MapApiService;
 
@@ -12,6 +11,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 //import retrofit.Call;
 //import retrofit.Callback;
@@ -59,7 +59,7 @@ public class TestDirectionApi  extends AndroidTestCase  {
             }
             @Override
             public void onFailure(Call<MapApiService.TransitRoutes> call, Throwable t) {
-                Log.d("Error", t.getMessage());
+                Timber.d("Error %s", t.getMessage());
             }
         });
     }

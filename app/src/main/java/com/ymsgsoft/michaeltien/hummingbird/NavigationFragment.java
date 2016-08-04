@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +33,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 
 ///**
@@ -111,7 +111,7 @@ public class NavigationFragment extends Fragment implements
 
     @Override
     public void onAttach(Activity activity) {
-        Log.d(LOG_TAG, "onAttach");
+        Timber.d(LOG_TAG, "onAttach");
         super.onAttach(activity);
         if (activity instanceof OnNavigationFragmentListener) {
             mListener = (OnNavigationFragmentListener) activity;

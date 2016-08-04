@@ -1,12 +1,13 @@
 package com.github.jjobes.slidedatetimepicker;
 
-import java.lang.reflect.Field;
-
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
+
+import java.lang.reflect.Field;
+
+import timber.log.Timber;
 
 /**
  * A subclass of {@link android.widget.TimePicker} that uses
@@ -61,19 +62,19 @@ public class CustomTimePicker extends TimePicker
         }
         catch (ClassNotFoundException e)
         {
-            Log.e(TAG, "ClassNotFoundException in CustomTimePicker", e);
+            Timber.e(TAG, "ClassNotFoundException in CustomTimePicker", e);
         }
         catch (NoSuchFieldException e)
         {
-            Log.e(TAG, "NoSuchFieldException in CustomTimePicker", e);
+            Timber.e(TAG, "NoSuchFieldException in CustomTimePicker", e);
         }
         catch (IllegalAccessException e)
         {
-            Log.e(TAG, "IllegalAccessException in CustomTimePicker", e);
+            Timber.e(TAG, "IllegalAccessException in CustomTimePicker", e);
         }
         catch (IllegalArgumentException e)
         {
-            Log.e(TAG, "IllegalArgumentException in CustomTimePicker", e);
+            Timber.e(TAG, "IllegalArgumentException in CustomTimePicker", e);
         }
     }
 }
