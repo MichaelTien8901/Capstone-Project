@@ -61,19 +61,19 @@ public class CustomDatePicker extends DatePicker
         }
         catch (ClassNotFoundException e)
         {
-            Timber.e(TAG, "ClassNotFoundException in CustomDatePicker", e);
+            Timber.e("%s ClassNotFoundException in CustomDatePicker", e);
         }
         catch (NoSuchFieldException e)
         {
-            Timber.e(TAG, "NoSuchFieldException in CustomDatePicker", e);
+            Timber.e("%s NoSuchFieldException in CustomDatePicker", e);
         }
         catch (IllegalAccessException e)
         {
-            Timber.e(TAG, "IllegalAccessException in CustomDatePicker", e);
+            Timber.e("%s IllegalAccessException in CustomDatePicker", e);
         }
         catch (IllegalArgumentException e)
         {
-            Timber.e(TAG, "IllegalArgumentException in CustomDatePicker", e);
+            Timber.e("%s IllegalArgumentException in CustomDatePicker", e);
         }
     }
 }

@@ -19,7 +19,7 @@ import timber.log.Timber;
  */
 public class CustomTimePicker extends TimePicker
 {
-    private static final String TAG = "CustomTimePicker";
+//    private static final String TAG = "CustomTimePicker";
 
     public CustomTimePicker(Context context, AttributeSet attrs)
     {
@@ -62,19 +62,19 @@ public class CustomTimePicker extends TimePicker
         }
         catch (ClassNotFoundException e)
         {
-            Timber.e(TAG, "ClassNotFoundException in CustomTimePicker", e);
+            Timber.e("%s ClassNotFoundException in CustomTimePicker", e);
         }
         catch (NoSuchFieldException e)
         {
-            Timber.e(TAG, "NoSuchFieldException in CustomTimePicker", e);
+            Timber.e("%s NoSuchFieldException in CustomTimePicker", e);
         }
         catch (IllegalAccessException e)
         {
-            Timber.e(TAG, "IllegalAccessException in CustomTimePicker", e);
+            Timber.e("%s IllegalAccessException in CustomTimePicker", e);
         }
         catch (IllegalArgumentException e)
         {
-            Timber.e(TAG, "IllegalArgumentException in CustomTimePicker", e);
+            Timber.d("%s IllegalArgumentException in CustomTimePicker", e);
         }
     }
 }
