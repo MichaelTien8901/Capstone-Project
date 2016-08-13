@@ -124,7 +124,7 @@ public class DetailRouteFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_detail_route, container, false);
         Context context = view.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_detail_route);
-        mAdapter = new DetailRouteRecyclerViewAdapter(getContext(), R.layout.list_item_detail_route, null, this);
+        mAdapter = new DetailRouteRecyclerViewAdapter(getContext(), R.layout.list_item_detail_route, R.layout.list_item_detail_route_transit, null, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 //        recyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL,
 //                getResources().getDrawable(R.drawable.line_divider)));

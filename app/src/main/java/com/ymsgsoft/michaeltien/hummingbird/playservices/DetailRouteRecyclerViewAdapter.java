@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ymsgsoft.michaeltien.hummingbird.OnStepItemClickListener;
@@ -14,22 +15,44 @@ import com.ymsgsoft.michaeltien.hummingbird.R;
 import com.ymsgsoft.michaeltien.hummingbird.data.StepColumns;
 
 public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<DetailRouteRecyclerViewAdapter.ViewHolder> {
+    private final int WALKING = 0, TRANSIT = 1;
     protected int mLayout;
+    protected int mLayoutTransit;
     protected Context mContext;
     protected OnStepItemClickListener mListener;
-    public DetailRouteRecyclerViewAdapter(Context context, int layout, Cursor c, OnStepItemClickListener listener) {
+    public DetailRouteRecyclerViewAdapter(Context context, int layout, int layout_transit, Cursor c, OnStepItemClickListener listener) {
         super(c);
         mLayout = layout;
+        mLayoutTransit = layout_transit;
         mContext = context;
         mListener = listener;
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(mLayout, parent, false);
-        return new ViewHolder(itemView);
+        switch(viewType) {
+            default:
+                View itemView1 = LayoutInflater.from(parent.getContext())
+                        .inflate(mLayout, parent, false);
+                return new ViewHolder(itemView1);
+            case TRANSIT:
+                View itemView2 = LayoutInflater.from(parent.getContext())
+                        .inflate(mLayoutTransit, parent, false);
+                return new ViewHolder2(itemView2);
+        }
     }
-
+    @Override
+    public int getItemViewType(int position) {
+        if ( this.getCursor() != null ) {
+            Cursor cursor = this.getCursor();
+            cursor.moveToPosition(position);
+            String travelMode = cursor.getString(cursor.getColumnIndex(StepColumns.TRAVEL_MODE));
+            String arrivalStop = cursor.getString(cursor.getColumnIndex(StepColumns.ARRIVAL_STOP));
+            if (travelMode.equals("TRANSIT") && arrivalStop != null) {
+                return TRANSIT;
+            }
+        }
+        return WALKING;
+    }
     @Override
     public void onBindViewHolder (final ViewHolder holder, Cursor cursor) {
         StepData data = holder.bindData(cursor);
@@ -46,14 +69,17 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
             holder.mTravelMode.setText(data.transitNo);
             String instruction = data.instruction;
             if ( data.arrivalStop != null) {
-                instruction += "\n" + data.arrivalStop;
-            }
-            if ( data.numStops != 0 ) {
-                String STOP;
-                STOP = data.numStops == 1 ?
-                        mContext.getResources().getString(R.string.bus_stop):
-                        mContext.getResources().getString(R.string.bus_stops);
-                instruction += "\n" + data.numStops + STOP;
+                ViewHolder2 holder2 = (ViewHolder2) holder;
+                holder2.mTransitInfo.setVisibility(View.VISIBLE);
+                holder2.mArrivalStop.setText(data.arrivalStop);
+                holder2.mDepartureStop.setText(data.departureStop);
+                if ( data.numStops != 0 ) {
+                    String STOP;
+                    STOP = data.numStops == 1 ?
+                            mContext.getResources().getString(R.string.bus_stop):
+                            mContext.getResources().getString(R.string.bus_stops);
+                    instruction += "\n" + data.numStops + STOP;
+                }
             }
             holder.mInstruction.setText(instruction);
         }
@@ -81,6 +107,9 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
         public final TextView mTravelMode;
         public final TextView mDurationView;
         public final ImageView mIcon;
+//        public final LinearLayout mTransitInfo;
+//        public final TextView mDepartureStop;
+//        public final TextView mArrivalStop;
 //        public long mStepId;
         public StepData mItem;
         public ViewHolder(View itemView) {
@@ -91,6 +120,10 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
             mTravelMode = (TextView) itemView.findViewById(R.id.item_detail_travel_mode);
             mDurationView = (TextView) itemView.findViewById(R.id.item_detail_duration);
             mIcon = (ImageView) itemView.findViewById(R.id.item_detail_step_icon);
+//            mTransitInfo = (LinearLayout) itemView.findViewById(R.id.item_detail_transit_info );
+//            mDepartureStop = (TextView) itemView.findViewById(R.id.item_detail_transit_departure_stop);
+//            mArrivalStop = (TextView) itemView.findViewById(R.id.item_detail_transit_arrival_stop);
+
         }
         public StepData bindData(Cursor cursor) {
             mItem = new StepData();
@@ -113,6 +146,25 @@ public class DetailRouteRecyclerViewAdapter extends CursorRecyclerAdapter<Detail
         public void onClick(View v) {
             if ( mListener != null)
                 mListener.OnItemClick( mItem, getAdapterPosition());
+        }
+    }
+    public class ViewHolder2 extends ViewHolder {
+        public final LinearLayout mTransitInfo;
+        public final TextView mDepartureStop;
+        public final TextView mArrivalStop;
+        public ViewHolder2(View itemView) {
+            super(itemView);
+            mTransitInfo = (LinearLayout) itemView.findViewById(R.id.item_detail_transit_info );
+            mDepartureStop = (TextView) itemView.findViewById(R.id.item_detail_transit_departure_stop);
+            mArrivalStop = (TextView) itemView.findViewById(R.id.item_detail_transit_arrival_stop);
+        }
+        @Override
+        public StepData bindData(Cursor cursor) {
+            mItem = super.bindData(cursor);
+            mItem.arrivalStop = cursor.getString(cursor.getColumnIndex(StepColumns.ARRIVAL_STOP));
+            mItem.departureStop = cursor.getString(cursor.getColumnIndex(StepColumns.DEPARTURE_STOP));
+            mItem.numStops = cursor.getLong(cursor.getColumnIndex(StepColumns.NUM_STOPS));
+            return mItem;
         }
     }
 }
