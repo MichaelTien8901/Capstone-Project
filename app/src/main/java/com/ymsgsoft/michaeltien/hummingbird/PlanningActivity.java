@@ -22,8 +22,6 @@ import android.widget.TextView;
 
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.ymsgsoft.michaeltien.hummingbird.data.PrefUtils;
 import com.ymsgsoft.michaeltien.hummingbird.data.RouteColumns;
 import com.ymsgsoft.michaeltien.hummingbird.data.RoutesProvider;
@@ -211,19 +209,17 @@ public class PlanningActivity extends AppCompatActivity implements
             mToObject.placeId = "";
         }
         updateSearchText();
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest.Builder builder = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR);        // All emulators
-//                .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
-//                .setLocation(currentLocation)
-        AdRequest adRequest = builder.build();
-        mAdView.loadAd(adRequest);
+//        AdView mAdView = (AdView) findViewById(R.id.adView);
+//        AdRequest.Builder builder = new AdRequest.Builder()
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR);        // All emulators
+////                .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
+////                .setLocation(currentLocation)
+//        AdRequest adRequest = builder.build();
+//        mAdView.loadAd(adRequest);
 
         mDepartView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                // test query
-//                tryQueryRoutes();
                 showDateTimeDialog();
             }
         });
@@ -237,7 +233,6 @@ public class PlanningActivity extends AppCompatActivity implements
                         //.setMaxDate(maxDate)
                         //.setIs24HourTime(true)
                 .setTheme(SlideDateTimePicker.HOLO_LIGHT)
-//                                    .setIndicatorColor(Color.parseColor("#990000"))
                 .setIndicatorColor(getResources().getColor(R.color.colorAccent))
                 .build()
                 .show();

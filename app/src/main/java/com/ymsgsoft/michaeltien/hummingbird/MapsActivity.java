@@ -19,8 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -161,15 +159,15 @@ public class MapsActivity extends AppCompatActivity
                 mPendingPlaceObject = intent.getParcelableExtra(PLACE_PARAM);
             }
         }
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        if (mAdView != null) {
-            AdRequest adRequest = new AdRequest.Builder()
-                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                    .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
-                            //                .setLocation(currentLocation)
-                    .build();
-            mAdView.loadAd(adRequest);
-        }
+//        AdView mAdView = (AdView) findViewById(R.id.adView);
+//        if (mAdView != null) {
+//            AdRequest adRequest = new AdRequest.Builder()
+//                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+//                    .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
+//                            //                .setLocation(currentLocation)
+//                    .build();
+//            mAdView.loadAd(adRequest);
+//        }
     }
 
     /**
