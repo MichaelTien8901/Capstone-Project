@@ -2,9 +2,10 @@ package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
-import android.text.Html;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,14 @@ public class StreetViewFragment extends Fragment
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnNavigationFragmentListener) {
+            mListener = (OnNavigationFragmentListener) context;
+        }
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -107,7 +116,7 @@ public class StreetViewFragment extends Fragment
     public void fabMyLocationPressed() {
         mPositionSync = true;
         if ( mListener != null)
-            mListener.onLocationSyncChange(mPositionSync);
+            mListener.onLocationSyncChange(true);
 
         if ( mCurrentLocation != null)
             moveCameraToCurrentLocation();
@@ -119,24 +128,27 @@ public class StreetViewFragment extends Fragment
         if ( manual_update) {
             mPositionSync = false;
             if ( mListener != null)
-                mListener.onLocationSyncChange(mPositionSync);
+                mListener.onLocationSyncChange(false);
         }
         if ( isMapReady ) {
             // draw polyline ignore
             // show instruction
             if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty())
                 if ( mStepObject.level == 0) {
-                    mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
+                    String inst = Utils.getTrimmedHtml(mStepObject.instruction);
+                    mInstructionView.setText(inst);
                     mInstructionView.setVisibility(View.VISIBLE);
                     mDetailedInstructionView.setVisibility(View.GONE);
                     mTransitPanel.setVisibility(View.GONE);
                     mDetailPanel.setVisibility(View.GONE);
                     if ( mStepObject.travel_mode.equals("WALKING")) {
-                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_walk));
+//                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_walk));
+                        mStepIconView.setImageDrawable(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.ic_directions_walk, null));
                         mStepTransitNo.setText("");
                         mStepTransitNo.setVisibility(View.GONE);
                     } else {
-                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_bus));
+//                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_bus));
+                        mStepIconView.setImageDrawable(ResourcesCompat.getDrawable(getActivity().getResources(),R.drawable.ic_directions_bus, null));
                         if ( mStepObject.transit_no != null && !mStepObject.transit_no.isEmpty()) {
                             mStepTransitNo.setText(mStepObject.transit_no);
                             mStepTransitNo.setVisibility(View.VISIBLE);

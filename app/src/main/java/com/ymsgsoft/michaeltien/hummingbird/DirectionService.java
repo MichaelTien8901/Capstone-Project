@@ -133,6 +133,7 @@ public class DirectionService extends IntentService {
                 try {
                     handleActionQueryDirection(param1, param2, query_time);
                 } catch (IOException e) {
+                    Timber.d(e.getMessage());
                 }
             } else if ( ACTION_ADD_FAVORITE_ROUTE.equals(action)) {
                 final PlaceObject mFrom = intent.getParcelableExtra(FROM_PARAM);
@@ -152,7 +153,7 @@ public class DirectionService extends IntentService {
         }
     }
 
-    private void handleActionQueryDirection(String from, String to, long query_time) throws IOException {
+    private void handleActionQueryDirection(String origin, String destination, long query_time) throws IOException {
         if ( !Utils.isOnline(getBaseContext())) {
             setDirectionStatus(getBaseContext(), DIRECTION_STATUS_NO_NETWORK);
         }
@@ -162,8 +163,6 @@ public class DirectionService extends IntentService {
                 .build();
         MapApiService.DirectionApi directionApi = retrofit.create(MapApiService.DirectionApi.class);
         String key = getString(R.string.google_maps_server_key);
-        String origin = from;
-        String destination = to;
 
 //        String lang = null;
 //        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {

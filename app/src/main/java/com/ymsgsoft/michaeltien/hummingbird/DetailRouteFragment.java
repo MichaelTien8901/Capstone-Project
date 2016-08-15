@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -140,7 +141,6 @@ public class DetailRouteFragment extends Fragment implements
                     .build();
         }
 
-;
         if ( savedInstanceState != null && savedInstanceState.containsKey(SAVE_ARG_KEY)) {
                 mRouteObject = savedInstanceState.getParcelable(SAVE_ARG_KEY);
         }
@@ -236,7 +236,7 @@ public class DetailRouteFragment extends Fragment implements
             List<LatLng> points = PolyUtil.decode(data.polylinePoints);
             PolylineOptions options = new PolylineOptions()
                     .addAll(points)
-                    .color(getResources().getColor(R.color.colorAccent));
+                    .color(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null));
             options.zIndex(10);
             if ( mStepline == null) {
                 mStepline = mMap.addPolyline(options);

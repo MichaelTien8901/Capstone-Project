@@ -2,10 +2,11 @@ package com.ymsgsoft.michaeltien.hummingbird;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.text.Html;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +60,7 @@ public class NavigationFragment extends Fragment implements
     protected Location mCurrentLocation;
     protected boolean mPositionSync = true;
     protected int mNavigationMode = 0;
-    final static double DISTANCE_TOLERENCE = 2.0; // meters
+//    final static double DISTANCE_TOLERENCE = 2.0; // meters
     final static float ZOOM_LEVEL = 15;
     protected RouteParcelable mRouteObject;
     protected StepParcelable mStepObject;
@@ -117,12 +118,24 @@ public class NavigationFragment extends Fragment implements
 
     @Override
     public void onAttach(Activity activity) {
-        Timber.d(LOG_TAG, "onAttach");
+        Timber.d(LOG_TAG, "onAttach(activity)");
         super.onAttach(activity);
         if (activity instanceof OnNavigationFragmentListener) {
             mListener = (OnNavigationFragmentListener) activity;
         } else {
             throw new RuntimeException(activity.toString()
+                    + " must implement OnNavigationFragmentListener");
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        Timber.d(LOG_TAG, "onAttach (context)");
+        super.onAttach(context);
+        if (context instanceof OnNavigationFragmentListener) {
+            mListener = (OnNavigationFragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
                     + " must implement OnNavigationFragmentListener");
         }
     }
@@ -139,7 +152,7 @@ public class NavigationFragment extends Fragment implements
             mPositionSync = true;
             mNavigationMode = 0;
             if ( mListener != null)
-                mListener.onLocationSyncChange(mPositionSync);
+                mListener.onLocationSyncChange(true);
         } else {
             if ( mNavigationMode ++ == 1)
                 mNavigationMode = 0;
@@ -152,26 +165,35 @@ public class NavigationFragment extends Fragment implements
     public void onMapReady(GoogleMap googleMap) {
         isMapReady = true;
         mMap = googleMap;
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
-                mCurrentCameraZoom = cameraPosition.zoom;
-                if (mCurrentLocation != null) {
-                    float[] result = new float[3];
-                    Location.distanceBetween(
-                            mCurrentLocation.getLatitude(),
-                            mCurrentLocation.getLongitude(),
-                            cameraPosition.target.latitude,
-                            cameraPosition.target.longitude, result);
-                    if (result[0] > DISTANCE_TOLERENCE) {
-                        mPositionSync = false;
-                        if (mListener != null) {
-                            mListener.onLocationSyncChange(mPositionSync);
-                        }
-                    }
+            public void onCameraMove() {
+                mPositionSync = false;
+                if (mListener != null) {
+                    mListener.onLocationSyncChange(false);
                 }
             }
         });
+//        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+//            @Override
+//            public void onCameraChange(CameraPosition cameraPosition) {
+//                mCurrentCameraZoom = cameraPosition.zoom;
+//                if (mCurrentLocation != null) {
+//                    float[] result = new float[3];
+//                    Location.distanceBetween(
+//                            mCurrentLocation.getLatitude(),
+//                            mCurrentLocation.getLongitude(),
+//                            cameraPosition.target.latitude,
+//                            cameraPosition.target.longitude, result);
+//                    if (result[0] > DISTANCE_TOLERENCE) {
+//                        mPositionSync = false;
+//                        if (mListener != null) {
+//                            mListener.onLocationSyncChange(mPositionSync);
+//                        }
+//                    }
+//                }
+//            }
+//        });
         if ( mPendingStepList != null) {
             for( StepParcelable step: mPendingStepList) {
                 stepUpdate(step, mStepListManualUpdate);
@@ -202,7 +224,7 @@ public class NavigationFragment extends Fragment implements
         if ( manual_update) {
             mPositionSync = false;
             if ( mListener != null)
-                mListener.onLocationSyncChange(mPositionSync);
+                mListener.onLocationSyncChange(false);
         }
         if ( isMapReady ) {
             // draw polyline
@@ -217,19 +239,22 @@ public class NavigationFragment extends Fragment implements
             // show instruction
             if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty())
                 if ( mStepObject.level == 0) {
-                    mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
-                    mInstructionView.setContentDescription(mStepObject.instruction);
+                    String inst = Utils.getTrimmedHtml(mStepObject.instruction);
+                    mInstructionView.setText(inst);
+                    mInstructionView.setContentDescription(inst);
                     mInstructionView.setVisibility(View.VISIBLE);
                     mDetailedInstructionView.setVisibility(View.GONE);
                     mTransitPanel.setVisibility(View.GONE);
                     mDetailPanel.setVisibility(View.GONE);
                     if ( mStepObject.travel_mode.equals("WALKING")) {
                         mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_walk_description));
-                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_walk));
+//                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_walk));
+                        mStepIconView.setImageDrawable(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.ic_directions_walk, null));
                         mStepTransitNo.setText("");
                         mStepTransitNo.setVisibility(View.GONE);
                     } else {
-                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_bus));
+//                        mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_bus));
+                        mStepIconView.setImageDrawable(ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.ic_directions_bus, null));
                         if ( mStepObject.transit_no != null && !mStepObject.transit_no.isEmpty()) {
                             mStepTransitNo.setText(mStepObject.transit_no);
                             mStepTransitNo.setVisibility(View.VISIBLE);
@@ -274,7 +299,8 @@ public class NavigationFragment extends Fragment implements
     private void drawPolyline( String polyline, long level, boolean isMoveCamera, boolean isHightLightColor) {
         List<LatLng> points = PolyUtil.decode(polyline);
 
-        int poly_color = isHightLightColor? getResources().getColor(R.color.colorAccent): Color.BLUE;
+//        int poly_color = isHightLightColor? getResources().getColor(R.color.colorAccent): Color.BLUE;
+        int poly_color = isHightLightColor? ResourcesCompat.getColor(getResources(), R.color.colorAccent, null): Color.BLUE;
         if ( level == 0) {
             if ( mPolyline1 != null) {
                 mPolyline1.remove();
