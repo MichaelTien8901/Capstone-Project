@@ -104,7 +104,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
             final String placeId = "place_id:" + item.getPlaceId();
             final CharSequence primaryText = item.getPrimaryText(null);
 
-            Timber.i(TAG, "Autocomplete item selected: " + primaryText);
+            Timber.i(TAG, "Autocomplete item selected: %s", primaryText);
             Intent resultData = new Intent();
             resultData.putExtra(PLACE_ID, placeId);
             resultData.putExtra(PLACE_TEXT, primaryText);
@@ -162,8 +162,8 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Timber.e(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
-                + connectionResult.getErrorCode());
+        Timber.e(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = %d",
+                connectionResult.getErrorCode());
 
     }
     private void PerformSearch() {

@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,7 +46,7 @@ public class PlanningActivity extends AppCompatActivity implements
     public static final String PLAN_FROM_ID = "com.ymsgsoft.michaeltien.hummingbird.SAVE_FROM_ID";
     public static final String PLAN_TO_ID = "com.ymsgsoft.michaeltien.hummingbird.SAVE_TO_ID";
     public static final String PLAN_TIME_ID = "com.ymsgsoft.michaeltien.hummingbird.SAVE_TIME_ID";
-    final String PLAN_LIST_VISIBLE_ID = "com.ymsgsoft.michaeltien.hummingbird.PLAN_LIST_VISIBLE_ID";
+//    final String PLAN_LIST_VISIBLE_ID = "com.ymsgsoft.michaeltien.hummingbird.PLAN_LIST_VISIBLE_ID";
     private final int SEARCH_FROM_REQUEST_ID = 1;
     private final int SEARCH_TO_REQUEST_ID = 2;
     @Bind(R.id.fromTextView) TextView mFromTextView;
@@ -75,7 +76,8 @@ public class PlanningActivity extends AppCompatActivity implements
         SharedPreferences.Editor editor = preferences.edit();
 //        editor.putBoolean(PLAN_LIST_VISIBLE_ID, mListLayout.getVisibility() == View.VISIBLE );
         editor.putLong(PLAN_TIME_ID, mQueryTime);
-        editor.commit();
+//        editor.commit();
+        editor.apply();
         super.onSaveInstanceState(outState);
     }
     private void updateSearchText(){
@@ -117,7 +119,8 @@ public class PlanningActivity extends AppCompatActivity implements
             format_string = getString(R.string.time_format_with_year);
         }
         time_string = new SimpleDateFormat(format_string).format(query_time);
-        mDepartView.setText(getString(R.string.depart_view_title) + time_string);
+        String departLabel = getString(R.string.depart_view_title) + time_string;
+        mDepartView.setText(departLabel);
     }
     protected SlideDateTimeListener mListener = new SlideDateTimeListener() {
         @Override
@@ -233,7 +236,7 @@ public class PlanningActivity extends AppCompatActivity implements
                         //.setMaxDate(maxDate)
                         //.setIs24HourTime(true)
                 .setTheme(SlideDateTimePicker.HOLO_LIGHT)
-                .setIndicatorColor(getResources().getColor(R.color.colorAccent))
+                .setIndicatorColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null))
                 .build()
                 .show();
     }
@@ -351,7 +354,8 @@ public class PlanningActivity extends AppCompatActivity implements
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         SharedPreferences.Editor spe = sp.edit();
         spe.putInt(c.getString(R.string.pref_direction_status_key), DirectionService.DIRECTION_STATUS_UNKNOWN);
-        spe.commit();
+        spe.apply();
+//        spe.commit();
     }
     @SuppressWarnings("ResourceType")
     static public @DirectionService.DirectionStatus

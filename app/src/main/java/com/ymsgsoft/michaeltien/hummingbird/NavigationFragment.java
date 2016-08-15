@@ -1,6 +1,5 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
@@ -116,17 +115,17 @@ public class NavigationFragment extends Fragment implements
         return rootView;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        Timber.d(LOG_TAG, "onAttach(activity)");
-        super.onAttach(activity);
-        if (activity instanceof OnNavigationFragmentListener) {
-            mListener = (OnNavigationFragmentListener) activity;
-        } else {
-            throw new RuntimeException(activity.toString()
-                    + " must implement OnNavigationFragmentListener");
-        }
-    }
+//    @Override
+//    public void onAttach(Activity activity) {
+//        Timber.d(LOG_TAG, "onAttach(activity)");
+//        super.onAttach(activity);
+//        if (activity instanceof OnNavigationFragmentListener) {
+//            mListener = (OnNavigationFragmentListener) activity;
+//        } else {
+//            throw new RuntimeException(activity.toString()
+//                    + " must implement OnNavigationFragmentListener");
+//        }
+//    }
 
     @Override
     public void onAttach(Context context) {

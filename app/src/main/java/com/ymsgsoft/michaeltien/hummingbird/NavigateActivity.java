@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
@@ -214,7 +215,7 @@ public class NavigateActivity extends AppCompatActivity implements
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, this)
                     .setResultCallback(new ResultCallback<Status>() {
-                        @Override
+                        @Override @NonNull
                         public void onResult(Status status) {
                             mRequestingLocationUpdates = true;
                             PrefUtils.resetLocationRequestFlag(NavigateActivity.this, getString(R.string.pref_key_location_request_flag));
@@ -368,7 +369,7 @@ public class NavigateActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Timber.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+        Timber.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = %d", result.getErrorCode());
     }
 
     @Override
@@ -521,8 +522,7 @@ public class NavigateActivity extends AppCompatActivity implements
                 startLocationUpdates();
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                Timber.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
-                        "upgrade location settings ");
+                Timber.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
                 if ( !PrefUtils.isLocationRequestFlag(NavigateActivity.this, getString(R.string.pref_key_location_request_flag)))
                     try {
                     // Show the dialog by calling startResolutionForResult(), and check the result
@@ -534,8 +534,7 @@ public class NavigateActivity extends AppCompatActivity implements
                     }
                 break;
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                Timber.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
-                        "not created.");
+                Timber.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
                 break;
         }
     }

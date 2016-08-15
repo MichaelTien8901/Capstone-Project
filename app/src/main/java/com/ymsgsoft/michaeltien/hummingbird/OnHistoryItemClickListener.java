@@ -6,5 +6,5 @@ import com.ymsgsoft.michaeltien.hummingbird.playservices.HistoryRecyclerViewAdap
  * Created by Michael Tien on 2016/4/1.
  */
 public interface OnHistoryItemClickListener {
-    public void OnItemClick(HistoryRecyclerViewAdapter.HistoryObject data, int position);
+    void OnItemClick(HistoryRecyclerViewAdapter.HistoryObject data, int position);
 }
