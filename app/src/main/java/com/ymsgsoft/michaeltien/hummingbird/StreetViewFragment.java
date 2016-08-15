@@ -35,8 +35,13 @@ public class StreetViewFragment extends Fragment
     private boolean isMapReady = false;
     private Location mCurrentLocation;
     private boolean mPositionSync = true;
-    @Bind(R.id.navigate_instruction)
-    TextView mInstructionView;
+    @Bind(R.id.navigate_instruction) TextView mInstructionView;
+    @Bind(R.id.navigate_transit_panel) View mTransitPanel;
+    @Bind(R.id.navigate_detail_panel) View mDetailPanel;
+    @Bind(R.id.navigate_transit_departure_stop) TextView mDepartureStop;
+    @Bind(R.id.navigate_transit_arrival_stop) TextView mArrivalStop;
+    @Bind(R.id.navigate_transit_stop_no) TextView mTransitStops;
+
     @Bind(R.id.navigate_detail_instruction) TextView mDetailedInstructionView;
     @Bind(R.id.navigate_step_transit_no) TextView mStepTransitNo;
     @Bind(R.id.navigate_step_icon) ImageView mStepIconView;
@@ -117,41 +122,51 @@ public class StreetViewFragment extends Fragment
                 mListener.onLocationSyncChange(mPositionSync);
         }
         if ( isMapReady ) {
-            // draw polyline
-//            if ( mStepObject.polyline != null && !mStepObject.polyline.isEmpty())
-//                drawPolyline(mStepObject.polyline,
-//                        mStepObject.level,
-//                        mStepObject.level == 0,
-//                        mStepObject.level > 0 || (mStepObject.level == 0 && mStepObject.count == 0));
-//            // draw end location
-//            if ( mStepObject.level != 0 || mStepObject.count == 0)
-//                drawDestination(new LatLng(mStepObject.end_lat, mStepObject.end_lng));
+            // draw polyline ignore
             // show instruction
             if (mStepObject.instruction != null && !mStepObject.instruction.isEmpty())
                 if ( mStepObject.level == 0) {
                     mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
                     mInstructionView.setVisibility(View.VISIBLE);
-                    mDetailedInstructionView.setVisibility(View.INVISIBLE);
+                    mDetailedInstructionView.setVisibility(View.GONE);
+                    mTransitPanel.setVisibility(View.GONE);
+                    mDetailPanel.setVisibility(View.GONE);
                     if ( mStepObject.travel_mode.equals("WALKING")) {
                         mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_walk));
                         mStepTransitNo.setText("");
-                        mStepTransitNo.setVisibility(View.INVISIBLE);
+                        mStepTransitNo.setVisibility(View.GONE);
                     } else {
                         mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_bus));
                         if ( mStepObject.transit_no != null && !mStepObject.transit_no.isEmpty()) {
                             mStepTransitNo.setText(mStepObject.transit_no);
                             mStepTransitNo.setVisibility(View.VISIBLE);
                         } else {
-                            mStepTransitNo.setVisibility(View.INVISIBLE);
+                            mStepTransitNo.setVisibility(View.GONE);
+                        }
+                        // transit details
+                        if ( mStepObject.departure_stop != null) { // use transit panel instead
+                            mDepartureStop.setText(mStepObject.departure_stop);
+                            if (mStepObject.arrival_stop != null) {
+                                mArrivalStop.setText(mStepObject.arrival_stop);
+                            } else
+                                mArrivalStop.setText("");
+                            if (mStepObject.num_stops != 0) {
+                                mTransitStops.setText(String.valueOf(mStepObject.num_stops));
+                            } else
+                                mTransitStops.setText("");
+                            mDetailPanel.setVisibility(View.VISIBLE);
+                            mTransitPanel.setVisibility(View.VISIBLE);
                         }
                     }
                 } else {
-                    mDetailedInstructionView.setText(Html.fromHtml(mStepObject.instruction));
+                    String inst = Utils.getTrimmedHtml(mStepObject.instruction);
+                    mDetailedInstructionView.setText(inst);
+                    mDetailPanel.setVisibility(View.VISIBLE);
                     mDetailedInstructionView.setVisibility(View.VISIBLE);
+                    mTransitPanel.setVisibility(View.GONE);
                 }
-//            if ( mStepObject.level != 0 || (mStepObject.level == 0 && mStepObject.count != 0)) {
             if ( mStepObject.level != 0 || (mStepObject.level == 0 && mStepObject.count == 0)) {
-                // set position of streetview
+                // set position of street view
                 // camera to the bearing of direction
                 Location start_location = new Location("");
                 start_location.setLatitude(mStepObject.start_lat);

@@ -64,6 +64,12 @@ public class NavigationFragment extends Fragment implements
     protected RouteParcelable mRouteObject;
     protected StepParcelable mStepObject;
     @Bind(R.id.navigate_instruction) TextView mInstructionView;
+    @Bind(R.id.navigate_transit_panel) View mTransitPanel;
+    @Bind(R.id.navigate_detail_panel) View mDetailPanel;
+    @Bind(R.id.navigate_transit_departure_stop) TextView mDepartureStop;
+    @Bind(R.id.navigate_transit_arrival_stop) TextView mArrivalStop;
+    @Bind(R.id.navigate_transit_stop_no) TextView mTransitStops;
+
     @Bind(R.id.navigate_detail_instruction) TextView mDetailedInstructionView;
     @Bind(R.id.navigate_step_transit_no) TextView mStepTransitNo;
     @Bind(R.id.navigate_step_icon) ImageView mStepIconView;
@@ -214,12 +220,14 @@ public class NavigationFragment extends Fragment implements
                     mInstructionView.setText(Html.fromHtml(mStepObject.instruction));
                     mInstructionView.setContentDescription(mStepObject.instruction);
                     mInstructionView.setVisibility(View.VISIBLE);
-                    mDetailedInstructionView.setVisibility(View.INVISIBLE);
+                    mDetailedInstructionView.setVisibility(View.GONE);
+                    mTransitPanel.setVisibility(View.GONE);
+                    mDetailPanel.setVisibility(View.GONE);
                     if ( mStepObject.travel_mode.equals("WALKING")) {
                         mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_walk_description));
                         mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_walk));
                         mStepTransitNo.setText("");
-                        mStepTransitNo.setVisibility(View.INVISIBLE);
+                        mStepTransitNo.setVisibility(View.GONE);
                     } else {
                         mStepIconView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_directions_bus));
                         if ( mStepObject.transit_no != null && !mStepObject.transit_no.isEmpty()) {
@@ -227,32 +235,31 @@ public class NavigationFragment extends Fragment implements
                             mStepTransitNo.setVisibility(View.VISIBLE);
                             mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_bus_description));
                         } else {
-                            mStepTransitNo.setVisibility(View.INVISIBLE);
+                            mStepTransitNo.setVisibility(View.GONE);
                             mStepIconView.setContentDescription(getActivity().getString(R.string.travel_icon_train_description));
                         }
-                        // details
-                        String detailText = null;
-                        if ( mStepObject.departure_stop != null){
-                            detailText = mStepObject.departure_stop;
-                        }
-                        if ( mStepObject.arrival_stop != null) {
-                            detailText += "\n" + mStepObject.arrival_stop;
-                        }
-                        if ( mStepObject.num_stops != 0) {
-                            String STOP = mStepObject.num_stops == 1 ?
-                                    getString(R.string.bus_stop):
-                                    getString(R.string.bus_stops);
-                            detailText += "\n" + mStepObject.num_stops + STOP;
-                        }
-                        if ( detailText != null) {
-                            mDetailedInstructionView.setText(detailText);
-                            mDetailedInstructionView.setVisibility(View.VISIBLE);
+                        // transit details
+                        if ( mStepObject.departure_stop != null) { // use transit panel instead
+                            mDepartureStop.setText(mStepObject.departure_stop);
+                            if (mStepObject.arrival_stop != null) {
+                                mArrivalStop.setText(mStepObject.arrival_stop);
+                            } else
+                                mArrivalStop.setText("");
+                            if (mStepObject.num_stops != 0) {
+                                mTransitStops.setText(String.valueOf(mStepObject.num_stops));
+                            } else
+                                mTransitStops.setText("");
+                            mDetailPanel.setVisibility(View.VISIBLE);
+                            mTransitPanel.setVisibility(View.VISIBLE);
                         }
                     }
                 } else {
-                    mDetailedInstructionView.setText(Html.fromHtml(mStepObject.instruction));
-                    mDetailedInstructionView.setContentDescription(mStepObject.instruction);
+                    String inst = Utils.getTrimmedHtml(mStepObject.instruction);
+                    mDetailedInstructionView.setText(inst);
+                    mDetailedInstructionView.setContentDescription(inst);
+                    mDetailPanel.setVisibility(View.VISIBLE);
                     mDetailedInstructionView.setVisibility(View.VISIBLE);
+                    mTransitPanel.setVisibility(View.GONE);
                 }
         } else {
             if ( mPendingStepList == null) {

@@ -23,4 +23,8 @@
     <!--<color name="theme_accent">#04561A</color>-->
     <color name="colorGrey">#ffe0e0e0</color>
     <color name="list_background">@color/teal_300</color>
+    <color name="colorNavigateStopBackground">@color/teal_300</color>
+    <color name="colorNavigateStopText">@color/pink_500</color>
+    <color name="colorDetailItemStopBackground">@color/teal_300</color>
+    <color name="colorDetailItemStopText">@color/pink_500</color>
 </resources>

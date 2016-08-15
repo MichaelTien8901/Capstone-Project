@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
 import android.util.DisplayMetrics;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -113,5 +114,15 @@ public class Utils {
         dialog.show(activity.getFragmentManager(), "NetworkDialog");
         return false;
     }
-
+    public static String getTrimmedHtml( String htmlText) {
+        String text;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            text = Html.fromHtml(htmlText, 0).toString().trim();
+        } else {
+            text = Html.fromHtml(htmlText).toString().trim();
+        }
+        // remove extra Linefeed
+        text = text.replaceAll("\n\n", "\n");
+        return text;
+    }
 }

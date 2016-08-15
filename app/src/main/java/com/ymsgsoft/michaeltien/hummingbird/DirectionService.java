@@ -30,10 +30,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
-//import retrofit.Call;
-//import retrofit.GsonConverterFactory;
-//import retrofit.Retrofit;
-
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
