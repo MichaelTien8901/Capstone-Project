@@ -1,9 +1,12 @@
 package com.ymsgsoft.michaeltien.hummingbird;
 
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v4.app.NavUtils;
@@ -97,9 +100,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
-        addPreferencesFromResource(R.xml.pref_general);
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_language_key)));
+//        addPreferencesFromResource(R.xml.pref_general);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            onCreatePreferenceActivity();
+        } else {
+            onCreatePreferenceFragment();
+        }
+
     }
 
     /**
@@ -124,5 +131,35 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
         return super.onMenuItemSelected(featureId, item);
     }
+    /**
+     * Wraps legacy {@link #onCreate(Bundle)} code for Android < 3 (i.e. API lvl
+     * < 11).
+     */
+    @SuppressWarnings("deprecation")
+    private void onCreatePreferenceActivity() {
+        addPreferencesFromResource(R.xml.pref_general);
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_language_key)));
+    }
 
+    /**
+     * Wraps {@link #onCreate(Bundle)} code for Android >= 3 (i.e. API lvl >=
+     * 11).
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void onCreatePreferenceFragment() {
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new MyPreferenceFragment ())
+                .commit();
+    }
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class MyPreferenceFragment extends PreferenceFragment
+    {
+        @Override
+        public void onCreate(final Bundle savedInstanceState)
+        {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_general); //outer class
+        }
+    }
 }
